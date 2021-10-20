@@ -42,5 +42,6 @@ extra:
       name: igrek51 on GitHub
 
 nav:
-  - Home: index.md
+  - Projects: index.md
+  - Cheatsheets: cheatsheet.md
   - Internet status: status.md
