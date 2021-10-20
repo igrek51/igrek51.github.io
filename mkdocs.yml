@@ -1,0 +1,46 @@
+site_name: igrek51
+repo_name: igrek51
+repo_url: https://github.com/igrek51
+site_author: igrek51
+docs_dir: docs
+edit_uri: ''
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: light blue
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.expand
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      use_pygments: true
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+plugins: []
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/igrek51
+      name: igrek51 on GitHub
+
+nav:
+  - Home: index.md
+  - Internet status: status.md
