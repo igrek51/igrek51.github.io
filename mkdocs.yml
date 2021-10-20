@@ -42,6 +42,7 @@ extra:
       name: igrek51 on GitHub
 
 nav:
-  - Projects: index.md
+  - Projects Portfolio: index.md
   - Cheatsheets: cheatsheet.md
+  - Music Theory: music-theory.md
   - Internet status: status.md
