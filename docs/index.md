@@ -18,16 +18,19 @@ hide:
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/nuclear?label=github&sort=semver)](https://github.com/igrek51/nuclear)
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
+  [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
 
 - [:material-eraser: Regex-rename](https://github.com/igrek51/regex-rename)  
   Bulk rename tool based on regular expressions to rename multiple files at once  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/regex-rename?label=github&sort=semver)](https://github.com/igrek51/regex-rename)
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/regex-rename)
+  [![PyPI](https://img.shields.io/pypi/v/regex-rename)](https://pypi.org/project/regex-rename)
 
 - [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
   Connect 4 (4 in a row) game solver finding a winning strategy.  
   ![](https://img.shields.io/badge/-Go-blue)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
 
 - [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
   Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs on your own  
@@ -55,22 +58,26 @@ hide:
   MP3 song normalizer  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/trimmer?label=github&sort=semver)](https://github.com/igrek51/trimmer)
+  [![PyPI](https://img.shields.io/pypi/v/trimmer)](https://pypi.org/project/trimmer)
 
 - [:material-compare: Diffs](https://github.com/igrek51/diffs)  
   Monitor of command output changes  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/diffs?label=github&sort=semver)](https://github.com/igrek51/diffs)
+  [![PyPI](https://img.shields.io/pypi/v/diffs)](https://pypi.org/project/diffs)
 
 - [:material-harddisk: Copymon](https://github.com/igrek51/copymon)  
   Monitor of memory buffers for better estimation of copying time  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/copymon?label=github&sort=semver)](https://github.com/igrek51/copymon)
+  [![PyPI](https://img.shields.io/pypi/v/copymon)](https://pypi.org/project/copymon)
 
 - [:material-middleware-outline: Xman](https://github.com/igrek51/xman)  
   HTTPS Man-In-The-Middle proxy recording & replaying requests  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/xman?label=github&sort=semver)](https://github.com/igrek51/xman)
   [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/igrek5151/xman?label=docker)](https://hub.docker.com/r/igrek5151/xman)
+  [![PyPI](https://img.shields.io/pypi/v/x-man)](https://pypi.org/project/x-man)
 
 - [:material-family-tree: ToDo Tree](https://github.com/igrek51/todotree)  
   Mobile application for Android storing ToDo notes in an unlimited tree structure  
