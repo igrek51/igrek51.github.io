@@ -11,6 +11,7 @@ hide:
   ![](https://img.shields.io/badge/-Kotlin-orange)
   ![](https://img.shields.io/badge/-Android-brightgreen)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/android-songbook?label=github&sort=semver)](https://github.com/igrek51/android-songbook)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/android-songbook)
 
 - [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear) - 
   Declarative parser for command line arguments  
