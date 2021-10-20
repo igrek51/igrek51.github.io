@@ -6,6 +6,9 @@
 ## Diatonic Scales in chromatic order
 [![](./assets/music/piano-scales-chromatic.png)](./assets/music/piano-scales-chromatic.png)
 
+## Piano Scales - black keys
+[![](./assets/music/piano-scales-black-keys.png)](./assets/music/piano-scales-black-keys.png)
+
 ## Circle of Fifths
 [![](./assets/music/circle-of-fifths.png)](./assets/music/circle-of-fifths.png)
 
