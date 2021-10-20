@@ -1,7 +1,10 @@
 # Music Theory
 
 ## Musical Scales by Fifths
-[![](./assets/music/piano-scales.png)](./assets/music/piano-scales.png)
+[![](./assets/music/piano-scales-by-fifths.png)](./assets/music/piano-scales-by-fifths.png)
+
+## Musical Scales in chromatic order
+[![](./assets/music/piano-scales-chromatic.png)](./assets/music/piano-scales-chromatic.png)
 
 ## Circle of Fifths
 [![](./assets/music/circle-of-fifths.png)](./assets/music/circle-of-fifths.png)
