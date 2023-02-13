@@ -46,6 +46,7 @@ nav:
   - Cheatsheets:
     - Cheatsheets Index: cheatsheet/cheatsheet.md
     - ADB cheatsheet: cheatsheet/adb.md
+    - Git cheatsheet: cheatsheet/git.md
     - Linux tools cheatsheet: cheatsheet/linux.md
     - Vim cheatsheet: cheatsheet/vim.md
   - Music Theory: music-theory.md

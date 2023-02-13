@@ -1,4 +1,4 @@
-# Misc linux tools cheatsheet
+# Misc Linux tools cheatsheet
 
 ## Less
 ### Less without line wrapping
@@ -23,6 +23,17 @@ screen -r 5050 # reattach
 screen -d -r byname # reattach not-detached session
 ```
 
+## Nmap
+### Check if TCP port is open
+```shell
+sudo nmap -sS -p22 192.168.0.50 # SYN scan
+sudo nmap -sY -p22 192.168.0.50 # open/filtered/closed
+```
+### Discover hosts with ping scan
+```shell
+sudo nmap -sP 192.168.0.1/24
+```
+
 ## Enable Magic Key
 ```shell
 # Temporary
@@ -34,8 +45,19 @@ sudo vim /etc/sysctl.conf
 kernel.sysrq=1
 ```
 
-## Write file without text editor: cat + EOF
+## GPG
+### Add GPG key to trusted keys (fix NO_PUBKEY)
+```shell
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys <PUBKEY>
+```
+
+## Shell
+### Write file without text editor: cat + EOF
 ```shell
 cat << 'EOF' > task.xml
 EOF
+```
+### Turn on strict mode in bash
+```shell
+set -euxo pipefail
 ```
