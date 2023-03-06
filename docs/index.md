@@ -37,6 +37,13 @@ hide:
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-RaspberryPi-crimson)
 
+- [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
+  MP3 song normalizer  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/trimmer?label=github&sort=semver)](https://github.com/igrek51/trimmer)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/trimmer)
+  [![PyPI](https://img.shields.io/pypi/v/trimmer)](https://pypi.org/project/trimmer)
+
 - [:material-calendar: Schedulio](https://github.com/igrek51/schedulio)  
   Plan your periodic events continuously  
   ![](https://img.shields.io/badge/-Python-yellow)
@@ -53,12 +60,6 @@ hide:
 - [:fontawesome-solid-gear: Watchmaker](https://github.com/igrek51/watchmaker)  
   Portable Live Linux Sytem with persistence features  
   ![](https://img.shields.io/badge/-Linux-darkgrey)
-
-- [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
-  MP3 song normalizer  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/trimmer?label=github&sort=semver)](https://github.com/igrek51/trimmer)
-  [![PyPI](https://img.shields.io/pypi/v/trimmer)](https://pypi.org/project/trimmer)
 
 - [:material-compare: Diffs](https://github.com/igrek51/diffs)  
   Monitor of command output changes  
