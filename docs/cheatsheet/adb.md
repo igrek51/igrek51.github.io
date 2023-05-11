@@ -29,8 +29,15 @@ adb logcat -d '*:D' -v color -v time -b main --pid=30280
 
 ## Backup application data (/data/data)
 ```bash
+# Backup app data only
 adb backup -noapk igrek.songbook
+# Extract
 ( printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" ; tail -c +25 backup.ab ) |  tar xfvz -
+
+# Backup app data and apk
+adb backup -apk com.azure.authenticator -f appdata.bak
+# Restore
+adb restore appdata.bak
 ```
 
 ## Simulate key input
