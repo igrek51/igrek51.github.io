@@ -96,3 +96,8 @@ git commit -m "Resolve diffs from $BRANCH_FROM to $BRANCH_TO"
 git format-patch -1 HASH
 git am PATCH.patch
 ```
+
+## Differences between local and remote
+```shell
+git diff --full-index --binary origin/$(git rev-parse --abbrev-ref HEAD) HEAD
+```
