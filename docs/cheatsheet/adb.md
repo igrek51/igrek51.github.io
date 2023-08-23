@@ -111,3 +111,9 @@ API level:
 getprop ro.build.version.sdk
 ```
 
+## Access data dir through shell
+```sh
+adb shell
+> run-as igrek.songbook
+> cd /data/data/igrek.songbook
+```
