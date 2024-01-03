@@ -13,13 +13,6 @@ hide:
     [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/android-songbook)
     [![Google Play](https://img.shields.io/badge/Google%20Play-igrek.songbook-blue)](https://play.google.com/store/apps/details?id=igrek.songbook)
 
-- [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear)  
-  Declarative parser for command line arguments  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/nuclear?label=github&sort=semver)](https://github.com/igrek51/nuclear)
-  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
-  [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
-
 - [:material-eraser: Regex-rename](https://github.com/igrek51/regex-rename)  
   Bulk rename tool based on regular expressions to rename multiple files at once  
   ![](https://img.shields.io/badge/-Python-yellow)
@@ -27,15 +20,23 @@ hide:
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/regex-rename)
   [![PyPI](https://img.shields.io/pypi/v/regex-rename)](https://pypi.org/project/regex-rename)
 
+- [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear)  
+  Declarative parser for command line arguments  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/nuclear?label=github&sort=semver)](https://github.com/igrek51/nuclear)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
+  [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
+
 - [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
   Connect 4 (4 in a row) game solver finding a winning strategy.  
   ![](https://img.shields.io/badge/-Go-blue)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
 
-- [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
-  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs on your own  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  ![](https://img.shields.io/badge/-RaspberryPi-crimson)
+- [:fontawesome-regular-face-dizzy: Psycho Killer](https://github.com/igrek51/psycho-killer)  
+  Interactive process killer, manager and system resources monitor  
+  ![](https://img.shields.io/badge/-Rust-red)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/psycho-killer?label=github&sort=semver)](https://github.com/igrek51/psycho-killer)
+  [![Crates](https://img.shields.io/crates/v/psycho-killer)](https://crates.io/crates/psycho-killer)
 
 - [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
   MP3 song normalizer  
@@ -43,6 +44,23 @@ hide:
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/trimmer?label=github&sort=semver)](https://github.com/igrek51/trimmer)
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/trimmer)
   [![PyPI](https://img.shields.io/pypi/v/trimmer)](https://pypi.org/project/trimmer)
+
+- [:material-family-tree: ToDo Tree](https://github.com/igrek51/todotree)  
+  Mobile application for Android storing ToDo notes in an unlimited tree structure  
+  ![](https://img.shields.io/badge/-Kotlin-orange)
+  ![](https://img.shields.io/badge/-Android-brightgreen)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/todotree?label=github&sort=semver)](https://github.com/igrek51/todotree)
+
+- [:octicons-cpu-16: Multicore system monitor](https://github.com/igrek51/multicore-monitor)  
+  Gnome Extension: Multicore CPU system monitor  
+  ![](https://img.shields.io/badge/-JavaScript-khaki)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/multicore-monitor?label=github&sort=semver)](https://github.com/igrek51/multicore-monitor)
+  [![Gnome Extensions](https://img.shields.io/badge/Gnome_Extensions-multicore--system--monitor-blue)](https://extensions.gnome.org/extension/6364/multicore-system-monitor/)
+
+- [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
+  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs on your own  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  ![](https://img.shields.io/badge/-RaspberryPi-crimson)
 
 - [:material-calendar: Schedulio](https://github.com/igrek51/schedulio)  
   Plan your periodic events continuously  
@@ -80,12 +98,6 @@ hide:
   [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/igrek5151/xman?label=docker)](https://hub.docker.com/r/igrek5151/xman)
   [![PyPI](https://img.shields.io/pypi/v/x-man)](https://pypi.org/project/x-man)
 
-- [:material-family-tree: ToDo Tree](https://github.com/igrek51/todotree)  
-  Mobile application for Android storing ToDo notes in an unlimited tree structure  
-  ![](https://img.shields.io/badge/-Kotlin-orange)
-  ![](https://img.shields.io/badge/-Android-brightgreen)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/todotree?label=github&sort=semver)](https://github.com/igrek51/todotree)
-
 - [:material-bell-ring: Force Awakening Alarm](https://github.com/igrek51/force-awakening-alarm)  
   A vicious Android alarm forcing you to awake by guessing the alarm song  
   ![](https://img.shields.io/badge/-Kotlin-orange)
@@ -99,3 +111,8 @@ hide:
   Tool for synchronizing files between local filesystem and Android devices using ADB  
   ![](https://img.shields.io/badge/-C++-blue)
   ![](https://img.shields.io/badge/-Android-brightgreen)
+
+- [:material-playlist-music: Songbird](https://github.com/igrek51/songbird)  
+  Spotify songs browser  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  ![](https://img.shields.io/badge/-Vue-19832C)
