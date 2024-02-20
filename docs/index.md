@@ -38,6 +38,12 @@ hide:
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/psycho-killer?label=github&sort=semver)](https://github.com/igrek51/psycho-killer)
   [![Crates](https://img.shields.io/crates/v/psycho-killer)](https://crates.io/crates/psycho-killer)
 
+- [:fontawesome-solid-magnifying-glass: fpick](https://github.com/igrek51/fpick)  
+  Interactive file picker  
+  ![](https://img.shields.io/badge/-Rust-red)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/fpick?label=github&sort=semver)](https://github.com/igrek51/fpick)
+  [![Crates](https://img.shields.io/crates/v/fpick)](https://crates.io/crates/fpick)
+
 - [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
   MP3 song normalizer  
   ![](https://img.shields.io/badge/-Python-yellow)

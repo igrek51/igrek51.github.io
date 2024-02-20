@@ -49,6 +49,11 @@ adb shell input keyevent 66 # enter
 adb shell input text ---text---
 ```
 
+Click the home button
+```
+adb shell input keyevent 3
+```
+
 ## Wireless debugging over WiFi connection
 Enable Wireless debugging:
 ```
@@ -99,6 +104,13 @@ cmd package install-existing com.miui.miwallpaper
 Enable "USB Debuging" in first place.
 ```
 adb shell settings put secure icon_blacklist nfc
+```
+
+## List Settings
+```
+adb shell settings list system
+adb shell settings list global
+adb shell settings list secure
 ```
 
 ## Look up Android version
