@@ -76,7 +76,7 @@ adb kill-server
 pm list packages
 ```
 
-## Uninstall bloatware packages
+## Uninstall bloatware packages (Xiaomi)
 ```
 pm uninstall -k --user 0 com.miui.msa.global
 pm uninstall -k --user 0 com.xiaomi.mipicks
@@ -98,6 +98,14 @@ pm uninstall -k --user 0 com.xiaomi.mi_connect_service
 Install preinstalled package back:
 ```
 cmd package install-existing com.miui.miwallpaper
+```
+
+## Uninstall bloatware packages (Motorola)
+```
+adb shell pm uninstall -k --user 0 com.facebook.appmanager
+adb shell pm uninstall -k --user 0 com.facebook.services
+adb shell pm uninstall -k --user 0 com.facebook.system
+adb shell pm uninstall -k --user 0 com.facebook.katana
 ```
 
 ## Disable annoying NFC icon
