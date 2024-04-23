@@ -38,6 +38,9 @@ adb backup -noapk igrek.songbook
 adb backup -apk com.azure.authenticator -f appdata.bak
 # Restore
 adb restore appdata.bak
+
+# Backup app data only
+adb backup com.azure.authenticator -f appdata.bak
 ```
 
 ## Simulate key input

@@ -122,3 +122,9 @@ hide:
   Spotify songs browser  
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-Vue-19832C)
+
+- [:fontawesome-solid-hammer: Makeit](https://github.com/igrek51/makeit)  
+  Interactive Makefile runner  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/makeit?label=github&sort=semver)](https://github.com/igrek51/makeit)
+  [![PyPI](https://img.shields.io/pypi/v/makit)](https://pypi.org/project/makit)
