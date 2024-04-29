@@ -20,29 +20,35 @@ hide:
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/regex-rename)
   [![PyPI](https://img.shields.io/pypi/v/regex-rename)](https://pypi.org/project/regex-rename)
 
-- [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear)  
-  Declarative parser for command line arguments  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/nuclear?label=github&sort=semver)](https://github.com/igrek51/nuclear)
-  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
-  [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
-
-- [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
-  Connect 4 (4 in a row) game solver finding a winning strategy.  
-  ![](https://img.shields.io/badge/-Go-blue)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
-
-- [:fontawesome-regular-face-dizzy: Psycho Killer](https://github.com/igrek51/psycho-killer)  
-  Interactive process killer, manager and system resources monitor  
-  ![](https://img.shields.io/badge/-Rust-red)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/psycho-killer?label=github&sort=semver)](https://github.com/igrek51/psycho-killer)
-  [![Crates](https://img.shields.io/crates/v/psycho-killer)](https://crates.io/crates/psycho-killer)
+- [:material-family-tree: ToDo Tree](https://github.com/igrek51/todotree2)  
+  ToDo notes in an unlimited tree structure  
+  ![](https://img.shields.io/badge/-Flutter-5ED3F3)
+  ![](https://img.shields.io/badge/-Android-brightgreen)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/todotree2?label=github&sort=semver)](https://github.com/igrek51/todotree2)
 
 - [:fontawesome-solid-magnifying-glass: fpick](https://github.com/igrek51/fpick)  
   Interactive file picker  
   ![](https://img.shields.io/badge/-Rust-red)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/fpick?label=github&sort=semver)](https://github.com/igrek51/fpick)
   [![Crates](https://img.shields.io/crates/v/fpick)](https://crates.io/crates/fpick)
+
+- [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
+  Connect 4 (4 in a row) game solver finding a winning strategy.  
+  ![](https://img.shields.io/badge/-Go-blue)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
+
+- [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear)  
+  Binding glue for CLI Python applications  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/nuclear?label=github&sort=semver)](https://github.com/igrek51/nuclear)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
+  [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
+
+- [:fontawesome-regular-face-dizzy: Psycho Killer](https://github.com/igrek51/psycho-killer)  
+  Interactive process killer, manager and system resources monitor  
+  ![](https://img.shields.io/badge/-Rust-red)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/psycho-killer?label=github&sort=semver)](https://github.com/igrek51/psycho-killer)
+  [![Crates](https://img.shields.io/crates/v/psycho-killer)](https://crates.io/crates/psycho-killer)
 
 - [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
   MP3 song normalizer  
@@ -51,22 +57,28 @@ hide:
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/trimmer)
   [![PyPI](https://img.shields.io/pypi/v/trimmer)](https://pypi.org/project/trimmer)
 
-- [:material-family-tree: ToDo Tree](https://github.com/igrek51/todotree)  
-  Mobile application for Android storing ToDo notes in an unlimited tree structure  
-  ![](https://img.shields.io/badge/-Kotlin-orange)
-  ![](https://img.shields.io/badge/-Android-brightgreen)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/todotree?label=github&sort=semver)](https://github.com/igrek51/todotree)
-
 - [:octicons-cpu-16: Multicore system monitor](https://github.com/igrek51/multicore-monitor)  
   Gnome Extension: Multicore CPU system monitor  
   ![](https://img.shields.io/badge/-JavaScript-khaki)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/multicore-monitor?label=github&sort=semver)](https://github.com/igrek51/multicore-monitor)
   [![Gnome Extensions](https://img.shields.io/badge/Gnome_Extensions-multicore--system--monitor-blue)](https://extensions.gnome.org/extension/6364/multicore-system-monitor/)
 
+- [:fontawesome-solid-hammer: Makeit](https://github.com/igrek51/makeit)  
+  Interactive Makefile runner  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/makeit?label=github&sort=semver)](https://github.com/igrek51/makeit)
+  [![PyPI](https://img.shields.io/pypi/v/makit)](https://pypi.org/project/makit)
+
 - [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
-  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs on your own  
+  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs  
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-RaspberryPi-crimson)
+
+- [:material-playlist-music: Songbird](https://github.com/igrek51/songbird)  
+  Spotify songs manager  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  ![](https://img.shields.io/badge/-Typescript-blue)
+  ![](https://img.shields.io/badge/-Vue-19832C)
 
 - [:material-calendar: Schedulio](https://github.com/igrek51/schedulio)  
   Plan your periodic events continuously  
@@ -81,21 +93,11 @@ hide:
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-Angular-red)
 
-- [:fontawesome-solid-gear: Watchmaker](https://github.com/igrek51/watchmaker)  
-  Portable Live Linux Sytem with persistence features  
-  ![](https://img.shields.io/badge/-Linux-darkgrey)
-
 - [:material-compare: Diffs](https://github.com/igrek51/diffs)  
   Monitor of command output changes  
   ![](https://img.shields.io/badge/-Python-yellow)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/diffs?label=github&sort=semver)](https://github.com/igrek51/diffs)
   [![PyPI](https://img.shields.io/pypi/v/diffs)](https://pypi.org/project/diffs)
-
-- [:material-harddisk: Copymon](https://github.com/igrek51/copymon)  
-  Monitor of memory buffers for better estimation of copying time  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/copymon?label=github&sort=semver)](https://github.com/igrek51/copymon)
-  [![PyPI](https://img.shields.io/pypi/v/copymon)](https://pypi.org/project/copymon)
 
 - [:material-middleware-outline: Xman](https://github.com/igrek51/xman)  
   HTTPS Man-In-The-Middle proxy recording & replaying requests  
@@ -109,6 +111,16 @@ hide:
   ![](https://img.shields.io/badge/-Kotlin-orange)
   ![](https://img.shields.io/badge/-Android-brightgreen)
 
+- [:fontawesome-solid-gear: Watchmaker](https://github.com/igrek51/watchmaker)  
+  Portable Live Linux Sytem with persistence features  
+  ![](https://img.shields.io/badge/-Linux-darkgrey)
+
+- [:material-harddisk: Copymon](https://github.com/igrek51/copymon)  
+  Monitor of memory buffers for better estimation of copying time  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/copymon?label=github&sort=semver)](https://github.com/igrek51/copymon)
+  [![PyPI](https://img.shields.io/pypi/v/copymon)](https://pypi.org/project/copymon)
+
 - [:material-map-marker-path: Co-op Pathfinder](https://github.com/igrek51/coop-pathfinder)  
   Cooperative path-finding algorithm simulator for solving bottle-necks in multi-agent systems  
   ![](https://img.shields.io/badge/-Java-red)
@@ -117,14 +129,3 @@ hide:
   Tool for synchronizing files between local filesystem and Android devices using ADB  
   ![](https://img.shields.io/badge/-C++-blue)
   ![](https://img.shields.io/badge/-Android-brightgreen)
-
-- [:material-playlist-music: Songbird](https://github.com/igrek51/songbird)  
-  Spotify songs browser  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  ![](https://img.shields.io/badge/-Vue-19832C)
-
-- [:fontawesome-solid-hammer: Makeit](https://github.com/igrek51/makeit)  
-  Interactive Makefile runner  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/makeit?label=github&sort=semver)](https://github.com/igrek51/makeit)
-  [![PyPI](https://img.shields.io/pypi/v/makit)](https://pypi.org/project/makit)
