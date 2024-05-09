@@ -50,5 +50,6 @@ nav:
     - Git cheatsheet: cheatsheet/git.md
     - Linux tools cheatsheet: cheatsheet/linux.md
     - Vim cheatsheet: cheatsheet/vim.md
+    - Video Subtitles: cheatsheet/video-subtitles.md
   - Music Theory: music-theory.md
   - Internet status: status.md

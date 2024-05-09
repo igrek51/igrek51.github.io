@@ -1,4 +1,6 @@
-# Add subtitles to video files
+# Video Subtitles
+This explains how to add subtitles to the video files.
+
 Prepare by installing: `sudo apt install qnapi uchardet ffmpeg recode`
 
 ## Download subtitles for your language
