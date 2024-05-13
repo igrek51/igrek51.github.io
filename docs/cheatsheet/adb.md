@@ -41,6 +41,7 @@ adb restore appdata.bak
 
 # Backup app data only
 adb backup com.azure.authenticator -f appdata.bak
+PACKAGE=com.azure.authenticator && adb backup $PACKAGE -f $PACKAGE.bak
 ```
 
 ## Simulate key input

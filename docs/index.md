@@ -44,6 +44,13 @@ hide:
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
   [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
 
+- [:material-lightbulb-outline: WAT](https://github.com/igrek51/wat)  
+  Deep inspection of Python objects  
+  ![](https://img.shields.io/badge/-Python-yellow)
+  [![GitHub version](https://img.shields.io/github/v/tag/igrek51/wat?label=github&sort=semver)](https://github.com/igrek51/wat)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/wat)
+  [![PyPI](https://img.shields.io/pypi/v/wat-inspector)](https://pypi.org/project/wat-inspector)
+
 - [:fontawesome-regular-face-dizzy: Psycho Killer](https://github.com/igrek51/psycho-killer)  
   Interactive process killer, manager and system resources monitor  
   ![](https://img.shields.io/badge/-Rust-red)
