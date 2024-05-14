@@ -112,10 +112,15 @@ adb shell pm uninstall -k --user 0 com.facebook.system
 adb shell pm uninstall -k --user 0 com.facebook.katana
 ```
 
-## Disable annoying NFC icon
+## Hide annoying NFC icon
 Enable "USB Debuging" in first place.
 ```
 adb shell settings put secure icon_blacklist nfc
+```
+
+## Hide VoLTE icon
+```
+adb shell settings put secure icon_blacklist rotate,ims
 ```
 
 ## List Settings
