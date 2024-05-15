@@ -55,7 +55,31 @@ nmap -sV 192.168.0.49
 nmap -Pn --script vuln 192.168.0.49
 ```
 
-## Enable Magic Key
+## Shell
+### Write file without text editor: cat + EOF
+```shell
+cat << 'EOF' > task.xml
+EOF
+```
+### Turn on strict mode in bash
+```shell
+set -euxo pipefail
+```
+
+## xargs
+Run command on each line:
+```sh
+ls -1 *.sh | xargs -I %s echo "mv '%s' '%s.bak'"
+```
+
+## Disk usage of subfolders
+```sh
+du -sch .[!.]* * 2>/dev/null | sort -h
+```
+
+## Linux Rescue Kit
+### Magic Key
+Enable Magic Key:
 ```shell
 # Temporary
 sudo sysctl -w kernel.sysrq=1
@@ -81,25 +105,54 @@ To use the magic SysRq key, press the key combo `ALT`-`SysRq`-`<command key>`:
 !!! note
     Some keyboards may not have a key labeled ‘SysRq’. The ‘SysRq’ key is also known as the ‘Print Screen’ key.
 
-## GPG
+
+
 ### Add GPG key to trusted keys (fix NO_PUBKEY)
-```shell
+```sh
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys <PUBKEY>
 ```
 
-## Shell
-### Write file without text editor: cat + EOF
-```shell
-cat << 'EOF' > task.xml
-EOF
-```
-### Turn on strict mode in bash
-```shell
-set -euxo pipefail
+## Restart touchpad driver
+```sh
+sudo modprobe -r psmouse
+sudo modprobe psmouse
 ```
 
-## xargs
-Run command on each line:
+## Disable jbd2 gvfsd
 ```sh
-ls -1 *.sh | xargs -I %s echo "mv '%s' '%s.bak'"
+pkill gvfsd-metadata
+rm -rf ~/.local/share/gvfs-metadata
+```
+
+## Diagnostic messages of the kernel
+```sh
+sudo dmesg --reltime --ctime
+```
+
+## Journal logs
+Filter all errors:
+```sh
+sudo journalctl --priority 2..3 -e
+```
+Filter by service name:
+```sh
+sudo journalctl -b 0 -u NetworkManager -e
+```
+All logs from current boot:
+```sh
+sudo journalctl -b 0 -e
+```
+
+## Crashing GNOME
+Errors in journal:
+```sh
+sudo journalctl -b 0 -e /usr/bin/gnome-shell
+# Following output:
+sudo journalctl -f -o cat /usr/bin/gnome-shell
+```
+
+Reset Gnome configuration:
+```sh
+dconf reset -f /org/gnome/
+dconf reset /org/gnome/desktop/interface/cursor-theme
 ```
