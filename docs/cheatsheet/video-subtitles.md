@@ -1,11 +1,16 @@
 # Video Subtitles
-This explains how to add subtitles to the video files.
+This tutorial explains how to add subtitles to the video files.
 
-Prepare by installing: `sudo apt install qnapi uchardet ffmpeg recode`
+## Prepare
+Install:
+```sh
+sudo apt install qnapi uchardet ffmpeg recode
+```
 
 ## Download subtitles for your language
 ```sh
 qnapi -l pl *.mp4
+qnapi -l pl *.mkv
 ```
 
 ## Detect encoding
@@ -31,6 +36,9 @@ recode utf16..utf8 *.txt
 Convert TXT to SRT, add `.default.srt` suffix for Jellyfin:
 ```sh
 ffmpeg -i 'S01E03.txt' 'S01E03.default.srt'
+```
+```sh
+ls -1 *.txt | sed -e 's/\.txt$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.txt" "%s.default.srt"'
 ```
 
 ## Appendix
