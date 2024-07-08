@@ -52,5 +52,7 @@ nav:
     - Docker cheatsheet: cheatsheet/docker.md
     - Video Subtitles: cheatsheet/video-subtitles.md
     - Cheatsheets Index: cheatsheet/cheatsheet.md
-  - Music Theory: music-theory.md
+  - Miscellaneous:
+    - Music Theory: music-theory.md
+    - Infographics: infographics.md
   - Internet status: status.md
