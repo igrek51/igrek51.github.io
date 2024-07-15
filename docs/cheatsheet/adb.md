@@ -146,3 +146,25 @@ adb shell
 > run-as igrek.songbook
 > cd /data/data/igrek.songbook
 ```
+
+## Synchronize files over ADB
+```shell
+# On Android device:
+# 1. Open Termux
+# 2. Install:
+pkg install openssh
+# 3. Authorize host in ~/.ssh/authorized_keys
+# 4. Open SSH server:
+sshd
+
+# On Host:
+# 1. Add SSH config to ~/.ssh/config: name: termux, Port 8022, User taken from `id`
+# 2. Dry Run
+rsync -rvhn --delete --size-only /mnt/data/Igrek/mp3/ termux:/data/data/com.termux/files/home/sd/mp3
+# 3. Synchronize files
+rsync -rvh --delete --size-only --info=progress2 /mnt/data/Igrek/mp3/ termux:/data/data/com.termux/files/home/sd/mp3
+
+# On Android:
+# 5. Close SSH server:
+pkill sshd
+```
