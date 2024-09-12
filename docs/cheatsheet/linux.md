@@ -106,7 +106,6 @@ To use the magic SysRq key, press the key combo `ALT`-`SysRq`-`<command key>`:
     Some keyboards may not have a key labeled ‘SysRq’. The ‘SysRq’ key is also known as the ‘Print Screen’ key.
 
 
-
 ### Add GPG key to trusted keys (fix NO_PUBKEY)
 ```sh
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys <PUBKEY>
@@ -124,12 +123,13 @@ pkill gvfsd-metadata
 rm -rf ~/.local/share/gvfs-metadata
 ```
 
-## Diagnostic messages of the kernel
+## Diagnostics
+### Diagnostic messages of the kernel
 ```sh
 sudo dmesg --reltime --ctime
 ```
 
-## Journal logs
+### Journal logs
 Filter all errors:
 ```sh
 sudo journalctl --priority 2..3 -e
@@ -155,4 +155,10 @@ Reset Gnome configuration:
 ```sh
 dconf reset -f /org/gnome/
 dconf reset /org/gnome/desktop/interface/cursor-theme
+```
+
+## Deb Packages
+### List installed packages with version
+```shell
+dpkg-query -f '${binary:Package}=${Version}\n' -W
 ```

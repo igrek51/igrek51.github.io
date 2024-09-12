@@ -50,7 +50,7 @@ nav:
     - Linux tools cheatsheet: cheatsheet/linux.md
     - Vim cheatsheet: cheatsheet/vim.md
     - Docker cheatsheet: cheatsheet/docker.md
-    - Video Subtitles: cheatsheet/video-subtitles.md
+    - Media: cheatsheet/media-utils.md
     - Cheatsheets Index: cheatsheet/cheatsheet.md
   - Miscellaneous:
     - Music Theory: music-theory.md
