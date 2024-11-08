@@ -1,34 +1,34 @@
 # ADB cheatsheet
 ## Logcat dump
 Select device 43d075de, filter selected tags with DEBUG level, SILENT other tags, colorful, show with timestamp & PID
-```
+```sh
 adb -s 43d075de logcat dupa0:D dupa1:D dupa2:D dupa3:D dupa4:D *:S -v time -v color
 ```
 Short messages only:
-```
+```sh
 adb -s 43d075de logcat dupa0:D dupa1:D dupa2:D dupa3:D dupa4:D *:S -v raw -v color
 adb -s F5AZB702J659 logcat dupa0:D dupa1:D dupa2:D dupa3:D dupa4:D *:S -v raw -v color
 ./adb logcat songbook0:D songbook1:D songbook2:D songbook3:D songbook4:D '*:S' -v raw -v color
 ```
 
 Print last 10000 lines (`-T 10000`) with errors (`*:E`) only (`-s`) and exit (`-d`). Show time, tag & message (`-v time`):
-```
+```sh
 adb logcat -d -T 10000 -s *:E -v color -v time -b main
 ```
 
 Print logs of a package (by tag):
-```
+```sh
 adb logcat -d -T 10000 -s songbook0:D songbook1:D songbook2:d songbook3:D songbook4:D -v color -v time -b main
 adb logcat -d -s dupa0:D dupa1:D dupa2:D dupa3:D -v color -v time -b main
 ```
 
 Print debug logs of one process (by PID):
-```
+```sh
 adb logcat -d '*:D' -v color -v time -b main --pid=30280
 ```
 
 ## Backup application data (/data/data)
-```bash
+```sh
 # Backup app data only
 adb backup -noapk igrek.songbook
 # Extract
@@ -44,8 +44,21 @@ adb backup com.azure.authenticator -f appdata.bak
 PACKAGE=com.azure.authenticator && adb backup $PACKAGE -f $PACKAGE.bak
 ```
 
-## Simulate key input
+## Make backup of installed APK
+Locate APK by running:
+```sh
+pm path com.google.android.videos
 ```
+
+Pull APKs
+```sh
+adb pull /data/app/com.google.android.videos-E83Rbdyp43iEgzifOQfMRw==/base.apk com.google.android.videos.bak.apk
+adb pull /data/app/com.google.android.videos-E83Rbdyp43iEgzifOQfMRw==/split_config.armeabi_v7a.apk split_config.armeabi_v7a.apk
+adb pull /data/app/com.google.android.videos-E83Rbdyp43iEgzifOQfMRw==/split_config.xhdpi.apk split_config.xhdpi.apk
+```
+
+## Simulate key input
+```sh
 adb shell input text ---text---
 adb shell input keyevent 66 # enter
 adb shell input text text3
@@ -54,13 +67,15 @@ adb shell input text ---text---
 ```
 
 Click the home button
-```
+```sh
 adb shell input keyevent 3
 ```
 
+Display and control your Android device with [scrcpy](https://github.com/Genymobile/scrcpy)
+
 ## Wireless debugging over WiFi connection
 Enable Wireless debugging:
-```
+```sh
 cd /mnt/data/ext/opt/android-sdk/platform-tools
 adb devices
 adb shell setprop service.adb.tcp.port 4448
@@ -69,19 +84,34 @@ adb shell ip addr show dev wlan0
 adb connect 192.168.0.250:4448
 ```
 Disable:
-```
+```sh
 adb shell setprop service.adb.tcp.port -1
 adb disconnect 192.168.0.250:4448
 adb kill-server
 ```
 
 ## List installed packages
-```
+```sh
 pm list packages
 ```
 
-## Uninstall bloatware packages (Xiaomi)
+List disabled packages
+```sh
+pm list packages -d
 ```
+
+## Disable package
+```sh
+pm disable-user --user 0 com.google.android.videos
+```
+
+Re-enable:
+```sh
+pm enable --user 0 com.google.android.videos
+```
+
+## Uninstall bloatware packages (Xiaomi)
+```sh
 pm uninstall -k --user 0 com.miui.msa.global
 pm uninstall -k --user 0 com.xiaomi.mipicks
 pm uninstall -k --user 0 com.facebook.appmanager
@@ -100,31 +130,36 @@ pm uninstall -k --user 0 com.xiaomi.mi_connect_service
 ```
 
 Install preinstalled package back:
-```
+```sh
 cmd package install-existing com.miui.miwallpaper
 ```
 
 ## Uninstall bloatware packages (Motorola)
-```
+```sh
 adb shell pm uninstall -k --user 0 com.facebook.appmanager
 adb shell pm uninstall -k --user 0 com.facebook.services
 adb shell pm uninstall -k --user 0 com.facebook.system
 adb shell pm uninstall -k --user 0 com.facebook.katana
 ```
 
+## Clear cache
+```sh
+pm trim-caches 9999999999
+```
+
 ## Hide annoying NFC icon
 Enable "USB Debuging" in first place.
-```
+```sh
 adb shell settings put secure icon_blacklist nfc
 ```
 
 ## Hide VoLTE icon
-```
+```sh
 adb shell settings put secure icon_blacklist rotate,ims
 ```
 
 ## List Settings
-```
+```sh
 adb shell settings list system
 adb shell settings list global
 adb shell settings list secure
@@ -132,11 +167,11 @@ adb shell settings list secure
 
 ## Look up Android version
 Android version:
-```
+```sh
 getprop ro.build.version.release
 ```
 API level:
-```
+```sh
 getprop ro.build.version.sdk
 ```
 
