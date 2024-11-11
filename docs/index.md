@@ -5,13 +5,21 @@ hide:
 
 # Projects Portfolio
 
-1.  [:material-music-note: Songbook](https://github.com/igrek51/android-songbook)  
-    Songs lyrics viewer for Android with chords toolkit for musicians, guitarists and pianists  
-    ![](https://img.shields.io/badge/-Kotlin-orange)
-    ![](https://img.shields.io/badge/-Android-brightgreen)
-    [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/android-songbook?label=github&sort=semver)](https://github.com/igrek51/android-songbook)
-    [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/android-songbook)
-    [![Google Play](https://img.shields.io/badge/Google%20Play-igrek.songbook-blue)](https://play.google.com/store/apps/details?id=igrek.songbook)
+
+1.  [:material-lightbulb-outline: WAT](https://github.com/igrek51/wat)  
+    Deep inspection of Python objects  
+    ![](https://img.shields.io/badge/-Python-yellow)
+    [![GitHub version](https://img.shields.io/github/v/tag/igrek51/wat?label=github&sort=semver)](https://github.com/igrek51/wat)
+    [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/wat)
+    [![PyPI](https://img.shields.io/pypi/v/wat-inspector)](https://pypi.org/project/wat-inspector)
+
+- [:material-music-note: Songbook](https://github.com/igrek51/android-songbook)  
+  Songs lyrics viewer for Android with chords toolkit for musicians, guitarists and pianists  
+  ![](https://img.shields.io/badge/-Kotlin-orange)
+  ![](https://img.shields.io/badge/-Android-brightgreen)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/android-songbook?label=github&sort=semver)](https://github.com/igrek51/android-songbook)
+  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/android-songbook)
+  [![Google Play](https://img.shields.io/badge/Google%20Play-igrek.songbook-blue)](https://play.google.com/store/apps/details?id=igrek.songbook)
 
 - [:material-eraser: Regex-rename](https://github.com/igrek51/regex-rename)  
   Bulk rename tool based on regular expressions to rename multiple files at once  
@@ -32,11 +40,6 @@ hide:
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/fpick?label=github&sort=semver)](https://github.com/igrek51/fpick)
   [![Crates](https://img.shields.io/crates/v/fpick)](https://crates.io/crates/fpick)
 
-- [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
-  Connect 4 (4 in a row) game solver finding a winning strategy.  
-  ![](https://img.shields.io/badge/-Go-blue)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
-
 - [:fontawesome-solid-circle-radiation: Nuclear](https://github.com/igrek51/nuclear)  
   Binding glue for CLI Python applications  
   ![](https://img.shields.io/badge/-Python-yellow)
@@ -44,18 +47,16 @@ hide:
   [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/nuclear)
   [![PyPI](https://img.shields.io/pypi/v/nuclear)](https://pypi.org/project/nuclear)
 
-- [:material-lightbulb-outline: WAT](https://github.com/igrek51/wat)  
-  Deep inspection of Python objects  
-  ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version](https://img.shields.io/github/v/tag/igrek51/wat?label=github&sort=semver)](https://github.com/igrek51/wat)
-  [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/wat)
-  [![PyPI](https://img.shields.io/pypi/v/wat-inspector)](https://pypi.org/project/wat-inspector)
-
 - [:fontawesome-regular-face-dizzy: Psycho Killer](https://github.com/igrek51/psycho-killer)  
   Interactive process killer, manager and system resources monitor  
   ![](https://img.shields.io/badge/-Rust-red)
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/psycho-killer?label=github&sort=semver)](https://github.com/igrek51/psycho-killer)
   [![Crates](https://img.shields.io/crates/v/psycho-killer)](https://crates.io/crates/psycho-killer)
+
+- [:fontawesome-solid-brain: C4solver](https://github.com/igrek51/connect4solver)  
+  Connect 4 (4 in a row) game solver finding a winning strategy.  
+  ![](https://img.shields.io/badge/-Go-blue)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/connect4solver?label=github&sort=semver)](https://github.com/igrek51/connect4solver)
 
 - [:fontawesome-solid-scissors: Trimmer](https://github.com/igrek51/trimmer)  
   MP3 song normalizer  
@@ -76,10 +77,11 @@ hide:
   [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/makeit?label=github&sort=semver)](https://github.com/igrek51/makeit)
   [![PyPI](https://img.shields.io/pypi/v/makit)](https://pypi.org/project/makit)
 
-- [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
-  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs  
+- [:material-compare: Diffs](https://github.com/igrek51/diffs)  
+  Monitor of command output changes  
   ![](https://img.shields.io/badge/-Python-yellow)
-  ![](https://img.shields.io/badge/-RaspberryPi-crimson)
+  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/diffs?label=github&sort=semver)](https://github.com/igrek51/diffs)
+  [![PyPI](https://img.shields.io/pypi/v/diffs)](https://pypi.org/project/diffs)
 
 - [:material-playlist-music: Songbird](https://github.com/igrek51/songbird)  
   Spotify songs manager  
@@ -100,11 +102,10 @@ hide:
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-Angular-red)
 
-- [:material-compare: Diffs](https://github.com/igrek51/diffs)  
-  Monitor of command output changes  
+- [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
+  Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs  
   ![](https://img.shields.io/badge/-Python-yellow)
-  [![GitHub version (latest SemVer)](https://img.shields.io/github/v/tag/igrek51/diffs?label=github&sort=semver)](https://github.com/igrek51/diffs)
-  [![PyPI](https://img.shields.io/pypi/v/diffs)](https://pypi.org/project/diffs)
+  ![](https://img.shields.io/badge/-RaspberryPi-crimson)
 
 - [:material-middleware-outline: Xman](https://github.com/igrek51/xman)  
   HTTPS Man-In-The-Middle proxy recording & replaying requests  
