@@ -14,6 +14,8 @@ qnapi -l pl *.mp4
 qnapi -l pl *.mkv
 ```
 
+or open with VLC, with VLsub extension.
+
 ### Detect encoding
 ```sh
 uchardet *.txt
@@ -22,8 +24,13 @@ Expect `UTF-8`, `Windows-1250` or `UTF-16`.
 
 ### Verify that converted encoding is actually fine 
 ```sh
-cat S01E03.txt | recode cp1250..utf8
-cat S01E03.txt | recode utf16..utf8
+cat *.txt | recode cp1250..utf8
+cat *.txt | recode utf16..utf8
+```
+
+Available encodings:
+```sh
+recode --list
 ```
 
 ### Recode to UTF8
