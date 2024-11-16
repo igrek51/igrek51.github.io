@@ -9,12 +9,21 @@ sudo apt install qnapi uchardet ffmpeg recode
 ```
 
 ### Download subtitles for your language
+
+#### Qnapi
 ```sh
 qnapi -l pl *.mp4
 qnapi -l pl *.mkv
 ```
 
+#### VLsub
 or open with VLC, with VLsub extension.
+
+#### Subliminal
+```sh
+pip install subliminal
+subliminal download -l pl *.mkv
+```
 
 ### Detect encoding
 ```sh
