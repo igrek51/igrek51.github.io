@@ -11,7 +11,7 @@ hide:
     ![](https://img.shields.io/badge/-Python-yellow)
     [![GitHub version](https://img.shields.io/github/v/tag/igrek51/wat?label=github&sort=semver)](https://github.com/igrek51/wat)
     [![Github Pages](https://img.shields.io/badge/docs-github.io-blue)](https://igrek51.github.io/wat)
-    [![PyPI](https://img.shields.io/pypi/v/wat-inspector)](https://pypi.org/project/wat-inspector)
+    [![PyPI](https://img.shields.io/pypi/v/wat)](https://pypi.org/project/wat)
 
 - [:material-music-note: Songbook](https://github.com/igrek51/android-songbook)  
   Songs lyrics viewer for Android with chords toolkit for musicians, guitarists and pianists  

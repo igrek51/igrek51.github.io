@@ -57,8 +57,16 @@ nmap -Pn --script vuln 192.168.0.49
 
 ## Shell
 ### Write file without text editor: cat + EOF
+Save exact content:
 ```shell
 cat << 'EOF' > task.xml
+Exact content: $100
+EOF
+```
+Save with variable expansion:
+```shell
+cat << EOF > task.xml
+Evaluated content: $VARIABLE
 EOF
 ```
 ### Turn on strict mode in bash
