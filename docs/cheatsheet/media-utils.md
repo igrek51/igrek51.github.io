@@ -76,3 +76,10 @@ for path in Path('.').iterdir():
 pip install -U yt-dlp
 yt-dlp -f 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' URL
 ```
+
+## Dynamic Audio Normalizer
+This allows for applying extra gain to the "quiet" sections of the audio while avoiding distortions or clipping the "loud" sections.
+In other words: The Dynamic Audio Normalizer will "even out" the volume of quiet and loud sections, in the sense that the volume of each section is brought to the same target level.
+```sh
+ffmpeg -i input.mp4 -c:v copy -af "dynaudnorm" -c:a aac -b:a 192k output.mp4
+```
