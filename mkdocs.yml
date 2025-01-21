@@ -45,14 +45,14 @@ extra:
 nav:
   - Projects Portfolio: index.md
   - Cheatsheets:
-    - ADB cheatsheet: cheatsheet/adb.md
-    - Git cheatsheet: cheatsheet/git.md
-    - Linux tools cheatsheet: cheatsheet/linux.md
-    - Vim cheatsheet: cheatsheet/vim.md
-    - Docker cheatsheet: cheatsheet/docker.md
-    - Media: cheatsheet/media-utils.md
-    - Cheatsheets Index: cheatsheet/cheatsheet.md
+    - ADB: cheatsheet/adb.md
+    - Git: cheatsheet/git.md
+    - Linux: cheatsheet/linux.md
+    - Vim: cheatsheet/vim.md
+    - Docker: cheatsheet/docker.md
+    - Video: cheatsheet/video.md
   - Miscellaneous:
-    - Music Theory: music-theory.md
-    - Infographics: infographics.md
+    - Music Theory: misc/music-theory.md
+    - Day of the week: misc/a-day-in-the-life.md
+    - Baby clothes taxonomy: misc/baby-clothes-taxonomy.md
   - Internet status: status.md
