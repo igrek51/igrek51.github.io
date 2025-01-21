@@ -87,3 +87,26 @@ ffmpeg -i "$INPUT.mkv" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k 
 ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "%s.norm.mkv"'
 ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "%s.norm.mp4"'
 ```
+
+## Split video into chunks
+```python
+from nuclear import shell, logger
+from pathlib import Path
+
+src_path = '[INPUT_PATH].mkv'
+dst_suffix = '-[TITLE].mkv'
+chunk_duration = 10  # in minutes
+
+def format_duration_m(minutes: int) -> str:
+    return f"{minutes // 60}:{minutes % 60}:00"
+
+src_duration_s = float(shell(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{src_path}"').strip())
+parts = list(range(0, int(src_duration_s // 60), chunk_duration))
+logger.debug('Creating chunks', parts=parts, count=len(parts))
+for index, part in enumerate(parts):
+    minutes_from = part
+    minutes_to = part + chunk_duration
+    out_path = f'{str(index+1).zfill(3)}{dst_suffix}'
+    shell(f'ffmpeg -ss {format_duration_m(minutes_from)} -to {format_duration_m(minutes_to)} -i "{src_path}" -c:v copy -af "dynaudnorm=maxgain=30" "{out_path}"')
+    logger.info(f'Created: {out_path}')
+```
