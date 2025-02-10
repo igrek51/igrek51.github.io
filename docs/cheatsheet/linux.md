@@ -1,4 +1,4 @@
-# Misc Linux tools cheatsheet
+# Linux cheatsheet
 
 ## Less
 ### Less without line wrapping
