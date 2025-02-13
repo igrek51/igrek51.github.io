@@ -170,3 +170,13 @@ dconf reset /org/gnome/desktop/interface/cursor-theme
 ```shell
 dpkg-query -f '${binary:Package}=${Version}\n' -W
 ```
+
+## Netcat
+Start Listening:
+```sh
+nc -lvp 1234
+```
+Connect:
+```sh
+nc -v 192.168.0.1 1234
+```

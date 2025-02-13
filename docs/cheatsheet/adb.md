@@ -90,6 +90,12 @@ adb disconnect 192.168.0.250:4448
 adb kill-server
 ```
 
+Alternatively:
+1. Connect the Android Device to via USB (Initial Setup)
+2. Restart ADB in TCP/IP: `adb tcpip 5555`
+3. Disconnect the USB Cable
+4. Connect remotely: `adb connect PUBLIC_IP:5555`
+
 ## List installed packages
 ```sh
 pm list packages
