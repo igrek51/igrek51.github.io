@@ -88,8 +88,24 @@ ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv
 ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "%s.norm.mp4"'
 ```
 
+Extract normalized audio from video:
+```sh
+ffmpeg -i input.mkv -map a \
+    -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
+    -filter:a "aresample=matrix_encoding=dplii" \
+    -filter:a "dynaudnorm=maxgain=50:framelen=400:gausssize=15" \
+    -ac 2 -q:a 0 \
+    output.mp3
+```
+
 ## Split video into chunks
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "nuclear",
+# ]
+# ///
 from nuclear import shell, logger
 from pathlib import Path
 
@@ -107,6 +123,16 @@ for index, part in enumerate(parts):
     minutes_from = part
     minutes_to = part + chunk_duration
     out_path = f'{str(index+1).zfill(3)}{dst_suffix}'
-    shell(f'ffmpeg -ss {format_duration_m(minutes_from)} -to {format_duration_m(minutes_to)} -i "{src_path}" -c:v copy -af "dynaudnorm=maxgain=30" "{out_path}"')
+    shell(
+        f'ffmpeg'
+        f' -i "{src_path}"'
+        f' -ss {format_duration_m(minutes_from)} -to {format_duration_m(minutes_to)}'
+        f' -c:v copy'
+        f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR"'  # Downmix to stereo
+        f' -filter:a "aresample=matrix_encoding=dplii"'
+        f' -filter:a "dynaudnorm=maxgain=50:framelen=400:gausssize=15"'  # Dynamic audio normalization
+        f' -ac 2 -c:a aac -b:a 192k'
+        f' "{out_path}"'
+    )
     logger.info(f'Created: {out_path}')
 ```
