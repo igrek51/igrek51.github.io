@@ -35,6 +35,7 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.blocks.caption
 plugins: []
 extra:
   social:
@@ -57,5 +58,6 @@ nav:
     - Baby clothes taxonomy: misc/baby-clothes-taxonomy.md
     - Music Theory: misc/music-theory.md
   - Journal:
-    - Cloudflared tunnel for Termux: termux-tunnel.md
+    - Cloudflared Tunnel on Termux: journal/termux-tunnel.md
+    - The Pitfalls in Async Python: journal/async-python.md
   - Internet status: status.md
