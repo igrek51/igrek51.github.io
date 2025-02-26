@@ -94,6 +94,7 @@ you must ensure that **any** async chunk lasts no longer than one second.
 How can you be sure of this? Are you aware of this when writing async Python code?
 Now, you'd rather start dividing your code into functions according to their execution time, adding more `await` keywords.
 Suddenly, you spend considerable time answering questions like:
+
 - What's the time complexity of this function?
 - How long will it run on production data?
 - How large will the input be? What's the worst case?
@@ -151,6 +152,7 @@ def main(args):
 
 ## Summary
 You might think solutions for inadvertent blocking calls in async Python are simple:
+
 - Use synchronous `def` endpoints in FastAPI and let them run in a thread pool
 - Or use `asyncio.to_thread` to offload blocking calls.
 

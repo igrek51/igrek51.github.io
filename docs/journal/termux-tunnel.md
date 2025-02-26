@@ -32,6 +32,7 @@ Open your [Cloudflare Dashboard](https://dash.cloudflare.com/)
 and create a tunnel under
 Zero Trust / Networks / Tunnels.
 Create a `cloudflared` tunnel with the following public hostnames:
+
 - `termux-ssh.example.com` pointing to a service `tcp://localhost:8022`
 - `termux-adb.example.com` pointing to a service `tcp://localhost:5555`
 
@@ -176,9 +177,11 @@ chmod +x ~/cloudflare/slack-notifier.sh
 ```
 
 Set up `supervisord` to run services in background:
+
 - SSH server,
 - cloudflared tunnel
 - Slack notifier
+
 ```sh
 cat << EOF > ~/cloudflare/supervisord.conf
 [supervisord]
@@ -249,6 +252,7 @@ EOF
 ```
 
 On your Android device, add widgets from Termux:Widget for:
+
 - `~/.shortcuts/tasks/open-tunnel.sh`
 - `~/.shortcuts/tasks/close-tunnel.sh`
 
