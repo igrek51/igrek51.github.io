@@ -56,4 +56,6 @@ nav:
     - Day of the week: misc/a-day-in-the-life.md
     - Baby clothes taxonomy: misc/baby-clothes-taxonomy.md
     - Music Theory: misc/music-theory.md
+  - Journal:
+    - Cloudflared tunnel for Termux: termux-tunnel.md
   - Internet status: status.md
