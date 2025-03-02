@@ -133,6 +133,9 @@ pm uninstall -k --user 0 com.xiaomi.joyose
 pm uninstall -k --user 0 com.miui.analytics
 pm uninstall -k --user 0 com.xiaomi.payment
 pm uninstall -k --user 0 com.xiaomi.mi_connect_service
+pm uninstall -k --user 0 com.android.thememanager
+pm uninstall -k --user 0 com.miui.android.fashiongallery
+pm uninstall -k --user 0 com.miui.cleaner
 ```
 
 Install preinstalled package back:

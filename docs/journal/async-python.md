@@ -1,9 +1,9 @@
-# The Pitfalls of Async Python
+# Async Python Pitfalls
 Async Python is great - until you get to the point where it's not.
 And when it fails, it fails hard.
 One **accidental blocking call** is all it takes to freeze your entire application.
 
-## Accidental Blocking Call
+## Danger of Accidental Blocking Call
 > It's easy to inadvertently introduce blocking calls into async code, which can freeze your entire application.
 
 We often rely on third-party libraries,
@@ -22,16 +22,39 @@ Even health checks stop working, triggering endless restarts in Kubernetes.
 Debugging was a nightmare. Once you experience this, you'll never look at async Python the same way again.
 That's why I avoid async Python whenever I can.
 
-## Coroutine Timeout
-Here's a surprising example.
-Imagine using a poorly written library that blocks a coroutine for a long time like this:
+## Async Chunk Size
+Many Python developers might not realize how crucial it is to control the size of async **chunks**.
+
+Async Python executes code in small chunks, moving from one `await` keyword to another.
+The event loop resumes a coroutine until it encounters an `await`,
+which is the **only point where control can be handed back to the loop**,
+allowing it to process other coroutines.
+
+![](../assets/journal/concurrent-async-execution.png)
+/// caption
+In an async Python loop, coroutines execute sequentially in small alternating chunks.
+///
+
+The concurrency model in async Python resembles cooking two dishes at once: frying meat and cooking rice.
+While two tasks are ongoing, you can only focus on one at a time.
+You switch between preparing the meat and stirring the rice,
+giving the illusion of doing two things at the same time.
+
+But if one task consumes your attention for too long,
+the other suffers - you'll end up with overcooked rice.
+
+As developers, we must ensure that **async chunks are as short as possible**.
+Only then can async Python function properly.
+
+## Coroutine Timeout Trap
+Here's a surprising pitfall.
+Imagine using a poorly written library that blocks a coroutine for an extended period:
 ```python
 async def cant_stop_me():
-    time.sleep(10)  # Should use: await asyncio.sleep(10)
+    time.sleep(10)  # Should use: await asyncio.sleep(10), but we can't change it
 ```
 
-To protect from a deadlock,
-you might try using this seemingly promising
+To prevent a deadlock, you might try using this seemingly promising
 [`asyncio.timeout`](https://docs.python.org/3/library/asyncio-task.html#asyncio.timeout):
 ```python
 import asyncio
@@ -52,15 +75,16 @@ Wrong! The function still runs for 10 seconds, ignoring the timeout.
 ![](../assets/journal/asyncio-timeout-no-power.jpg)
 
 Why? Because `time.sleep(10)` is a blocking call. Once Python hands control to a coroutine,
-it won't return to the event loop until the coroutine willingly yields control.
+it won't return to the event loop until the coroutine voluntarily yields control.
 Since it never does, the timeout mechanism is powerless.
 
 This sounds silly as you think about it:
-to interrupt the **unresponsive** coroutine, the async loop first waits until it becomes **responsive**.
+to interrupt the **unresponsive** coroutine, the async loop first waits for it to become **responsive**.
 
-If you call something synchronous in an async thread, it will block, and there's nothing you can do.
+If you call a synchronous function in an async thread, it will block, and there's nothing you can do.
 Any kind of cancelling the coroutine won't work here,
-because in asyncio there's only one thread, and this single thread is now fully occupied by the busy coroutine.
+because there's only one thread in *asyncio*,
+and this single thread is now fully occupied by the busy coroutine.
 So Python kindly waits until the naughty coroutine let go of the control. It's hopeless.
 
 A proper solution is to offload blocking calls to a **separate thread** using
@@ -82,13 +106,13 @@ async def main():
 
 asyncio.run(main())
 ```
-Now it works as expected: the main thread remains free, and the timeout functions properly.
-However, the blocking operation still runs in the background thread,
+Now the main thread remains free, and the timeout functions properly.
+Keep in mind that the blocking operation still runs in the background thread,
 it just no longer disrupts the event loop.
 
 ## Cancelling Coroutine
-You might think [`asyncio.Task.cancel`](https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancel)
-is a reliable way to terminate coroutines. Unfortunately, that doesn't always work either.
+You might assume [`asyncio.Task.cancel`](https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancel)
+can reliably terminate a coroutine. Unfortunately, that's not always true.
 ```python
 import asyncio
 import time
@@ -108,10 +132,12 @@ async def main():
 asyncio.run(main())
 ```
 Surprise! The task still runs for 10 seconds.
-Why? Because async loop runs on the same thread as the blocked coroutine, and nothing can interrupt it.
+
+Why? Because the event loop runs on the same thread as the blocked coroutine, and nothing can interrupt it.
 
 Async Python alternates its execution between two things: an active coroutine and an async loop supervisor.
-If a coroutine won't give up control, the async loop never gets the chance to decide what to process next or to cancel the naughty coroutine.
+If a coroutine won't give up control,
+the async loop never gets the chance to decide what to process next or to cancel the busy coroutine.
 
 The problem with async Python is that it's too **naive** and
 it puts too much trust in the coroutines underneath, which is a bold assumption.
@@ -138,21 +164,7 @@ asyncio.run(main())
 ```
 Now it's been cancelled as expected.
 
-## Controlling Async Chunk Size
-Many async Python developers might not realize the importance of controlling the size of async **chunks**.
-Async Python executes code in small chunks, moving from one `await` keyword to another.
-The event loop resumes a coroutine until it encounters an `await`,
-which is the **only point where control can be handed back to the loop**,
-allowing it to switch to executing other coroutines.
-
-![](../assets/journal/concurrent-async-execution.png)
-/// caption
-In a Pyhton async loop, coroutines are executed alternately but sequentially in small chunks.
-///
-
-As developers, we should keep these **chunks as short as possible**.
-
-## Async endpoints
+## Async Endpoints
 Imagine running an async FastAPI server on Kubernetes
 with liveness probes checking server health periodically:
 
@@ -170,11 +182,11 @@ async def heavy_endpoint():
 
 The default timeout for a liveness probe in Kubernetes is **1 second**,
 meaning your app must respond within that time. Otherwise, it's going to be **killed** by Kubernetes.
-This isn't usually a problem for **multithreaded** apps, which can independently respond to lightweight health checks regardless of load.
+For **multithreaded** apps, this isn't an issue - lightweight health checks can run independently regardless of load.
 
 The problem begins with async Python.
 To give a live endpoint a chance to be processed while the server is busy,
-you must ensure that **any** async chunk lasts **no longer than one second**.
+you must ensure that **every** async chunk lasts **no longer than one second**.
 How can you be sure of this? Are you aware of this when writing async Python code?
 Suddenly, you spend considerable time answering questions like:
 
@@ -186,14 +198,13 @@ Suddenly, you spend considerable time answering questions like:
 - What if there are many **concurrent requests**?
   Now, our coroutine and all the preceding, scheduled coroutines must fit in a 1-second chunk.
   How many concurrent requests do we expect?
-  How does the async loop schedules many concurrent coroutines?
 
 Now, think about multithreading, where you don't have such problems.
 Or think about the Go programming language, where its fabulous concurrency works like a charm without such concerns.
 
 Again, **multithreading** will save you.
 Fortunately, FastAPI also supports "classic", **synchronous** endpoints that run in a **thread pool**.
-Simply switch to `def` endpoints, instead of `async def`:
+Simply switch from `async def` to `def` endpoints:
 ```python
 app = fastapi.FastAPI()
 
@@ -205,10 +216,10 @@ def live_endpoint():
 def heavy_endpoint():
     return long_computation()
 ```
-Now the health check always runs in a separate thread, ensuring it remains responsive.
+Now, health checks run in a separate thread, ensuring it remains responsive.
 
 ## Multithreading as a cure
-Every time we encountered inadvertent blocking calls, the solution was **multithreading**:
+Every time we encountered blocking issues, the fix was **multithreading**:
 
 - Switching FastAPI endpoints from `async def` to `def` and let them run in a thread pool
 - Using `asyncio.to_thread` to offload blocking calls
@@ -226,14 +237,21 @@ While async Python has benefits, it also comes with serious risks:
 - **Debugging Challenges**
 - **Error Handling**
 
-I love Python.
-*asyncio* is a nice library, especially useful in **MicroPython**.
-It's really a game changer for **microcontrollers** where there's no **threading**.
-But in traditional large applications, *asyncio* assumptions about cooperative multitasking can be risky.
-I don't believe in *asyncio*. I have more faith in the widespread adoption of **free-threaded Python**.
+## Key Takeaway
+To recap, the best practice working with async Python is to follow this rule of thumb:
 
-## Async-Sync Context Switching Cheat Sheet
-If you struggle with switching between async and sync world, here's a quick reference:
+- Use `async`/`await` only when operations complete in **no time** (constant complexity `O(1)`).
+- For **higher complexity** tasks (e.g. loops), offload them using `asyncio.to_thread`.
+
+I love Python.
+*asyncio* is useful, especially for **MicroPython** on microcontrollers where **threads** don't exist.
+But for large applications? Its cooperative multitasking model is a risky bet.
+
+I don't believe in *asyncio*.
+I trust that the widespread adoption of **free-threaded Python** will make Python stronger.
+
+## Appendix: Async-Sync Context
+If you struggle with switching between **async** and **sync** worlds, here's a quick reference:
 
 -   Running an async function in a sync context:
     ```python
