@@ -296,3 +296,18 @@ Finally, connect to the remote device through the ADB tunnel:
 adb connect localhost:5556
 scrcpy -s localhost:5556
 ```
+
+## Connecting though SSH Proxy command
+Add this to your `.ssh/config` (evaluate :
+```sh
+. ./setup.env
+cat << EOF >&1
+Host $TUNNEL_DNS_SSH
+  ProxyCommand /usr/local/bin/cloudflared access ssh --hostname %h
+  User $TERMUX_USER_ID
+EOF
+```
+and then you can connect with just:
+```sh
+ssh $TUNNEL_DNS_SSH
+```
