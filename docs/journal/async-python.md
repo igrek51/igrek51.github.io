@@ -250,7 +250,7 @@ But for large applications? Its cooperative multitasking model is a risky bet.
 I don't believe in *asyncio*.
 I trust that the widespread adoption of **free-threaded Python** will make Python stronger.
 
-## Appendix: Async-Sync Context
+## Appendix 1: Async-Sync Context
 If you struggle with switching between **async** and **sync** worlds, here's a quick reference:
 
 -   Running an async function in a sync context:
@@ -280,6 +280,109 @@ If you struggle with switching between **async** and **sync** worlds, here's a q
     def main(args):
         result = fun(args)
     ```
+
+## Appendix 2: Async FastAPI with background task
+```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "fastapi==0.115.11",
+#   "uvicorn==0.34.0",
+# ]
+# ///
+import asyncio
+
+from fastapi import FastAPI
+import uvicorn
+
+
+async def main():
+    background_task = asyncio.create_task(background_looper())
+    app = FastAPI()
+
+    config = uvicorn.Config(app, host="0.0.0.0", port=8000)
+    server = uvicorn.Server(config)
+    try:
+        await server.serve()
+    finally:
+        background_task.cancel()
+
+
+async def background_looper():
+    while True:
+        print('background task execution')
+        await asyncio.sleep(5)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+```
+
+## Appendix 3: Serving WSGI with FastAPI
+```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "fastapi==0.115.11",
+#   "uvicorn==0.34.0",
+#   "prometheus-client==0.21.1",
+# ]
+# ///
+import asyncio
+from typing import Callable, Awaitable
+
+from fastapi import FastAPI
+from fastapi.middleware.wsgi import WSGIMiddleware
+from prometheus_client import make_wsgi_app
+from prometheus_client.core import REGISTRY
+from starlette.types import ASGIApp, Receive, Scope, Send
+import uvicorn
+
+
+class AsgiDispatcher:
+    """Forward requests to different ASGI apps based on the request path"""
+    def __init__(self, patterns: dict[str, ASGIApp], default: ASGIApp, on_startup: Callable[[], Awaitable[None]] | None = None):
+        self.patterns = patterns
+        self.default_app = default
+        self.on_startup = on_startup
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope['type'] == 'lifespan' and self.on_startup is not None:
+            message = await receive()
+            if message['type'] == 'lifespan.startup':
+                await self.on_startup()
+                await send({'type': 'lifespan.startup.complete'})
+                return
+            if message['type'] == 'lifespan.shutdown':
+                logger.debug('ASGI shutdown event')
+
+        app = None
+        request_path = scope['path']
+        for pattern_prefix, pattern_app in self.patterns.items():
+            if request_path.startswith(pattern_prefix):
+                if scope['type'] in {'http', 'websocket'}:
+                    app = pattern_app
+                    break
+
+        if app is None:
+            app = self.default_app
+        await app(scope, receive, send)
+
+
+async def main():
+    app = FastAPI()
+    metrics_app = make_wsgi_app(REGISTRY)
+    dispatcher = AsgiDispatcher({
+        '/metrics': WSGIMiddleware(metrics_app),
+    }, default=app)
+    config = uvicorn.Config(dispatcher, host="0.0.0.0", port=8000)
+    server = uvicorn.Server(config)
+    await server.serve()
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+```
 
 ## References
 - [Why I avoid async Python when I can](https://oscar-evertsson.medium.com/why-i-avoid-async-python-when-i-can-dfa383a2125c)
