@@ -12,6 +12,7 @@ less -r
 ### Less: leave uncleared output on exit
 ```
 export LESS="-X"
+LESS="-Xr" hg status
 ```
 
 ## Screen
