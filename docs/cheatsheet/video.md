@@ -77,15 +77,17 @@ pip install -U yt-dlp
 yt-dlp -f 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' URL
 ```
 
-## Dynamic Audio Normalizer
-This allows for applying extra gain to the "quiet" sections of the audio while avoiding distortions or clipping the "loud" sections.
-In other words: The Dynamic Audio Normalizer will "even out" the volume of quiet and loud sections, in the sense that the volume of each section is brought to the same target level.
+## Dynamic Audio Normalizer / Night Mode / Dynamic range compression
+This allows for applying extra gain to the "quiet" sections of the audio while avoiding distortions
+or clipping the "loud" sections.
+In other words: The Dynamic Audio Normalizer will "even out" the volume of quiet and loud sections,
+in the sense that the volume of each section is brought to the same target level.
 ```sh
-ffmpeg -i "$INPUT.mkv" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "$INPUT.norm.mkv"
+ffmpeg -i "$INPUT.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "$INPUT.norm.mkv"
 ```
 ```sh
-ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "%s.norm.mkv"'
-ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=30" -c:a aac -b:a 192k "%s.norm.mp4"'
+ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "%s.norm.mkv"'
+ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "%s.norm.mp4"'
 ```
 
 Extract normalized audio from video:
@@ -96,6 +98,37 @@ ffmpeg -i input.mkv -map a \
     -filter:a "dynaudnorm=maxgain=50:framelen=400:gausssize=15" \
     -ac 2 -q:a 0 \
     output.mp3
+```
+
+Python script evaluating commands for batch of files:
+```python
+from pathlib import Path
+import sys
+from nuclear import shell
+
+sources: list[Path] = list(Path('.').glob('*.mkv'))
+
+def evaluate_cmd(f: Path) -> str:
+    """
+    map 0:a:1 - From input #0 select audio stream index #1 (second)
+    pan=stereo - downmix 5.1 to stereo
+    aresample=matrix_encoding=dplii - Dolby Pro Logic II matrix
+    dynaudnorm - Dynamic Audio Normalizer
+    -ac 2 -q:a 0 - output 2 channels, variable bitrate
+    """
+    return f'''ffmpeg -i "{f.absolute()}"
+ -map 0:a:1
+ -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,
+aresample=matrix_encoding=dplii,
+dynaudnorm=maxgain=50:framelen=400:gausssize=15"
+ -ac 2 -q:a 0
+ "{f.stem}.mp3"'''
+
+for file in sources:
+    cmd = evaluate_cmd(file).replace('\n', '')
+    print(cmd)
+    if '--run' in sys.argv:
+        shell(cmd, raw_output=True)
 ```
 
 ## Split video into chunks
