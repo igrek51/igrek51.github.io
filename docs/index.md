@@ -102,6 +102,11 @@ hide:
   ![](https://img.shields.io/badge/-Python-yellow)
   ![](https://img.shields.io/badge/-Angular-red)
 
+- [:material-brain: MemGen](https://github.com/igrek51/memgen)  
+  Mnemonic Generator to memorize numbers using Mnemonic Major System  
+  ![](https://img.shields.io/badge/-JavaScript-khaki)
+  [![Github Pages](https://img.shields.io/badge/app-github.io-blue)](https://igrek51.github.io/memgen)
+
 - [:fontawesome-regular-circle-play: Raspberry Looper](https://github.com/igrek51/raspberry-looper)  
   Audio tracks looper running on Raspberry Pi for playing multi-instrumental songs  
   ![](https://img.shields.io/badge/-Python-yellow)
