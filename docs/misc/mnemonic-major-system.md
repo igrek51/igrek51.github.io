@@ -20,9 +20,9 @@ Polish variant of Mnemonic Major System maps phonetic sounds to digits:
 - "mój tort ulubiony" →
   disregarding neutrals: "m", "t", "r", "t", "l", "b", "n" →
   mapping letters to `3141592` (first digits of Pi)
-- "negatywne" →
-  "n", "g", "t", "w", "n" →
-  `27182` (first digits of e)
+- "negatywna wada" →
+  "n", "g", "t", "w", "n", "w, "d" →
+  `2718281` (first digits of e)
 
 ## Mnemonic generator
 [MemGen](https://igrek51.github.io/memgen/)
