@@ -100,13 +100,23 @@ ffmpeg -i input.mkv -map a \
     output.mp3
 ```
 
+## maker.py
 Python script evaluating commands for batch of files:
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "nuclear",
+# ]
+# ///
 from pathlib import Path
 import sys
-from nuclear import shell
+from nuclear import shell, logger
 
 sources: list[Path] = list(Path('.').glob('*.mkv'))
+# sources: list[Path] = list(map(Path, [
+# ]))
+
 
 def evaluate_cmd(f: Path) -> str:
     """
@@ -116,19 +126,24 @@ def evaluate_cmd(f: Path) -> str:
     dynaudnorm - Dynamic Audio Normalizer
     -ac 2 -q:a 0 - output 2 channels, variable bitrate
     """
+    target = f'{f.stem}.mp3'
+    if Path(target).exists():
+        logger.debug(f'{target} already exists - skipping')
+        return ''
     return f'''ffmpeg -i "{f.absolute()}"
  -map 0:a:1
  -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,
 aresample=matrix_encoding=dplii,
 dynaudnorm=maxgain=50:framelen=400:gausssize=15"
  -ac 2 -q:a 0
- "{f.stem}.mp3"'''
+ "{target}"'''
 
 for file in sources:
     cmd = evaluate_cmd(file).replace('\n', '')
-    print(cmd)
-    if '--run' in sys.argv:
-        shell(cmd, raw_output=True)
+    if cmd:
+        logger.info(cmd)
+        if '--run' in sys.argv:
+            shell(cmd, raw_output=True)
 ```
 
 ## Split video into chunks
