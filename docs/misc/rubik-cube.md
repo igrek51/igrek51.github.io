@@ -11,20 +11,20 @@ e.g. `L'`.
 ## Simple 3x3x3 Cube Algorithm
 ### 1. White Cross
 Goal:  
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=lwlwwwlwllbllblllllrllrllll)
+![](../assets/misc/rubik/3x_1_white_cross.svg)
 
 Figure that on your own ☺️
 
 ### 2. White Corners
 Goal:  
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=wwwwwwwwwbbblbllllrrrlrllll)
+![](../assets/misc/rubik/3x_2.svg)
 
 Pay attention to the matching colours on the sides.
 
 ### 3. Middle Layer
 Now, Turn the cube upside-down. You need to fill the middle layer by moving edges from the top. Look for this pattern:
 
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=lllllllrllllsrlrrrlbllbsbbb)  
+![](../assets/misc/rubik/3x_3.svg)  
 To move the top layer edge to the right, do this:
 ```
 U R U' R' U' F' U F
@@ -34,7 +34,7 @@ U R U' R' U' F' U F
 Look at the yellow pattern at the top. There are 3 cases.
 
 #### Minus
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=lllyyylllllllllllllylllllll)
+![](../assets/misc/rubik/3x_4_minus.svg)
 
 To make the yellow cross, run:
 ```
@@ -43,17 +43,17 @@ FRU R'U'F
 (mnemonic: "through roof")
 
 #### L shape
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=lylyylllllyllllllllylllllll)
+![](../assets/misc/rubik/3x_4_l.svg)
 
 Run "Minus" algo backwards, or run it multiple times.
 
 #### Dot
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=llllylllllyllllllllylllllll)
+![](../assets/misc/rubik/3x_4_dot.svg)
 
 Run "Minus" algo multiple times, until you get "Minus" pattern.
 
 ### 5. Permute Yellow Edges
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=lylyyylyllblrrrrrrlrlbbbbbb)
+![](../assets/misc/rubik/3x_5.svg)
 
 ```
 R U2 R' U' R U' R'
@@ -62,14 +62,14 @@ U'
 Mnemonic: R goes alternately. Run until white corner comes back.
 
 ### 6. Permute Last Layer
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=sysyyysybyrsrrrrrrsbrbbbbbb)
+![](../assets/misc/rubik/3x_6.svg)
 
 ```
 L' U R U' L U R' U'
 ```
 
 ### 7. Orient Last Layer
-![](https://visualcube.api.cubing.net/visualcube.php?fmt=svg&size=200&r=y30x-30&fc=gyyyyybyyrrrrrrrrrobbbbbbbb)
+![](../assets/misc/rubik/3x_7.svg)
 
 Repeat algo from step "5. Permute Yellow Edges" 2 times:
 1 mirrored and 1 normal run:
@@ -81,6 +81,8 @@ R U2 R' U' R U' R'
 
 ## 4x4x4 Cube
 ### Edge Parity
+![](../assets/misc/rubik/4x_edge_parity.svg)
+
 ```
 # join left bottom with right top, breaks top edge
 (dD) R U' R' (dD)'
@@ -89,6 +91,8 @@ R U2 R' U' R U' R'
 ```
 
 ### OLL Parity
+![](../assets/misc/rubik/4x_oll_parity.svg)
+
 having bad edge at top, behind:
 ```
 (rR) B2
@@ -99,6 +103,8 @@ having bad edge at top, behind:
 ```
 
 ### PLL Parity
+![](../assets/misc/rubik/4x_pll_parity.svg)
+
 Having bad edge top, front:
 ```
 r2 U2 r2 (uU)2 r2 u2
