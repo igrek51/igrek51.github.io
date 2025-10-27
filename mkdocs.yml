@@ -59,6 +59,7 @@ nav:
     - Baby clothes taxonomy: misc/baby-clothes-taxonomy.md
     - Music Theory: misc/music-theory.md
     - Rubik's Cube: misc/rubik-cube.md
+    - Mnemonic Major System: misc/mnemonic-major-system.md
   - Journal:
     - Cloudflared Tunnel on Termux: journal/termux-tunnel.md
     - Async Python Pitfalls: journal/async-python.md
