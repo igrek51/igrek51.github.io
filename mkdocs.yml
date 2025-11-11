@@ -51,6 +51,7 @@ nav:
     - Docker: cheatsheet/docker.md
     - Git: cheatsheet/git.md
     - Linux: cheatsheet/linux.md
+    - Networking on Linux: cheatsheet/networking.md
     - Python: cheatsheet/python.md
     - Video: cheatsheet/video.md
     - Vim: cheatsheet/vim.md

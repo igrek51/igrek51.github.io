@@ -11,49 +11,8 @@ less -r
 ```
 ### Less: leave uncleared output on exit
 ```
-export LESS="-X"
-LESS="-Xr" hg status
-```
-
-## Screen
-```shell
-screen -S new_screen_name # create named screen
-# detach with Ctrl+a, d
-screen -ls # list screens
-screen -r 5050 # reattach
-screen -d -r byname # reattach not-detached session
-```
-
-## Nmap
-### Discover hosts, MACs, hostnames with ping scan
-```shell
-sudo nmap -sP 192.168.0.1/24
-```
-
-### Check if TCP port is open
-```shell
-sudo nmap -sS -p22 192.168.0.50 # SYN scan
-sudo nmap -sY -p22 192.168.0.50 # open/filtered/closed
-```
-
-### Scan port range
-```sh
-nmap -p 1-65535 localhost
-```
-
-### Scan OS and detect services
-```sh
-nmap -A -T4 192.168.0.49
-```
-
-### Detect service versions
-```sh
-nmap -sV 192.168.0.49
-```
-
-### CVE detection
-```sh
-nmap -Pn --script vuln 192.168.0.49
+export LESS="-XR"
+LESS="-XR" hg status
 ```
 
 ## Shell
@@ -73,6 +32,15 @@ EOF
 ### Turn on strict mode in bash
 ```shell
 set -euxo pipefail
+```
+
+## Screen
+```shell
+screen -S new_screen_name # create named screen
+# detach with Ctrl+a, d
+screen -ls # list screens
+screen -r 5050 # reattach
+screen -d -r byname # reattach not-detached session
 ```
 
 ## xargs
@@ -127,6 +95,7 @@ sudo modprobe psmouse
 ```
 
 ## Disable jbd2 gvfsd
+(Reduce disk usage in background)
 ```sh
 pkill gvfsd-metadata
 rm -rf ~/.local/share/gvfs-metadata
@@ -170,14 +139,4 @@ dconf reset /org/gnome/desktop/interface/cursor-theme
 ### List installed packages with version
 ```shell
 dpkg-query -f '${binary:Package}=${Version}\n' -W
-```
-
-## Netcat
-Start Listening:
-```sh
-nc -lvp 1234
-```
-Connect:
-```sh
-nc -v 192.168.0.1 1234
 ```
