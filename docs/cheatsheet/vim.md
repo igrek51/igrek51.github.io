@@ -20,7 +20,8 @@ ESC or Ctrl^[
 ```
 
 ## Useful shortcuts
-Navigation:  
+Navigation:
+
 - `w` - jump to next word
 - `b` - jump to previous word
 - `e` - jump to the end of the current word
@@ -30,24 +31,28 @@ Navigation:
 - `$` - go to end of line
 - `3w` - jump 3 words
 
-Deletion:  
+Deletion:
+
 - `dd` - delete line
 - `dw` - delete the word
 - `x` - delete single character
 - `D` - delete to end of line
 
 Copy / Paste:
+
 - `yy` - copy line
 - `p` - paste below
 - `P` - paste above
 
 Edit:
+
 - `o` - open a new line below
 - `O` - open a new line above
 - `u` - undo
 - `Ctrl+r` - redo
 
 Search:
+
 - `/`, text, `Enter` - search forward
 - `?`, text, `Enter` - search backward
 - `n` - next occurence
