@@ -75,6 +75,8 @@ for path in Path('.').iterdir():
 ```sh
 pip install -U yt-dlp
 yt-dlp -f 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' URL
+# Or:
+yt-dlp -f "bestvideo[height<=1080]+bestaudio/best" --merge-output-format mp4 --no-playlist --remote-components ejs:github URL
 ```
 
 ## Dynamic Audio Normalizer / Night Mode / Dynamic range compression
