@@ -73,10 +73,17 @@ for path in Path('.').iterdir():
 
 ## Download YouTube video as MP4
 ```sh
-pip install -U yt-dlp
+pip3 install --upgrade yt-dlp --break-system-packages
 yt-dlp -f 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' URL
-# Or:
+# Or (newer):
 yt-dlp -f "bestvideo[height<=1080]+bestaudio/best" --merge-output-format mp4 --no-playlist --remote-components ejs:github URL
+# Download MP4 with normalized audio
+yt-dlp -f 'bestvideo[height<=1080]+bestaudio/best' \
+  --merge-output-format mp4 \
+  --no-playlist --remote-components ejs:github \
+  --postprocessor-args "Merger:-filter:a 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15' -c:v copy -c:a aac -ac 2" \
+  -o "{target}" \
+  "{yt_url}"
 ```
 
 ## Dynamic Audio Normalizer / Night Mode / Dynamic range compression
