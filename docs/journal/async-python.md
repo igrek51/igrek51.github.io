@@ -85,7 +85,7 @@ If you call a synchronous function in an async thread, it will block, and there'
 Any kind of cancelling the coroutine won't work here,
 because there's only one thread in *asyncio*,
 and this single thread is now fully occupied by the busy coroutine.
-So Python kindly waits until the naughty coroutine let go of the control. It's hopeless.
+So Python kindly waits until the naughty coroutine let go of control. It's hopeless.
 
 A proper solution is to offload blocking calls to a **separate thread** using
 [`asyncio.to_thread`](https://docs.python.org/3/library/asyncio-task.html#asyncio.to_thread)

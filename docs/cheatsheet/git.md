@@ -62,7 +62,7 @@ git cherry-pick -n COMMIT_HASH
 git branch -u origin/branch
 ```
 
-## Add brach alias
+## Add branch alias
 ```shell
 git symbolic-ref refs/heads/om refs/remotes/origin/master
 ```

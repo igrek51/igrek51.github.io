@@ -158,7 +158,7 @@ pm trim-caches 9999999999
 ```
 
 ## Hide annoying NFC icon
-Enable "USB Debuging" in first place.
+Enable "USB Debugging" in first place.
 ```sh
 adb shell settings put secure icon_blacklist nfc
 ```

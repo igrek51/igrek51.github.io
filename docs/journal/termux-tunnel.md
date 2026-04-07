@@ -7,7 +7,7 @@ You'll be able to use SSH and ADB to connect, and you won't need root access.
 
 ## Configuration
 You'll need to configure some variables during the setup process.
-Some of them will be known and have to updated once some steps are finished.
+Some of them will be known and have to be updated once some steps are finished.
 Some will be known upfront, while others will need updating as you go.
 Save these in a `setup.env` file on both your Android device (server) and Linux desktop (client):
 ```sh
@@ -297,7 +297,7 @@ adb connect localhost:5556
 scrcpy -s localhost:5556
 ```
 
-## Connecting though SSH Proxy command
+## Connecting through SSH Proxy command
 Add this to your `.ssh/config` (evaluate :
 ```sh
 . ./setup.env
