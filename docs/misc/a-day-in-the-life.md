@@ -4,7 +4,7 @@
 
 Given any date, you can determine the day of the week in your head — no calendar needed.
 This is a mental arithmetic trick based on **modular arithmetic**.
-Sometimes it may come in handy to avoid constantly checking up the phone.
+Sometimes it comes in handy to avoid constantly checking your phone.
 
 ## The math behind it
 Mathematically, you just need to realize that the set of weekdays forms a **ring of residue classes modulo 7**.
@@ -45,9 +45,10 @@ Every 4 years there's a leap year adding one extra day, so each year contributes
 `Y//4` accounts for the accumulated leap days up to year `Y`.
 
 **Why we subtract the leap day instead of adding:**
-Rather than adding a correction for each leap year, the month codes for January and February
-are set 1 lower in leap years (6→5, 2→1). This way the leap day correction only affects
-2 months (Jan, Feb) instead of all 10 remaining months — much simpler to memorize.
+The `Y//4` term assumes every year divisible by 4 is a leap year, so it over-counts by 1
+for January and February of an actual leap year (the extra day hasn't occurred yet).
+To correct this, the month codes for January and February are pre-decremented by 1 in leap years (6→5, 2→1),
+absorbing the over-count for exactly those two months — instead of adjusting all 10 others.
 
 **Century offset `B`:**
 The Gregorian calendar has a century correction (century years are leap years only if divisible by 400).
@@ -64,14 +65,20 @@ Other useful base years with `B=0`: **1944**, **1972**, **2024** — handy if yo
 
 ## Month codes
 
-| Month | Code | Month | Code |
-|-------|------|-------|------|
-| Jan   | 6 (5 in leap year) | Jul | 5 |
-| Feb   | 2 (1 in leap year) | Aug | 1 |
-| Mar   | 2 | Sep | 4 |
-| Apr   | 5 | Oct | 6 |
-| May   | 0 | Nov | 2 |
-| Jun   | 3 | Dec | 4 |
+| Month | Code |
+|-------|------|
+| Jan   | 6 (5 in leap year) |
+| Feb   | 2 (1 in leap year) |
+| Mar   | 2 |
+| Apr   | 5 |
+| May   | 0 |
+| Jun   | 3 |
+| Jul   | 5 |
+| Aug   | 1 |
+| Sep   | 4 |
+| Oct   | 6 |
+| Nov   | 2 |
+| Dec   | 4 |
 
 The sequence is: **6 2 2 5 0 3 5 1 4 6 2 4**
 
@@ -109,25 +116,29 @@ Y=93, Y//4=23, B=1, M=3 (Jun), D=10
 
 ## Tips for mental calculation
 
+**Modulo division**:
+Modulo "division" is actually about subtracting.
+To find the remainder, keep subtracting multiples of 7 until you get a number from O to 6.
+
 **Reduce early:** apply mod 7 to each term as you go — no need to sum large numbers.
 For example, `93 % 7 = 2`, `23 % 7 = 2`, then `(2+2+1+3+3) % 7 = 4`.
 
-**Memorize the current year's offset:** if you know that 2025 contributes `(25 + 6) % 7 = 3`,
+**Memorize the current year's offset:** if you know that 2026 contributes `(26 + 6) % 7 = 4`,
 then for any date in 2025 you only need:
 
 ```
-(3 + M + D) % 7
+(4 + M + D) % 7
 ```
 
 with just the month code and day — three numbers instead of five.
 
 Quick lookup for the total year offset:  
-* 2025 - 3
-* 2026 - 4
-* 2027 - 5
-* 2028 - 0*
+* 2025 → 3
+* 2026 → 4
+* 2027 → 5
+* 2028 → 0 (leap year)
 
 **Use a nearby base year** if the date is far from 2000:
 pick a known year with `B=0` (e.g. 1972), set `Y = year − base`, and use `B=0`.
 
-Remember that cycle repeats every 28 years (7x4).
+Remember that the calendar cycle repeats every 28 years (`lcm(7, 4)`).
