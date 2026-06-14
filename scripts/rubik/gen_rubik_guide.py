@@ -437,28 +437,28 @@ STEPS = {
         {'variant': 'red_bottom_1', 'description': 'White-red block at bottom (V1)', 'algorithm': 'F2'},
         {'variant': 'red_bottom_2', 'description': 'White-red at bottom via M (V2)', 'algorithm': "D M D' M'"},
     ],
-    '02_white_corners': [
-        {'variant': 'rfu', 'description': 'Corner at RFU (white on right)', 'algorithm': 'R U R\''},
-        {'variant': 'fur', 'description': 'Corner at FUR (white on front)', 'algorithm': 'F U\' F\''},
-    ],
-    '03_second_layer': [
-        {'variant': 'fr', 'description': 'Edge to FR slot', 'algorithm': 'U R U\' R\' U\' F\' U F'},
-        {'variant': 'fl', 'description': 'Edge to FL slot', 'algorithm': 'U\' L\' U L U F U\' F\''},
-    ],
-    '04_yellow_cross': [
-        {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
-        {'variant': 'L', 'description': 'L-shape (two adjacent edges)', 'algorithm': 'F U R U\' R\' F\''},
-        {'variant': 'dot', 'description': 'Dot pattern (no edges)', 'algorithm': 'F R U R\' U\' F\' U2 F U R U\' R\' F\''},
-    ],
-    '05_orient_yellow': [
-        {'variant': 'sune', 'description': 'Sune (one corner yellow on top)', 'algorithm': 'R U2 R\' U\' R U\' R\''},
-    ],
-    '06_permute_corners': [
-        {'variant': 'a_perm', 'description': '3-corner cycle', 'algorithm': 'L\' U R U\' L U R\' U\''},
-    ],
-    '07_final_edges': [
-        {'variant': 'antisune_sune', 'description': 'Antisune then Sune', 'algorithm': 'L\' U2 L U L\' U L R U2 R\' U\' R U\' R\''},
-    ],
+    # '02_white_corners': [
+    #     {'variant': 'rfu', 'description': 'Corner at RFU (white on right)', 'algorithm': 'R U R\''},
+    #     {'variant': 'fur', 'description': 'Corner at FUR (white on front)', 'algorithm': 'F U\' F\''},
+    # ],
+    # '03_second_layer': [
+    #     {'variant': 'fr', 'description': 'Edge to FR slot', 'algorithm': 'U R U\' R\' U\' F\' U F'},
+    #     {'variant': 'fl', 'description': 'Edge to FL slot', 'algorithm': 'U\' L\' U L U F U\' F\''},
+    # ],
+    # '04_yellow_cross': [
+    #     {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
+    #     {'variant': 'L', 'description': 'L-shape (two adjacent edges)', 'algorithm': 'F U R U\' R\' F\''},
+    #     {'variant': 'dot', 'description': 'Dot pattern (no edges)', 'algorithm': 'F R U R\' U\' F\' U2 F U R U\' R\' F\''},
+    # ],
+    # '05_orient_yellow': [
+    #     {'variant': 'sune', 'description': 'Sune (one corner yellow on top)', 'algorithm': 'R U2 R\' U\' R U\' R\''},
+    # ],
+    # '06_permute_corners': [
+    #     {'variant': 'a_perm', 'description': '3-corner cycle', 'algorithm': 'L\' U R U\' L U R\' U\''},
+    # ],
+    # '07_final_edges': [
+    #     {'variant': 'antisune_sune', 'description': 'Antisune then Sune', 'algorithm': 'L\' U2 L U L\' U L R U2 R\' U\' R U\' R\''},
+    # ],
 }
 
 
@@ -539,19 +539,12 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
                     states.append(list(current))
                     move_labels.append(move)
                 
-                seq_svg = render_svg_sequence(states, move_labels)
+                seq_svg = render_svg_sequence(states, move_labels, cell_size=240)
                 seq_file = os.path.join(output_dir, f'{step_name}_{var_id}_seq.svg')
                 with open(seq_file, 'w') as f:
                     f.write(seq_svg)
                 print(f"  {step_name}/{var_id}: sequence = {seq_file}")
                 total += 1
-            
-            # Goal file
-            goal_file = os.path.join(output_dir, f'{step_name}_goal.svg')
-            with open(goal_file, 'w') as f:
-                f.write(solved_svg)
-            print(f"  {step_name}: goal = {goal_file}")
-            total += 1
             continue
         
         for variant in variants:
@@ -574,7 +567,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
                 move_labels.append(move)
             
             # Generate sequence SVG with arrows
-            seq_svg = render_svg_sequence(states, move_labels)
+            seq_svg = render_svg_sequence(states, move_labels, cell_size=240)
             seq_file = os.path.join(output_dir, f'{step_name}_{var_id}_seq.svg')
             with open(seq_file, 'w') as f:
                 f.write(seq_svg)
