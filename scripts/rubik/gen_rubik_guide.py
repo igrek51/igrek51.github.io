@@ -92,6 +92,12 @@ MOVE_DEFS = {
         [_idx(F, 3), _idx(D, 3), _idx(B, 5), _idx(U, 3)],
         [_idx(F, 6), _idx(D, 6), _idx(B, 2), _idx(U, 6)],
     ]),
+    'M': (U, [], [], [
+        # M going down (same as D, looking at right face): U→F→D→B→U
+        [_idx(U, 1), _idx(F, 1), _idx(D, 1), _idx(B, 7)],
+        [_idx(U, 4), _idx(F, 4), _idx(D, 4), _idx(B, 4)],
+        [_idx(U, 7), _idx(F, 7), _idx(D, 7), _idx(B, 1)],
+    ]),
 }
 
 
@@ -147,7 +153,7 @@ def parse_algorithm(algorithm: str) -> List[str]:
     # No spaces: parse character by character
     moves = []
     i = 0
-    valid_moves = {'R', 'L', 'U', 'D', 'F', 'B'}
+    valid_moves = {'R', 'L', 'U', 'D', 'F', 'B', 'M'}
     while i < len(algorithm):
         c = algorithm[i]
         if c in valid_moves:
@@ -428,8 +434,8 @@ SOLVED = list('wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg')
 
 STEPS = {
     '01_white_cross': [
-        {'variant': 'red_bottom_1', 'description': 'White-red block at bottom (V1)', 'algorithm': 'F'},
-        {'variant': 'red_bottom_2', 'description': 'White-red block at bottom (V2)', 'algorithm': "F'"},
+        {'variant': 'red_bottom_1', 'description': 'White-red block at bottom (V1)', 'algorithm': 'F2'},
+        {'variant': 'red_bottom_2', 'description': 'White-red at bottom via M (V2)', 'algorithm': "D M D' M'"},
     ],
     '02_white_corners': [
         {'variant': 'rfu', 'description': 'Corner at RFU (white on right)', 'algorithm': 'R U R\''},
