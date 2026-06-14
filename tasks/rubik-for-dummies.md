@@ -7,12 +7,11 @@ Generate a **printable A4 landscape one-pager** showing Rubik's cube solving ste
 ## Files
 
 - **`scripts/rubik/gen_rubik_guide.py`** -- Cube simulator + SVG renderer + guide generator
-  - `render_svg_exploded(colors, size)` -- Exploded view renderer (main cube + reference faces below/left)
+  - `render_svg_exploded(colors, size)` -- Exploded view renderer (main cube + reference faces below/left/back)
   - `render_svg_sequence(states, labels, cell_size)` -- Row of cubes with arrow labels between them
   - `apply_move()`, `apply_alg()` -- Move simulator
   - `inverse_alg()` -- Algorithm reversal
   - Key frame generation via inverse method
-
 - **`scripts/rubik/test_cube_moves.py`** -- 18 unit tests for all moves and key sequences
 - **`scripts/rubik/test_server.py`** -- HTTP API server for interactive testing
 - **`scripts/rubik/test_cube_generator.html`** -- Web UI for the API
@@ -25,8 +24,8 @@ Generate a **printable A4 landscape one-pager** showing Rubik's cube solving ste
 
 - **Goal**: White cross on U face, colored centers + matching edges on side faces, rest gray
 - **Variants**:
-  1. White-red block at bottom (V1) -- `F`
-  2. White-red block at bottom (V2) -- `F'`
+  1. "Upside down" -- White-red edge at DF, solved by `F2`
+  2. "Elevator" -- White-red edge at DB, solved by `D M D' M'`
 
 ## Key Implementation Details
 
@@ -61,18 +60,26 @@ Generate a **printable A4 landscape one-pager** showing Rubik's cube solving ste
 ### Exploded View
 
 - Main cube in center (27 visible stickers from U+F+R view)
-- Reference faces below/left:
+- Reference faces:
   - **Below**: 9 D face stickers (rows inverted: D6->visual top, D0->visual bottom)
   - **Left**: 9 L face stickers (columns swapped: L2->visual left, L0->visual right)
+  - **Upper-right (back)**: 9 B face stickers (columns swapped: B2->visual left, B0->visual right), shifted from F geometry
 - Single SVG per cube state
-- ViewBox: `-2.0 -1.4 4.4 3.0` with fixed 48-polygon geometry
-- Polygon indices: 0-2 outlines, 3-11 R, 12-20 U, 21-29 F, 30-38 L (exploded), 39-47 D (exploded)
+- ViewBox: `-2.0 -1.4 4.4 3.0` with 57-polygon geometry (48 original + 9 B face)
+- Polygon indices: 0-2 outlines, 3-11 R, 12-20 U, 21-29 F, 30-38 L (exploded), 39-47 D (exploded), 48-56 B (exploded)
+
+### Mirror Offsets
+
+- **L face** (left): shifted from R geometry by `dx=-1.5, dy=-0.25` (dy adjusted up by 1 tile height)
+- **D face** (below): shifted from U geometry by `dx=0, dy=+1.5`
+- **B face** (upper-right): shifted from F geometry by `dx=+1.5, dy=-1.0` (dx adjusted right by 1 tile width)
 
 ### SVG Sticker Order Rules
 
 - **Main view (R, U, F)**: direct view, no mirror -- map position 0 to polygon (R,0) etc.
 - **L exploded** (shifted left, mirror effect): columns swapped -- polygon 30 shows (L,2), polygon 38 shows (L,6)
 - **D exploded** (shifted down, mirror effect): rows inverted -- polygon 39 shows (D,6), polygon 47 shows (D,2)
+- **B exploded** (shifted upper-right, mirror effect): columns swapped -- polygon 48 shows (B,2), polygon 56 shows (B,6)
 
 ### Per-Move Sequence Rendering
 
@@ -147,16 +154,19 @@ python scripts/rubik/gen_rubik_guide.py --state "lllllllllyyyyyyyyylllllllllyyyy
 ## Verification Checklist
 
 - [x] Cube simulator logic verified (move definitions, inverse algorithms, 18 tests pass)
-- [x] SVG rendering with exploded view correct (L column-swapped, D row-swapped mirror rule)
-- [x] All 6 moves use CCW_FACE (face rotation consistent)
-- [x] All 6 moves pass M^4 = identity and M + M^3 = identity
-- [x] All moves pass corner consistency check (3 distinct colors per corner)
-- [x] Step 1 White Cross variants: 2 variants with F, F' algorithms
+- [x] SVG rendering with exploded view correct (L column-swapped, D row-swapped, B column-swapped mirror rules)
+- [x] All 6 moves + M move use CCW_FACE (face rotation consistent)
+- [x] M move verified: M^4 = identity, M + M^3 = identity; M cycles [U1,F1,D1,B7], [U4,F4,D4,B4], [U7,F7,D7,B1]
+- [x] Step 1 White Cross variants: "Upside down" (F2) and "Elevator" (D M D' M')
 - [x] Step 1 goal state: white cross + colored centers + matching edges, rest gray
 - [x] Sequence SVG rendering with arrow labels and move labels
 - [x] `--png` flag converts SVGs via Inkscape
 - [x] Test server API, restartable via start_server.sh
 - [x] Gray tile support (`l` = #aaaaaa, `d` = #777777)
+- [x] B face mirror added to exploded view (polygons 48-56, shifted from F geometry)
+- [x] L mirror shifted up 0.25 (one tile height)
+- [x] B mirror shifted right 0.3 (one tile width)
+- [x] Variant labels renamed: "Upside down" (F2) and "Elevator" (D M D' M')
 - [ ] Print layout verified on actual A4 paper or print preview
 - [ ] HTML guide renders correctly at 2x scale
 
