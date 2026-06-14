@@ -218,91 +218,187 @@ def string_to_state(s: str) -> List[str]:
 
 
 # ============================================================================
-# SVG RENDERING
+# SVG RENDERING  –  3-D engine
 # ============================================================================
 
-# Fixed exploded view polygon coordinates (from test_exploded_cube.html)
-EXPLODED_POLYGONS = [
-    # Outline (3 black polygons) - indices 0-2
-    '0.20684405736417,-0.10342202868208 0.65400098857461,-0.50223953102503 0.59354043975904,0.29677021987952 0.18464331255837,0.78141988002483',
-    '-0.16103316974267,-0.68150055605482 0.65400098857461,-0.50223953102503 0.20684405736417,-0.10342202868208 -0.69915174967186,-0.34957587483593',
-    '-0.69915174967186,-0.34957587483593 0.20684405736417,-0.10342202868208 0.18464331255837,0.78141988002483 -0.63049311492991,0.48418667844381',
-    
-    # Main cube stickers (27 - visible from U+F+R view) - indices 3-29
-    '0.23220459330744,-0.097441401330956 0.38227249092114,-0.23128636700361 0.36999212937981,0.045154977624192 0.22499715953803,0.18982100852027',
-    '0.4069817245562,-0.2545381490138 0.54094270983739,-0.37401742313938 0.52467144659853,-0.1077720348288 0.39470136301487,0.021903195614004',
-    '0.56310093386749,-0.39487439578917 0.68341608451396,-0.50218300385423 0.66399522435527,-0.24552875671726 0.54682967062863,-0.12862900747859',
-    '0.223353818639,0.23784491367276 0.36834878848078,0.093178882776681 0.35693169206116,0.350187397987 0.21668124027086,0.50378990925302',
-    '0.3922779720275,0.06821860554084 0.52224805561116,-0.061456624901962 0.50706331929562,0.18701000964104 0.38086087560788,0.32522712075116',
-    '0.54378933560067,-0.083930885138136 0.6609548893273,-0.20083063437682 0.6427690222492,0.039502697171029 0.52860459928513,0.16453574940487',
-    '0.21515350390181,0.54839286735931 0.35540395569211,0.3947903560933 0.34476218854429,0.63434555238436 0.20895837445964,0.79530846448196',
-    '0.37860023265147,0.36841120720791 0.50480267633921,0.23019409609779 0.49059915258614,0.46260522739722 0.36795846550365,0.60796640349897',
-    '0.52575903029008,0.20635820880183 0.63992345325415,0.081325156567985 0.6228584076258,0.30684639519048 0.51155550653701,0.43876934010126',
-    
-    # Top-left area stickers (9) - indices 12-20
-    '-0.16308766923626,-0.71207714627716 0.06893319498559,-0.66104579069008 -0.069879916590964,-0.56561143321124 -0.30935815523295,-0.62185393851769',
-    '0.11180610591039,-0.65128217351647 0.35708263835866,-0.59733532702698 0.22686512059301,-0.4962248436571 -0.027007005666167,-0.55584781603763',
-    '0.40251326858017,-0.58698845898221 0.66221484485652,-0.5298689256595 0.54189969421005,-0.42256031759443 0.27229575081453,-0.48587797561233',
-    '-0.33581637736973,-0.60457603181805 -0.096338138727745,-0.54833352651161 -0.24992750361457,-0.44274045834187 -0.49719274936492,-0.5050351446816',
-    '-0.052006830500575,-0.53752584778919 0.20186529575861,-0.47790287540865 0.057347059211871,-0.36568825940513 -0.2055961953874,-0.43193277961945',
-    '0.24898588289863,-0.46641417348037 0.51858982629416,-0.40309651546248 0.38462884101296,-0.2836172413369 0.10446764635189,-0.35419955747685',
-    '-0.52650751013751,-0.48588756542377 -0.27924226438716,-0.42359287908404 -0.45009984781468,-0.30612786796512 -0.70545724037948,-0.3755070017707',
-    '-0.23338157689329,-0.41156389934697 0.029561677705984,-0.34531937913265 -0.13174994780725,-0.22006513754759 -0.4042391603208,-0.29409888822805',
-    '0.078474752161267,-0.33248841791719 0.35863594682234,-0.26190610177724 0.20856804920864,-0.12806113610458 -0.082836873351964,-0.20723417633213',
-    
-    # Bottom-left area stickers (9) - indices 21-29
-    '-0.72004575804874,-0.34151840727719 -0.46468836548394,-0.27213927347161 -0.45107516882697,0.0026842338018111 -0.69790099484541,-0.072601403908595',
-    '-0.41897143950024,-0.25894568756878 -0.14648222698668,-0.18491193688833 -0.14259047425941,0.09602599279775 -0.40535824284327,0.015877819704637',
-    '-0.097706202112198,-0.17083564826423 0.19369872044841,-0.091662608036674 0.18649128667899,0.19559980181455 -0.093814449384923,0.11010228142185',
-    '-0.69482963515065,-0.026315135872389 -0.44800380913221,0.048970501838018 -0.43533982912821,0.30463120287977 -0.67418372027694,0.22440046260398',
-    '-0.40383837771209,0.063133327157647 -0.14107060912822,0.14328150025076 -0.1374586676318,0.40402041077812 -0.39117439770808,0.3187940281994',
-    '-0.094059816353234,0.15835665718065 0.18624591971068,0.24385417757335 0.17957334134255,0.5097991731536 -0.090447874856813,0.41909556770801',
-    '-0.67131990143287,0.26756077772389 -0.43247601028413,0.34779151799968 -0.42066531159164,0.586226157549 -0.65202564383899,0.50186239958934',
-    '-0.38976040593535,0.36276197672144 -0.13604467585907,0.44798835930017 -0.13268341577213,0.69063107484156 -0.37794970724287,0.60119661627076',
-    '-0.090675803204967,0.46388861250066 0.17934541299439,0.55459221794625 0.17315028355223,0.8015078150689 -0.087314543118027,0.70653132804205',
-    
-    # Left face exploded (9 stickers from L, indices 45-53) - indices 30-38
-    '-1.26779540669256,-0.347441401330956 -1.11772750907886,-0.48128636700361 -1.13000787062019,-0.20484502237580798 -1.27500284046197,-0.06017899147972999',
-    '-1.0930182754438,-0.5045381490138 -0.95905729016261,-0.62401742313938 -0.97532855340147,-0.3577720348288 -1.10529863698513,-0.228096804385996',
-    '-0.93689906613251,-0.64487439578917 -0.81658391548604,-0.75218300385423 -0.83600477564473,-0.49552875671726 -0.95317032937137,-0.37862900747858996',
-    '-1.276646181361,-0.012155086327239994 -1.13165121151922,-0.15682111722331898 -1.14306830793874,0.100187397987 -1.28331875972914,0.25378990925302003',
-    '-1.1077220279725,-0.18178139445916 -0.97775194438884,-0.311456624901962 -0.99293668070438,-0.06298999035896 -1.11913912439212,0.07522712075116',
-    '-0.95621066439933,-0.333930885138136 -0.8390451106727,-0.45083063437682 -0.8572309777508,-0.210497302828971 -0.97139540071487,-0.08546425059512999',
-    '-1.28484649609819,0.29839286735931003 -1.14459604430789,0.1447903560933 -1.15523781145571,0.38434555238435997 -1.29104162554036,0.54530846448196',
-    '-1.12139976734853,0.11841120720790999 -0.99519732366079,-0.019805903902209987 -1.00940084741386,0.21260522739722 -1.13204153449635,0.35796640349897',
-    '-0.97424096970992,-0.043641791198169994 -0.86007654674585,-0.168674843432015 -0.8771415923742,0.056846395190480015 -0.98844449346299,0.18876934010126',
-    
-    # Bottom face exploded (9 stickers from D, indices 9-17) - indices 39-47
-    '-0.16308766923626,0.78792285372284 0.06893319498559,0.83895420930992 -0.069879916590964,0.93438856678876 -0.30935815523295,0.87814606148231',
-    '0.11180610591039,0.84871782648353 0.35708263835866,0.90266467297302 0.22686512059301,1.0037751563429 -0.027007005666167,0.94415218396237',
-    '0.40251326858017,0.91301154101779 0.66221484485652,0.9701310743405 0.54189969421005,1.07743968240557 0.27229575081453,1.01412202438767',
-    '-0.33581637736973,0.89542396818195 -0.096338138727745,0.95166647348839 -0.24992750361457,1.05725954165813 -0.49719274936492,0.9949648553184',
-    '-0.052006830500575,0.96247415221081 0.20186529575861,1.02209712459135 0.057347059211871,1.13431174059487 -0.2055961953874,1.06806722038055',
-    '0.24898588289863,1.03358582651963 0.51858982629416,1.09690348453752 0.38462884101296,1.2163827586631 0.10446764635189,1.14580044252315',
-    '-0.52650751013751,1.01411243457623 -0.27924226438716,1.07640712091596 -0.45009984781468,1.19387213203488 -0.70545724037948,1.1244929982293',
-    '-0.23338157689329,1.08843610065303 0.029561677705984,1.15468062086735 -0.13174994780725,1.27993486245241 -0.4042391603208,1.20590111177195',
-    '0.078474752161267,1.16751158208281 0.35863594682234,1.23809389822276 0.20856804920864,1.37193886389542 -0.082836873351964,1.29276582366787',
+def _solve_affine(pts3, vals):
+    """Solve the 4-variable affine system  [x,y,z,1]·m = val  in least-squares."""
+    n = len(pts3)
+    ATA = [[0.0]*4 for _ in range(4)]
+    ATb = [0.0]*4
+    for i in range(n):
+        row = list(pts3[i]) + [1.0]
+        for j in range(4):
+            for k in range(4):
+                ATA[j][k] += row[j] * row[k]
+            ATb[j] += row[j] * vals[i]
+    aug = [ATA[i][:] + [ATb[i]] for i in range(4)]
+    for col in range(4):
+        best = col
+        for row in range(col + 1, 4):
+            if abs(aug[row][col]) > abs(aug[best][col]):
+                best = row
+        aug[col], aug[best] = aug[best], aug[col]
+        piv = aug[col][col]
+        for row in range(4):
+            if row == col:
+                continue
+            f = aug[row][col] / piv
+            for k in range(5):
+                aug[row][k] -= f * aug[col][k]
+    return [aug[i][4] / aug[i][i] for i in range(4)]
 
-    # Back face exploded (9 stickers from B, shifted from F geometry - indices 48-56)
-    '0.77995424195126,-1.34151840727719 1.03531163451606,-1.27213927347161 1.04892483117303,-0.9973157661981888 0.80209900515459,-1.072601403908595',
-    '1.08102856049976,-1.25894568756878 1.3535177730133199,-1.18491193688833 1.35740952574059,-0.90397400720225 1.09464175715673,-0.984122180295363',
-    '1.402293797887802,-1.17083564826423 1.69369872044841,-1.091662608036674 1.68649128667899,-0.80440019818545 1.406185550615077,-0.88989771857815',
-    '0.80517036484935,-1.026315135872389 1.05199619086779,-0.951029498161982 1.06466017087179,-0.69536879712023 0.8258162797230599,-0.7755995373960201',
-    '1.09616162228791,-0.936866672842353 1.3589293908717799,-0.85671849974924 1.3625413323682,-0.59597958922188 1.10882560229192,-0.6812059718006',
-    '1.405940183646766,-0.8416433428193499 1.68624591971068,-0.75614582242665 1.67957334134255,-0.4902008268464 1.409552125143187,-0.5809044322919901',
-    '0.8286800985671299,-0.73243922227611 1.06752398971587,-0.65220848200032 1.0793346884083599,-0.413773842451 0.84797435616101,-0.49813760041066',
-    '1.11023959406465,-0.6372380232785599 1.36395532414093,-0.55201164069983 1.36731658422787,-0.30936892515843994 1.1220502927571299,-0.39880338372923996',
-    '1.409324196795033,-0.53611138749934 1.67934541299439,-0.44540778205375 1.67315028355223,-0.1984921849311 1.4126854568819731,-0.29346867195795',
+
+# Affine projection fitted to the 7 visible cube corners that appear in the
+# original SVG polygon data.  Coordinate system: x=right, y=depth, z=up.
+# Each corner is a vertex shared by three cube faces; the screen positions
+# come directly from the outline polygon strings in the original art.
+_CORNER_XYZ = [
+    (1,0,1), (1,1,1), (1,1,0), (1,0,0),   # R-face corners
+    (0,0,1), (0,1,1), (0,0,0),             # L/F/U corners visible in outlines
 ]
+_CORNER_SX = [
+     0.20684405736417,  0.65400098857461,  0.59354043975904,  0.18464331255837,
+    -0.69915174967186, -0.16103316974267, -0.63049311492991,
+]
+_CORNER_SY = [
+    -0.10342202868208, -0.50223953102503,  0.29677021987952,  0.78141988002483,
+    -0.34957587483593, -0.68150055605482,  0.48418667844381,
+]
+_MX = _solve_affine(_CORNER_XYZ, _CORNER_SX)
+_MY = _solve_affine(_CORNER_XYZ, _CORNER_SY)
 
 
-def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0, 
-                       scale: float = 1.0) -> str:
-    """Render cube state as SVG <g> elements at given offset and scale.
-    
-    The viewBox is -2.0 to 2.4 in X, -1.4 to 1.6 in Y (size 4.4 x 3.0).
-    Returns the string of <polygon> elements inside a <g> tag.
+def _proj(x: float, y: float, z: float):
+    """Project a 3-D point to (sx, sy) screen coordinates."""
+    return (
+        _MX[0]*x + _MX[1]*y + _MX[2]*z + _MX[3],
+        _MY[0]*x + _MY[1]*y + _MY[2]*z + _MY[3],
+    )
+
+
+def _tile_quad(o, u, v, row: int, col: int, n: int = 3) -> List[tuple]:
+    """Return the 4 projected screen corners of tile (row, col) on a face.
+
+    o  – 3-D origin corner of the face (top-left as seen from outside)
+    u  – 3-D column direction vector (one full face width)
+    v  – 3-D row    direction vector (one full face height)
+    Tile corners wind: top-left, top-right, bottom-right, bottom-left.
     """
+    c0, c1 = col / n, (col + 1) / n
+    r0, r1 = row / n, (row + 1) / n
+    return [
+        _proj(o[0]+c0*u[0]+r0*v[0], o[1]+c0*u[1]+r0*v[1], o[2]+c0*u[2]+r0*v[2]),
+        _proj(o[0]+c1*u[0]+r0*v[0], o[1]+c1*u[1]+r0*v[1], o[2]+c1*u[2]+r0*v[2]),
+        _proj(o[0]+c1*u[0]+r1*v[0], o[1]+c1*u[1]+r1*v[1], o[2]+c1*u[2]+r1*v[2]),
+        _proj(o[0]+c0*u[0]+r1*v[0], o[1]+c0*u[1]+r1*v[1], o[2]+c0*u[2]+r1*v[2]),
+    ]
+
+
+def _fmt_poly(pts) -> str:
+    return ' '.join(f'{x},{y}' for x, y in pts)
+
+
+# ── Face definitions (origin, col-vec u, row-vec v) ──────────────────────────
+# Origin = top-left corner as seen from *outside* the face.
+# u = direction that increases the column index (left→right from outside).
+# v = direction that increases the row    index (top→bottom from outside).
+#
+# R face  (x=1, outward +x):  top-left from right = TBR=(1,1,1),  u→-y,  v→-z
+_R_FACE = ((1,1,1), (0,-1,0), (0,0,-1))
+# U face  (z=1, outward +z):  top-left from above = TBL=(0,1,1),  u→+x,  v→-y
+_U_FACE = ((0,1,1), (1,0,0),  (0,-1,0))
+# F face  (y=0, outward -y):  top-left from front = TFL=(0,0,1),  u→+x,  v→-z
+_F_FACE = ((0,0,1), (1,0,0),  (0,0,-1))
+# L face  (x=0, outward -x):  top-left from left  = TFL=(0,0,1),  u→+y,  v→-z
+_L_FACE = ((0,0,1), (0,1,0),  (0,0,-1))
+# D face  (z=0, outward -z):  top-left from below = BBL=(0,1,0),  u→+x,  v→-y
+_D_FACE = ((0,1,0), (1,0,0),  (0,-1,0))
+# B face  (y=1, outward +y):  top-left from back  = TBR=(1,1,1),  u→-x,  v→-z
+_B_FACE = ((1,1,1), (-1,0,0), (0,0,-1))
+
+# Minimum gaps (in 3-D cube units) so each mirror clears the cube outline.
+# Computed by separating-axis theorem along each face's outward screen normal:
+#   mirror_min_projection > cube_max_projection  (plus 0.05 visual clearance).
+_MIRROR_GAP_L = 0.6737   # L face outward = -x
+_MIRROR_GAP_D = 0.8044   # D face outward = -z
+_MIRROR_GAP_B = 1.7489   # B face outward = +y
+
+# Mirror face definitions: same orientation as the hidden face, shifted outward.
+def _shifted(face_def, dx, dy, dz):
+    o, u, v = face_def
+    return ((o[0]+dx, o[1]+dy, o[2]+dz), u, v)
+
+_L_MIRROR = _shifted(_L_FACE, -_MIRROR_GAP_L, 0,              0)
+_D_MIRROR = _shifted(_D_FACE,  0,              0,             -_MIRROR_GAP_D)
+_B_MIRROR = _shifted(_B_FACE,  0,             +_MIRROR_GAP_B,  0)
+
+
+def _build_exploded_polygons() -> List[str]:
+    """Build all 57 polygon strings for the exploded cube view via the 3-D engine.
+
+    Index layout (unchanged from original):
+      0-2   : outlines for R, U, F faces
+      3-11  : R face sticker tiles
+      12-20 : U face sticker tiles
+      21-29 : F face sticker tiles
+      30-38 : L mirror tiles  (same orientation as L face, shifted outward in -x)
+      39-47 : D mirror tiles  (same orientation as D face, shifted outward in -z)
+      48-56 : B mirror tiles  (same orientation as B face, shifted outward in +y)
+
+    Sticker-to-polygon mapping in sticker_order is unchanged; the geometry now
+    comes entirely from the 3-D projection so all faces are axis-aligned and
+    the mirrors are exactly parallel to the corresponding cube faces.
+    """
+    polys = []
+
+    # ── 3 face outlines (filled with nothing, just strokes) ──────────────────
+    for face in (_R_FACE, _U_FACE, _F_FACE):
+        o, u, v = face
+        corners = [
+            _proj(*o),
+            _proj(o[0]+u[0], o[1]+u[1], o[2]+u[2]),
+            _proj(o[0]+u[0]+v[0], o[1]+u[1]+v[1], o[2]+u[2]+v[2]),
+            _proj(o[0]+v[0], o[1]+v[1], o[2]+v[2]),
+        ]
+        polys.append(_fmt_poly(corners))
+
+    # ── 9 tiles each for R, U, F (main visible faces) ────────────────────────
+    for face in (_R_FACE, _U_FACE, _F_FACE):
+        o, u, v = face
+        for row in range(3):
+            for col in range(3):
+                polys.append(_fmt_poly(_tile_quad(o, u, v, row, col)))
+
+    # ── 9 tiles each for L, D, B mirrors ────────────────────────────────────
+    for face in (_L_MIRROR, _D_MIRROR, _B_MIRROR):
+        o, u, v = face
+        for row in range(3):
+            for col in range(3):
+                polys.append(_fmt_poly(_tile_quad(o, u, v, row, col)))
+
+    return polys
+
+
+# Build at module load.
+EXPLODED_POLYGONS = _build_exploded_polygons()
+
+# ViewBox: computed from actual polygon extents plus a small margin.
+_VB_MARGIN = 0.08
+_all_pts = [
+    (float(tok.split(',')[0]), float(tok.split(',')[1]))
+    for poly in EXPLODED_POLYGONS
+    for tok in poly.split()
+]
+_VB_X0 = min(p[0] for p in _all_pts) - _VB_MARGIN
+_VB_Y0 = min(p[1] for p in _all_pts) - _VB_MARGIN
+_VB_W  = max(p[0] for p in _all_pts) - _VB_X0 + _VB_MARGIN
+_VB_H  = max(p[1] for p in _all_pts) - _VB_Y0 + _VB_MARGIN
+
+
+def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
+                      scale: float = 1.0) -> str:
+    """Render cube state as SVG <g> elements at given offset and scale."""
     state = list(state)
     color_map = {
         'w': '#FFFFFF', 'y': '#FFD700', 'r': '#FF3333',
@@ -310,53 +406,87 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         'l': '#aaaaaa', 'd': '#777777',
     }
     transform = f"transform='translate({ox},{oy}) scale({scale})'"
-    lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.035;stroke-linejoin:round;stroke-linecap:round'>"]
-    
+    lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.035;"
+             f"stroke-linejoin:round;stroke-linecap:round'>"]
+
+    # Polygon index → (face_enum, sticker_pos) mapping.
+    # Mirror faces need sticker re-ordering because of how each face is
+    # numbered (from the outside viewer's perspective the column/row direction
+    # may differ from the 3-D origin/u/v chosen above).
+    #
+    # L face: sticker[0]=top-left from left = origin=(0,0,1), col→+y, row→-z
+    #   → L[row,col] maps to sticker row*3+col  (standard, no swap needed)
+    #   BUT the original sticker_order had columns reversed relative to the
+    #   old R-copy approach.  With the proper 3-D face the col direction (+y)
+    #   already places sticker 0 at top-left (back of cube) and sticker 2 at
+    #   top-right (front of cube), matching the standard L face numbering.
+    #
+    # D face: sticker[0]=back-left from below = origin=(0,1,0), col→+x, row→-y(front)
+    #   → D[row,col] maps to standard sticker row*3+col
+    #
+    # B face: sticker[0]=top-left from back = origin=(1,1,1), col→-x, row→-z
+    #   → B[row,col] maps to standard sticker row*3+col
     sticker_order = [
+        # outlines
         (0, None), (1, None), (2, None),
-        (3, (R, 0)), (4, (R, 1)), (5, (R, 2)), 
-        (6, (R, 3)), (7, (R, 4)), (8, (R, 5)), 
-        (9, (R, 6)), (10, (R, 7)), (11, (R, 8)),
-        (12, (U, 0)), (13, (U, 1)), (14, (U, 2)), 
-        (15, (U, 3)), (16, (U, 4)), (17, (U, 5)), 
+        # R face  – R[row,col] = sticker row*3+col
+        (3,  (R, 0)), (4,  (R, 1)), (5,  (R, 2)),
+        (6,  (R, 3)), (7,  (R, 4)), (8,  (R, 5)),
+        (9,  (R, 6)), (10, (R, 7)), (11, (R, 8)),
+        # U face  – U[row,col] = sticker row*3+col
+        (12, (U, 0)), (13, (U, 1)), (14, (U, 2)),
+        (15, (U, 3)), (16, (U, 4)), (17, (U, 5)),
         (18, (U, 6)), (19, (U, 7)), (20, (U, 8)),
-        (21, (F, 0)), (22, (F, 1)), (23, (F, 2)), 
-        (24, (F, 3)), (25, (F, 4)), (26, (F, 5)), 
+        # F face  – F[row,col] = sticker row*3+col
+        (21, (F, 0)), (22, (F, 1)), (23, (F, 2)),
+        (24, (F, 3)), (25, (F, 4)), (26, (F, 5)),
         (27, (F, 6)), (28, (F, 7)), (29, (F, 8)),
-        # L face exploded (shifted from R geometry - columns mirrored)
-        (30, (L, 2)), (31, (L, 1)), (32, (L, 0)), 
-        (33, (L, 5)), (34, (L, 4)), (35, (L, 3)), 
+        # L mirror – origin=(0-gap,0,1), u→+y, v→-z
+        #   tile(row,col): col increases toward +y = toward back of cube
+        #   L sticker layout (from outside/left): col=0 → front (y=0) = sticker 2,4,8...
+        #   Our u=+y means col=0→front? No: u=(0,1,0) so col=0 is y=0 (front), col=2 is y=1 (back).
+        #   L sticker 0=top-back, 2=top-front. tile(0,0)=top-front → sticker L[2].
+        (30, (L, 2)), (31, (L, 1)), (32, (L, 0)),
+        (33, (L, 5)), (34, (L, 4)), (35, (L, 3)),
         (36, (L, 8)), (37, (L, 7)), (38, (L, 6)),
-        # D face rows swapped (shifted from U geometry - rows inverted)
-        (39, (D, 6)), (40, (D, 7)), (41, (D, 8)), 
-        (42, (D, 3)), (43, (D, 4)), (44, (D, 5)), 
-        (45, (D, 0)), (46, (D, 1)), (47, (D, 2)),
-        # B face exploded (shifted from F geometry - columns mirrored)
-        (48, (B, 2)), (49, (B, 1)), (50, (B, 0)),
-        (51, (B, 5)), (52, (B, 4)), (53, (B, 3)),
-        (54, (B, 8)), (55, (B, 7)), (56, (B, 6)),
+        # D mirror – origin=(0,1,-gap), u→+x, v→-y(front)
+        #   tile(row,col): row=0→y=1(back), row=2→y=0(front)
+        #   D sticker 0=back-left, 6=front-left. tile(0,0)→back-left→D[0].
+        (39, (D, 0)), (40, (D, 1)), (41, (D, 2)),
+        (42, (D, 3)), (43, (D, 4)), (44, (D, 5)),
+        (45, (D, 6)), (46, (D, 7)), (47, (D, 8)),
+        # B mirror – origin=(1,1+gap,1), u→-x, v→-z
+        #   tile(row,col): col=0→x=1(right of cube), col=2→x=0(left of cube)
+        #   B sticker 0=top-left from back = top-right in cube = x=1. tile(0,0)→B[0].
+        (48, (B, 0)), (49, (B, 1)), (50, (B, 2)),
+        (51, (B, 3)), (52, (B, 4)), (53, (B, 5)),
+        (54, (B, 6)), (55, (B, 7)), (56, (B, 8)),
     ]
-    
+
     for poly_idx, face_info in sticker_order:
         points_str = EXPLODED_POLYGONS[poly_idx]
         if face_info is None:
-            lines.append(f"    <polygon fill='none' stroke='#000000' stroke-width='0.08' points='{points_str}'/>")
+            lines.append(f"    <polygon fill='none' stroke='#000000' "
+                         f"stroke-width='0.08' points='{points_str}'/>")
         else:
             face, pos = face_info
             color_char = state[_idx(face, pos)]
             color = color_map.get(color_char, '#CCCCCC')
-            lines.append(f"    <polygon fill='{color}' stroke='#000000' points='{points_str}'/>")
-    
+            lines.append(f"    <polygon fill='{color}' stroke='#000000' "
+                         f"points='{points_str}'/>")
+
     lines.append("  </g>")
     return '\n'.join(lines)
 
 
 def render_svg_exploded(state: List[str], size: int = 600) -> str:
     """Render cube state as SVG with exploded view (main + reference faces)."""
+    vb = f'{_VB_X0:.4f} {_VB_Y0:.4f} {_VB_W:.4f} {_VB_H:.4f}'
     lines = [
         "<?xml version='1.0' encoding='UTF-8'?>",
-        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}' viewBox='-2.0 -1.4 4.4 3.0'>",
-        f"  <rect fill='#FFFFFF' x='-2.0' y='-1.4' width='4.4' height='3.0'/>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}' viewBox='{vb}'>",
+        f"  <rect fill='#FFFFFF' x='{_VB_X0:.4f}' y='{_VB_Y0:.4f}' "
+        f"width='{_VB_W:.4f}' height='{_VB_H:.4f}'/>",
         render_cube_group(state),
         "</svg>",
     ]
