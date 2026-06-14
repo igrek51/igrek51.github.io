@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube Generator Tester</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            grid-column: 1 / -1;
+            color: #333;
+            margin-top: 0;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .info {
+            background: #e8f4f8;
+            border-left: 4px solid #0066cc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .error {
+            background: #ffe8e8;
+            border-left-color: #ff0000;
+            color: #cc0000;
+        }
+        .success {
+            background: #e8ffe8;
+            border-left-color: #00aa00;
+            color: #006600;
+        }
+        .warning {
+            background: #fff8e8;
+            border-left-color: #ffaa00;
+            color: #886600;
+        }
+        svg {
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+        .svg-wrapper {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px;
+            background: #fafafa;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading {
+            color: #666;
+            text-align: center;
+        }
+        .state-display {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.85em;
+            word-break: break-all;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rubik's Cube SVG Generator - Interactive Tester</h1>
+    
+    <div class="container">
+        <!-- Input Section -->
+        <div class="section">
+            <h2>Input</h2>
+            
+            <div class="input-group">
+                <label>Cube State (54 chars, U D F B R L):</label>
+                <textarea id="stateInput" placeholder="wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg">wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg</textarea>
+                <div class="info">
+                    Format: 54 characters representing all stickers<br>
+                    U-face (white) = 0-8<br>
+                    D-face (yellow) = 9-17<br>
+                    F-face (red) = 18-26<br>
+                    B-face (orange) = 27-35<br>
+                    R-face (blue) = 36-44<br>
+                    L-face (green) = 45-53
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Move Sequence (optional):</label>
+                <input type="text" id="movesInput" placeholder="e.g., R U R' U' or R2 D L2" value="">
+                <div class="info">
+                    Examples: <code>R</code> <code>U'</code> <code>R2</code> <code>R U R' U'</code><br>
+                    Space-separated moves are processed in order.
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="generateCube()">Generate SVG</button>
+                <button onclick="resetInputs()">Reset</button>
+                <button onclick="loadSolved()">Load Solved</button>
+                <button onclick="loadScrambled()">Load Scrambled</button>
+            </div>
+            
+            <div id="status" style="margin-top: 15px;"></div>
+        </div>
+        
+        <!-- Output Section -->
+        <div class="section">
+            <h2>Cube Rendering</h2>
+            <div id="svgContainer" class="svg-wrapper">
+                <div class="loading">SVG will appear here</div>
+            </div>
+            <button onclick="downloadSVG()" id="downloadBtn" style="display:none; width:100%;">Download SVG</button>
+        </div>
+    </div>
+    
+    <!-- Test Cases Section -->
+    <div class="section full-width">
+        <h2>Quick Tests</h2>
+        <div class="button-group">
+            <button onclick="testMove('R')">R move</button>
+            <button onclick="testMove('L')">L move</button>
+            <button onclick="testMove('U')">U move</button>
+            <button onclick="testMove('D')">D move</button>
+            <button onclick="testMove('F')">F move</button>
+            <button onclick="testMove('B')">B move</button>
+            <button onclick="testMove('R2')">R2 (double)</button>
+            <button onclick="testMove(\"R'\")">R' (inverse)</button>
+            <button onclick="testAlg(\"R U R' U'\")">Sexy (RUR'U')</button>
+            <button onclick="testAlg(\"R U R' U R U2 R'\")">Sune</button>
+            <button onclick="testAlg(\"F R U' R' U' R U R' F'\")">Yellow Cross</button>
+        </div>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="section full-width">
+        <h2>How to Use</h2>
+        <div class="info">
+            <strong>Option 1: Browser-based (requires Python server)</strong><br>
+            1. Run: <code>python test_server.py</code><br>
+            2. Enter state and moves above<br>
+            3. Click "Generate SVG"<br>
+            <br>
+            <strong>Option 2: Command line (always works)</strong><br>
+            <code>python scripts/gen_rubik_guide.py --state "www..." --moves "R U R'" --output result.svg</code><br>
+            Then open <code>result.svg</code> in a browser.
+        </div>
+    </div>
+    
+    <script>
+        const solvedState = 'wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg';
+        const scrambledState = 'rwrwwwgwygyryrryryrbbrbbgbyboboyoyogyggggbgobobooby';
+        let lastSvg = null;
+        
+        function loadSolved() {
+            document.getElementById('stateInput').value = solvedState;
+            document.getElementById('movesInput').value = '';
+            generateCube();
+        }
+        
+        function loadScrambled() {
+            document.getElementById('stateInput').value = scrambledState;
+            document.getElementById('movesInput').value = '';
+            generateCube();
+        }
+        
+        function resetInputs() {
+            document.getElementById('stateInput').value = solvedState;
+            document.getElementById('movesInput').value = '';
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('svgContainer').innerHTML = '<div class="loading">SVG will appear here</div>';
+            document.getElementById('downloadBtn').style.display = 'none';
+        }
+        
+        function testMove(move) {
+            document.getElementById('stateInput').value = solvedState;
+            document.getElementById('movesInput').value = move;
+            generateCube();
+        }
+        
+        function testAlg(alg) {
+            document.getElementById('stateInput').value = solvedState;
+            document.getElementById('movesInput').value = alg;
+            generateCube();
+        }
+        
+        function downloadSVG() {
+            if (!lastSvg) {
+                alert('No SVG generated yet');
+                return;
+            }
+            const blob = new Blob([lastSvg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'cube.svg';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        async function generateCube() {
+            const state = document.getElementById('stateInput').value;
+            const moves = document.getElementById('movesInput').value;
+            const status = document.getElementById('status');
+            const svgContainer = document.getElementById('svgContainer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            // Validate state
+            if (state.length !== 54) {
+                status.innerHTML = '<div class="info error">Error: State must be exactly 54 characters (got ' + state.length + ')</div>';
+                svgContainer.innerHTML = '<div class="loading">Invalid state length</div>';
+                downloadBtn.style.display = 'none';
+                return;
+            }
+            
+            svgContainer.innerHTML = '<div class="loading">Generating SVG...</div>';
+            status.innerHTML = '';
+            downloadBtn.style.display = 'none';
+            
+            try {
+                // Try to fetch from server
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        state: state,
+                        moves: moves
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                lastSvg = await response.text();
+                svgContainer.innerHTML = lastSvg;
+                status.innerHTML = '<div class="info success">SVG generated successfully!</div>';
+                downloadBtn.style.display = 'block';
+                
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="info error">
+                        Server not responding. Run this command in terminal:<br>
+                        <code>python test_server.py</code><br><br>
+                        Or use command line directly:<br>
+                        <code>python scripts/gen_rubik_guide.py --state "${state}" --moves "${moves}" --output /tmp/cube.svg</code>
+                    </div>
+                `;
+                svgContainer.innerHTML = '<div class="loading">Waiting for server...</div>';
+                console.error('Error:', error);
+            }
+        }
+        
+        // Load solved state on page load
+        window.addEventListener('load', function() {
+            loadSolved();
+        });
+    </script>
+</body>
+</html>
