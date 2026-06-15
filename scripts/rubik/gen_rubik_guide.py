@@ -359,6 +359,10 @@ def _compute_mirror_gaps():
         g = (cube_max - face_min0) / step_per_gap + extra
         return max(g, 0.15)
 
+    gap_L = min_gap_for(_L_FACE, (-1,  0,  0), extra=0.08)
+    gap_D = min_gap_for(_D_FACE, ( 0,  0, -1), extra=0.08)
+    gap_B = min_gap_for(_B_FACE, ( 0, +1,  0), extra=0.15)
+
     gap_L = min_gap_for(_L_FACE, (-1,  0,  0))
     gap_D = min_gap_for(_D_FACE, ( 0,  0, -1))
     gap_B = min_gap_for(_B_FACE, ( 0, +1,  0))
@@ -585,9 +589,29 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         (54, (B, 6)), (55, (B, 7)), (56, (B, 8)),
     ]
 
-    for poly_idx, face_info in sticker_order:
+    # Define drawing phases: mirrors first (behind), then cube faces, then edges.
+    # Phase 1: Mirrors (L, D, B) - indices 30-56
+    mirror_indices = range(30, 57)
+    # Phase 2: Cube face tiles (R, U, F) - indices 3-29
+    cube_tile_indices = range(3, 30)
+    # Phase 3: Outlines (indices 0-2) - drawn with cube faces
+
+    # Render Phase 1: Mirrors (behind cube)
+    for poly_idx in mirror_indices:
+        face_info = sticker_order[poly_idx][1]
+        points_str = EXPLODED_POLYGONS[poly_idx]
+        face, pos = face_info
+        color_char = state[_idx(face, pos)]
+        color = color_map.get(color_char, '#CCCCCC')
+        lines.append(f"    <polygon fill='{color}' stroke='#000000' "
+                     f"points='{points_str}'/>")
+
+    # Render Phase 2: Cube faces (R, U, F) + outlines
+    for poly_idx in cube_tile_indices:
+        face_info = sticker_order[poly_idx][1]
         points_str = EXPLODED_POLYGONS[poly_idx]
         if face_info is None:
+            # Outline polygons
             lines.append(f"    <polygon fill='none' stroke='#000000' "
                          f"stroke-width='0.06' points='{points_str}'/>")
         else:
