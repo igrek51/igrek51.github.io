@@ -218,63 +218,61 @@ def string_to_state(s: str) -> List[str]:
 
 
 # ============================================================================
-# SVG RENDERING  –  3-D engine
+# SVG RENDERING  –  3-D perspective engine
 # ============================================================================
+import math as _math
 
-def _solve_affine(pts3, vals):
-    """Solve the 4-variable affine system  [x,y,z,1]·m = val  in least-squares."""
-    n = len(pts3)
-    ATA = [[0.0]*4 for _ in range(4)]
-    ATb = [0.0]*4
-    for i in range(n):
-        row = list(pts3[i]) + [1.0]
-        for j in range(4):
-            for k in range(4):
-                ATA[j][k] += row[j] * row[k]
-            ATb[j] += row[j] * vals[i]
-    aug = [ATA[i][:] + [ATb[i]] for i in range(4)]
-    for col in range(4):
-        best = col
-        for row in range(col + 1, 4):
-            if abs(aug[row][col]) > abs(aug[best][col]):
-                best = row
-        aug[col], aug[best] = aug[best], aug[col]
-        piv = aug[col][col]
-        for row in range(4):
-            if row == col:
-                continue
-            f = aug[row][col] / piv
-            for k in range(5):
-                aug[row][k] -= f * aug[col][k]
-    return [aug[i][4] / aug[i][i] for i in range(4)]
+# ── Perspective camera ───────────────────────────────────────────────────────
+# Coordinate system: x=right, y=depth (into screen), z=up.
+# Camera orbits around the cube centre (0.5, 0.5, 0.5) with:
+#   azimuth  = angle in XY plane measured from -y axis (front) toward +x axis (right)
+#   elevation = angle above ground plane
+# This gives a natural perspective view: F face (y=0) on the left,
+# R face (x=1) on the upper-right, U face (z=1) on top.
 
+def _vec_sub(a, b): return (a[0]-b[0], a[1]-b[1], a[2]-b[2])
+def _vec_dot(a, b): return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
+def _vec_cross(a, b):
+    return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0])
+def _vec_norm(a):
+    m = _math.sqrt(_vec_dot(a, a))
+    return (a[0]/m, a[1]/m, a[2]/m)
 
-# Affine projection fitted to the 7 visible cube corners that appear in the
-# original SVG polygon data.  Coordinate system: x=right, y=depth, z=up.
-# Each corner is a vertex shared by three cube faces; the screen positions
-# come directly from the outline polygon strings in the original art.
-_CORNER_XYZ = [
-    (1,0,1), (1,1,1), (1,1,0), (1,0,0),   # R-face corners
-    (0,0,1), (0,1,1), (0,0,0),             # L/F/U corners visible in outlines
-]
-_CORNER_SX = [
-     0.20684405736417,  0.65400098857461,  0.59354043975904,  0.18464331255837,
-    -0.69915174967186, -0.16103316974267, -0.63049311492991,
-]
-_CORNER_SY = [
-    -0.10342202868208, -0.50223953102503,  0.29677021987952,  0.78141988002483,
-    -0.34957587483593, -0.68150055605482,  0.48418667844381,
-]
-_MX = _solve_affine(_CORNER_XYZ, _CORNER_SX)
-_MY = _solve_affine(_CORNER_XYZ, _CORNER_SY)
+_CAM_AZ_DEG  = 30.0    # azimuth: 0=front(-y), 90=right(+x)  →  front-right view
+_CAM_EL_DEG  = 25.0    # elevation above ground
+_CAM_DIST    = 4.0     # distance from cube centre
+_CAM_FOV     = 4.0     # focal-length scale (higher = less wide-angle distortion)
+
+_target = (0.5, 0.5, 0.5)
+_up_world = (0.0, 0.0, 1.0)
+
+def _build_camera():
+    az = _math.radians(_CAM_AZ_DEG)
+    el = _math.radians(_CAM_EL_DEG)
+    cam = (
+        _target[0] + _CAM_DIST * _math.cos(el) * _math.sin(az),
+        _target[1] - _CAM_DIST * _math.cos(el) * _math.cos(az),
+        _target[2] + _CAM_DIST * _math.sin(el),
+    )
+    fwd   = _vec_norm(_vec_sub(_target, cam))
+    right = _vec_norm(_vec_cross(fwd, _up_world))
+    up    = _vec_cross(right, fwd)
+    return cam, fwd, right, up
+
+_CAM, _CAM_FWD, _CAM_RIGHT, _CAM_UP = _build_camera()
 
 
 def _proj(x: float, y: float, z: float):
-    """Project a 3-D point to (sx, sy) screen coordinates."""
-    return (
-        _MX[0]*x + _MX[1]*y + _MX[2]*z + _MX[3],
-        _MY[0]*x + _MY[1]*y + _MY[2]*z + _MY[3],
-    )
+    """Project a 3-D world point onto the 2-D screen via perspective divide."""
+    d  = _vec_sub((x, y, z), _CAM)
+    px = _vec_dot(d, _CAM_RIGHT)
+    py = _vec_dot(d, _CAM_UP)
+    pz = _vec_dot(d, _CAM_FWD)
+    if pz < 0.01:
+        pz = 0.01
+    sx =  px / pz * _CAM_FOV
+    sy = -py / pz * _CAM_FOV   # flip y so +z is up on screen
+    return (sx, sy)
 
 
 def _tile_quad(o, u, v, row: int, col: int, n: int = 3) -> List[tuple]:
@@ -317,12 +315,57 @@ _D_FACE = ((0,1,0), (1,0,0),  (0,-1,0))
 # B face  (y=1, outward +y):  top-left from back  = TBR=(1,1,1),  u→-x,  v→-z
 _B_FACE = ((1,1,1), (-1,0,0), (0,0,-1))
 
-# Minimum gaps (in 3-D cube units) so each mirror clears the cube outline.
-# Computed by separating-axis theorem along each face's outward screen normal:
-#   mirror_min_projection > cube_max_projection  (plus 0.05 visual clearance).
-_MIRROR_GAP_L = 0.6737   # L face outward = -x
-_MIRROR_GAP_D = 0.8044   # D face outward = -z
-_MIRROR_GAP_B = 1.7489   # B face outward = +y
+# Minimum gaps (in 3-D cube units) recomputed after perspective projection change.
+# Determined by separating-axis theorem: mirror clears all cube faces with 0.05 clearance.
+def _compute_mirror_gaps():
+    """Find minimum 3-D gap for each mirror so it doesn't overlap the cube in screen space.
+
+    Uses separating-axis theorem along each face's outward screen-space normal.
+    Returns (gap_L, gap_D, gap_B).
+    """
+    def all_cube_pts():
+        pts = []
+        for face in (_R_FACE, _U_FACE, _F_FACE):
+            o, u, v = face
+            for row in range(3):
+                for col in range(3):
+                    pts.extend(_tile_quad(o, u, v, row, col))
+        return pts
+
+    def screen_normal_of(dx3, dy3, dz3):
+        # Screen displacement of a unit step in the given 3D direction
+        p0 = _proj(0.5, 0.5, 0.5)
+        p1 = _proj(0.5 + dx3, 0.5 + dy3, 0.5 + dz3)
+        sdx, sdy = p1[0]-p0[0], p1[1]-p0[1]
+        m = _math.sqrt(sdx*sdx + sdy*sdy)
+        return sdx/m, sdy/m
+
+    def dot2(a, b): return a[0]*b[0] + a[1]*b[1]
+
+    def min_gap_for(face_def, outward3d, extra=0.06):
+        sn = screen_normal_of(*outward3d)
+        step_per_gap = dot2(
+            (_proj(0.5+outward3d[0], 0.5+outward3d[1], 0.5+outward3d[2])[0]
+             - _proj(0.5, 0.5, 0.5)[0],
+             _proj(0.5+outward3d[0], 0.5+outward3d[1], 0.5+outward3d[2])[1]
+             - _proj(0.5, 0.5, 0.5)[1]),
+            sn
+        )
+        o, u, v = face_def
+        face_pts_g0 = [q for row in range(3) for col in range(3)
+                       for q in _tile_quad(o, u, v, row, col)]
+        face_min0 = min(dot2(p, sn) for p in face_pts_g0)
+        cube_max  = max(dot2(p, sn) for p in all_cube_pts())
+        g = (cube_max - face_min0) / step_per_gap + extra
+        return max(g, 0.15)
+
+    gap_L = min_gap_for(_L_FACE, (-1,  0,  0))
+    gap_D = min_gap_for(_D_FACE, ( 0,  0, -1))
+    gap_B = min_gap_for(_B_FACE, ( 0, +1,  0))
+    return gap_L, gap_D, gap_B
+
+
+_MIRROR_GAP_L, _MIRROR_GAP_D, _MIRROR_GAP_B = _compute_mirror_gaps()
 
 # Mirror face definitions: same orientation as the hidden face, shifted outward.
 def _shifted(face_def, dx, dy, dz):
@@ -337,22 +380,18 @@ _B_MIRROR = _shifted(_B_FACE,  0,             +_MIRROR_GAP_B,  0)
 def _build_exploded_polygons() -> List[str]:
     """Build all 57 polygon strings for the exploded cube view via the 3-D engine.
 
-    Index layout (unchanged from original):
+    Index layout:
       0-2   : outlines for R, U, F faces
       3-11  : R face sticker tiles
       12-20 : U face sticker tiles
       21-29 : F face sticker tiles
-      30-38 : L mirror tiles  (same orientation as L face, shifted outward in -x)
-      39-47 : D mirror tiles  (same orientation as D face, shifted outward in -z)
-      48-56 : B mirror tiles  (same orientation as B face, shifted outward in +y)
-
-    Sticker-to-polygon mapping in sticker_order is unchanged; the geometry now
-    comes entirely from the 3-D projection so all faces are axis-aligned and
-    the mirrors are exactly parallel to the corresponding cube faces.
+      30-38 : L mirror tiles
+      39-47 : D mirror tiles
+      48-56 : B mirror tiles
     """
     polys = []
 
-    # ── 3 face outlines (filled with nothing, just strokes) ──────────────────
+    # ── 3 face outlines ───────────────────────────────────────────────────────
     for face in (_R_FACE, _U_FACE, _F_FACE):
         o, u, v = face
         corners = [
@@ -363,14 +402,14 @@ def _build_exploded_polygons() -> List[str]:
         ]
         polys.append(_fmt_poly(corners))
 
-    # ── 9 tiles each for R, U, F (main visible faces) ────────────────────────
+    # ── 9 tiles each for R, U, F ─────────────────────────────────────────────
     for face in (_R_FACE, _U_FACE, _F_FACE):
         o, u, v = face
         for row in range(3):
             for col in range(3):
                 polys.append(_fmt_poly(_tile_quad(o, u, v, row, col)))
 
-    # ── 9 tiles each for L, D, B mirrors ────────────────────────────────────
+    # ── 9 tiles each for L, D, B mirrors ─────────────────────────────────────
     for face in (_L_MIRROR, _D_MIRROR, _B_MIRROR):
         o, u, v = face
         for row in range(3):
@@ -384,7 +423,7 @@ def _build_exploded_polygons() -> List[str]:
 EXPLODED_POLYGONS = _build_exploded_polygons()
 
 # ViewBox: computed from actual polygon extents plus a small margin.
-_VB_MARGIN = 0.08
+_VB_MARGIN = 0.10
 _all_pts = [
     (float(tok.split(',')[0]), float(tok.split(',')[1]))
     for poly in EXPLODED_POLYGONS
@@ -394,6 +433,71 @@ _VB_X0 = min(p[0] for p in _all_pts) - _VB_MARGIN
 _VB_Y0 = min(p[1] for p in _all_pts) - _VB_MARGIN
 _VB_W  = max(p[0] for p in _all_pts) - _VB_X0 + _VB_MARGIN
 _VB_H  = max(p[1] for p in _all_pts) - _VB_Y0 + _VB_MARGIN
+
+
+def _cube_edge_lines() -> List[str]:
+    """Return SVG <line> strings for the 3 bold visible cube edges.
+
+    The three edges where visible faces meet:
+      U-F junction: edge from TFL=(0,0,1) to TFR=(1,0,1)
+      U-R junction: edge from TFR=(1,0,1) to TBR=(1,1,1)
+      F-R junction: edge from TFR=(1,0,1) to BFR=(1,0,0)
+    These are the most visible 'corners' of the cube silhouette.
+    """
+    edges_3d = [
+        ((0,0,1), (1,0,1)),   # U-F top edge
+        ((1,0,1), (1,1,1)),   # U-R top edge
+        ((1,0,1), (1,0,0)),   # F-R right edge
+    ]
+    sw = 0.055  # bold stroke width
+    lines = []
+    for (x0,y0,z0), (x1,y1,z1) in edges_3d:
+        p0 = _proj(x0, y0, z0)
+        p1 = _proj(x1, y1, z1)
+        lines.append(
+            f"    <line x1='{p0[0]}' y1='{p0[1]}' x2='{p1[0]}' y2='{p1[1]}' "
+            f"stroke='#000000' stroke-width='{sw}' stroke-linecap='round'/>"
+        )
+    return lines
+
+
+def _connector_lines() -> List[str]:
+    """Return SVG dotted <line> elements connecting each cube corner to its mirror corner.
+
+    For each hidden face mirror, the 4 corners of the mirror correspond to the 4 corners
+    of the cube face they were 'slid out' from.  We draw dotted lines between them.
+    """
+    sw   = 0.022   # stroke width
+    dash = '0.07,0.05'  # dash pattern
+
+    # Each pair: (cube_corner_3d, mirror_corner_3d)
+    # L mirror corners: the L face (x=0) corners slide to x=-gap_L
+    # D mirror corners: the D face (z=0) corners slide to z=-gap_D
+    # B mirror corners: the B face (y=1) corners slide to y=1+gap_B
+    connector_pairs = []
+
+    gL = _MIRROR_GAP_L
+    for xyz in [(0,0,1), (0,1,1), (0,0,0), (0,1,0)]:
+        connector_pairs.append((xyz, (xyz[0]-gL, xyz[1], xyz[2])))
+
+    gD = _MIRROR_GAP_D
+    for xyz in [(0,0,0), (1,0,0), (0,1,0), (1,1,0)]:
+        connector_pairs.append((xyz, (xyz[0], xyz[1], xyz[2]-gD)))
+
+    gB = _MIRROR_GAP_B
+    for xyz in [(0,1,0), (1,1,0), (0,1,1), (1,1,1)]:
+        connector_pairs.append((xyz, (xyz[0], xyz[1]+gB, xyz[2])))
+
+    lines = []
+    for cube_xyz, mirror_xyz in connector_pairs:
+        p0 = _proj(*cube_xyz)
+        p1 = _proj(*mirror_xyz)
+        lines.append(
+            f"    <line x1='{p0[0]}' y1='{p0[1]}' x2='{p1[0]}' y2='{p1[1]}' "
+            f"stroke='#888888' stroke-width='{sw}' stroke-dasharray='{dash}' "
+            f"stroke-linecap='round'/>"
+        )
+    return lines
 
 
 def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
@@ -406,58 +510,76 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         'l': '#aaaaaa', 'd': '#777777',
     }
     transform = f"transform='translate({ox},{oy}) scale({scale})'"
-    lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.035;"
+    lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.028;"
              f"stroke-linejoin:round;stroke-linecap:round'>"]
 
+    # ── Dotted connector lines (drawn first, behind everything) ──────────────
+    lines.extend(_connector_lines())
+
+    # ── Sticker polygons ─────────────────────────────────────────────────────
     # Polygon index → (face_enum, sticker_pos) mapping.
-    # Mirror faces need sticker re-ordering because of how each face is
-    # numbered (from the outside viewer's perspective the column/row direction
-    # may differ from the 3-D origin/u/v chosen above).
     #
-    # L face: sticker[0]=top-left from left = origin=(0,0,1), col→+y, row→-z
-    #   → L[row,col] maps to sticker row*3+col  (standard, no swap needed)
-    #   BUT the original sticker_order had columns reversed relative to the
-    #   old R-copy approach.  With the proper 3-D face the col direction (+y)
-    #   already places sticker 0 at top-left (back of cube) and sticker 2 at
-    #   top-right (front of cube), matching the standard L face numbering.
+    # Face tile origins and col/row directions (from _build_exploded_polygons):
     #
-    # D face: sticker[0]=back-left from below = origin=(0,1,0), col→+x, row→-y(front)
-    #   → D[row,col] maps to standard sticker row*3+col
+    # R face: origin=TBR=(1,1,1), u→-y (toward front), v→-z (toward bottom)
+    #   tile(0,0)=TBR area=R[0], tile(0,2)=TFR area=R[2], tile(2,0)=BBR=R[6], tile(2,2)=BFR=R[8]
+    #   → standard mapping: tile(r,c)→R[r*3+c]
     #
-    # B face: sticker[0]=top-left from back = origin=(1,1,1), col→-x, row→-z
-    #   → B[row,col] maps to standard sticker row*3+col
+    # U face: origin=TBL=(0,1,1), u→+x, v→-y (toward front)
+    #   tile(0,0)=TBL=U[0], tile(0,2)=TBR=U[2], tile(2,0)=TFL=U[6], tile(2,2)=TFR=U[8]
+    #   → standard mapping: tile(r,c)→U[r*3+c]
+    #
+    # F face: origin=TFL=(0,0,1), u→+x, v→-z
+    #   tile(0,0)=TFL=F[0], tile(0,2)=TFR=F[2], tile(2,0)=BFL=F[6], tile(2,2)=BFR=F[8]
+    #   → standard mapping: tile(r,c)→F[r*3+c]
+    #
+    # L mirror: origin=(0-gap,0,1), u→+y, v→-z
+    #   tile(0,0)=(−gap,0,1)=front-top, tile(0,2)=(−gap,1,1)=back-top
+    #   L sticker viewed from outside (-x): left=back(y=1), right=front(y=0)
+    #   L[0]=top-back=tile(0,2), L[2]=top-front=tile(0,0)
+    #   → tile(r,c) → L[r*3 + (2-c)]  (column reversed)
+    #
+    # D mirror: origin=(0,1,−gap), u→+x, v→-y (toward front, decreasing y)
+    #   tile(0,0)=(0,1,−gap)=back-left, tile(2,0)=(0,0,−gap)=front-left
+    #   D sticker viewed from outside (-z, looking up): top=back, left=x=0
+    #   D[0]=back-left=tile(0,0), D[6]=front-left=tile(2,0) ← but viewer sees it from above!
+    #   From above (+z looking down): front (y=0) is NEAREST and should appear
+    #   at the top of the mirror (closest to cube). In screen: tile(0) has smaller sy
+    #   (higher), so tile(0,0) is the upper-back part. The NEAR part (front, y=0)
+    #   is tile(row=2). For a natural "mirror" view: D[6..8] (front row, nearest F face)
+    #   should appear at the TOP of the D mirror → tile(row=0).
+    #   → tile(r,c) → D[(2-r)*3 + c]  (row reversed)
+    #
+    # B mirror: origin=(1,1+gap,1), u→-x, v→-z
+    #   tile(0,0)=(1,1+gap,1)=right-top, tile(0,2)=(0,1+gap,1)=left-top
+    #   B sticker viewed from outside (+y, looking toward -y):
+    #   left=x=1(right of cube from front), right=x=0, so columns are reversed relative to front.
+    #   B[0]=top-left from back=top of x=1=tile(0,0), B[2]=top of x=0=tile(0,2)
+    #   → standard mapping: tile(r,c)→B[r*3+c]
     sticker_order = [
-        # outlines
+        # outlines (thick border drawn separately, these just serve as face background)
         (0, None), (1, None), (2, None),
-        # R face  – R[row,col] = sticker row*3+col
+        # R face
         (3,  (R, 0)), (4,  (R, 1)), (5,  (R, 2)),
         (6,  (R, 3)), (7,  (R, 4)), (8,  (R, 5)),
         (9,  (R, 6)), (10, (R, 7)), (11, (R, 8)),
-        # U face  – U[row,col] = sticker row*3+col
+        # U face
         (12, (U, 0)), (13, (U, 1)), (14, (U, 2)),
         (15, (U, 3)), (16, (U, 4)), (17, (U, 5)),
         (18, (U, 6)), (19, (U, 7)), (20, (U, 8)),
-        # F face  – F[row,col] = sticker row*3+col
+        # F face
         (21, (F, 0)), (22, (F, 1)), (23, (F, 2)),
         (24, (F, 3)), (25, (F, 4)), (26, (F, 5)),
         (27, (F, 6)), (28, (F, 7)), (29, (F, 8)),
-        # L mirror – origin=(0-gap,0,1), u→+y, v→-z
-        #   tile(row,col): col increases toward +y = toward back of cube
-        #   L sticker layout (from outside/left): col=0 → front (y=0) = sticker 2,4,8...
-        #   Our u=+y means col=0→front? No: u=(0,1,0) so col=0 is y=0 (front), col=2 is y=1 (back).
-        #   L sticker 0=top-back, 2=top-front. tile(0,0)=top-front → sticker L[2].
+        # L mirror – columns reversed: tile(r,c) → L[r*3+(2-c)]
         (30, (L, 2)), (31, (L, 1)), (32, (L, 0)),
         (33, (L, 5)), (34, (L, 4)), (35, (L, 3)),
         (36, (L, 8)), (37, (L, 7)), (38, (L, 6)),
-        # D mirror – origin=(0,1,-gap), u→+x, v→-y(front)
-        #   tile(row,col): row=0→y=1(back), row=2→y=0(front)
-        #   D sticker 0=back-left, 6=front-left. tile(0,0)→back-left→D[0].
-        (39, (D, 0)), (40, (D, 1)), (41, (D, 2)),
+        # D mirror – rows reversed: tile(r,c) → D[(2-r)*3+c]
+        (39, (D, 6)), (40, (D, 7)), (41, (D, 8)),
         (42, (D, 3)), (43, (D, 4)), (44, (D, 5)),
-        (45, (D, 6)), (46, (D, 7)), (47, (D, 8)),
-        # B mirror – origin=(1,1+gap,1), u→-x, v→-z
-        #   tile(row,col): col=0→x=1(right of cube), col=2→x=0(left of cube)
-        #   B sticker 0=top-left from back = top-right in cube = x=1. tile(0,0)→B[0].
+        (45, (D, 0)), (46, (D, 1)), (47, (D, 2)),
+        # B mirror – standard: tile(r,c) → B[r*3+c]
         (48, (B, 0)), (49, (B, 1)), (50, (B, 2)),
         (51, (B, 3)), (52, (B, 4)), (53, (B, 5)),
         (54, (B, 6)), (55, (B, 7)), (56, (B, 8)),
@@ -467,13 +589,16 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         points_str = EXPLODED_POLYGONS[poly_idx]
         if face_info is None:
             lines.append(f"    <polygon fill='none' stroke='#000000' "
-                         f"stroke-width='0.08' points='{points_str}'/>")
+                         f"stroke-width='0.06' points='{points_str}'/>")
         else:
             face, pos = face_info
             color_char = state[_idx(face, pos)]
             color = color_map.get(color_char, '#CCCCCC')
             lines.append(f"    <polygon fill='{color}' stroke='#000000' "
                          f"points='{points_str}'/>")
+
+    # ── Bold cube edges on top ────────────────────────────────────────────────
+    lines.extend(_cube_edge_lines())
 
     lines.append("  </g>")
     return '\n'.join(lines)
@@ -510,11 +635,10 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     if m != n - 1:
         raise ValueError(f"Expected {n-1} labels for {n} states, got {m}")
     
-    # Layout: each cube in a cell of (cell_size x cell_size), 
+    # Layout: each cube in a cell of (cell_size x cell_size),
     # then arrow_gap, then next cube, etc.
-    # viewBox for each cube: width 4.4, height 3.0
-    # Scale: cell_size / 4.4
-    scale = cell_size / 4.4
+    # Scale so the full viewBox fits inside cell_size in the larger dimension.
+    scale = cell_size / max(_VB_W, _VB_H)
     cell_step = cell_size + arrow_gap
     total_width = (n - 1) * cell_step + cell_size
     total_height = cell_size + label_height
@@ -527,13 +651,14 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     ]
     
     for i, state in enumerate(states):
-        # Cube position: centered in cell
+        # Cube position: centered in cell.
+        # The viewBox centre in 3D-engine coords is (_VB_X0 + _VB_W/2, _VB_Y0 + _VB_H/2).
         cx = i * cell_step + cell_size / 2
         cy = cell_size / 2
-        # The viewBox center is at x=0.2, y=0.1 (from -2.0 to 2.4, -1.4 to 1.6)
-        # So offset to center:
-        ox = cx - 0.2 * scale
-        oy = cy - 0.1 * scale
+        vb_cx = _VB_X0 + _VB_W / 2
+        vb_cy = _VB_Y0 + _VB_H / 2
+        ox = cx - vb_cx * scale
+        oy = cy - vb_cy * scale
         lines.append(render_cube_group(state, ox, oy, scale))
         
         # Arrow to next cube (if not last)
