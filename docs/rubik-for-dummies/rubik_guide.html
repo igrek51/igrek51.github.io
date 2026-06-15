@@ -50,22 +50,89 @@ h2 {
   width: auto;
   margin-bottom: 1em;
 }
+.notation {
+  display: flex;
+  align-items: flex-start;
+  gap: 2em;
+  margin-bottom: 1.5em;
+}
+.notation-img {
+  width: 250px;
+  height: auto;
+}
+.notation-text {
+  flex: 1;
+}
+.notation-text p {
+  margin-bottom: 0.5em;
+}
+.notation-text ul {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+.notation-text li {
+  margin-bottom: 0.3em;
+}
 </style>
 </head>
 <body>
 
 <p class="title">Rubik's Cube for Dummies</p>
 
-<h2>Step 1: White Cross</h2>
+<h2>Move Notation</h2>
+
+<div class="notation">
+  <img class="notation-img" src="assets/notation.svg" alt="Move Notation">
+  <div class="notation-text">
+    <p><strong>Face moves:</strong> Rotate the indicated face 90° clockwise (when looking at that face).</p>
+    <ul>
+      <li><strong>R</strong> - Right face</li>
+      <li><strong>L</strong> - Left face</li>
+      <li><strong>U</strong> - Up (top) face</li>
+      <li><strong>D</strong> - Down (bottom) face</li>
+      <li><strong>F</strong> - Front face</li>
+      <li><strong>B</strong> - Back face</li>
+      <li><strong>M</strong> - Middle vertical layer (between L and R, same direction as L)</li>
+    </ul>
+    <p><strong>Inverse moves:</strong> Add <span class="alg">'</span> for 90° counter-clockwise (e.g., <span class="alg">R'</span>).</p>
+    <p><strong>Double moves:</strong> Add <span class="alg">2</span> for 180° rotation (e.g., <span class="alg">U2</span>).</p>
+  </div>
+</div>
+
+<h2>1. White Cross</h2>
 
 <div class="variant">
-  <div class="label">Upside down: <span class="alg">F2</span></div>
-  <img class="seq-img" src="assets/01_white_cross_red_bottom_1_seq.svg" alt="V1 sequence">
+  <div class="label">1A. Upside down: <span class="alg">F2</span></div>
+  <img class="seq-img" src="assets/01_white_cross_upside-down_seq.svg">
 </div>
 
 <div class="variant">
-  <div class="label">Elevator: <span class="alg">D M D' M'</span></div>
-  <img class="seq-img" src="assets/01_white_cross_red_bottom_2_seq.svg" alt="V2 sequence">
+  <div class="label">1B. Elevator: <span class="alg">D M D' M'</span></div>
+  <img class="seq-img" src="assets/01_white_cross_elevator_seq.svg">
+</div>
+
+<h2>2. White Corners</h2>
+
+<div class="variant">
+  <div class="label">2A. Elevator: <span class="alg">D' R' D R</span></div>
+  <img class="seq-img" src="assets/02_white_corners_elevator_seq.svg">
+</div>
+
+<div class="variant">
+  <div class="label">2B. Elevator mirrored: <span class="alg">D F D' F'</span></div>
+  <img class="seq-img" src="assets/02_white_corners_elevator-inversed_seq.svg">
+</div>
+
+<div class="variant">
+  <div class="label">2C. Upside-down: <span class="alg">R' D2 R D</span></div>
+  <img class="seq-img" src="assets/02_white_corners_upside-down_seq.svg">
+  + 2B
+</div>
+
+<h2>🔃 3. Middle Layer</h2>
+<div class="variant">
+  <div class="label">3. To right: <span class="alg">U R U' R' U' F' U F</span></div>
+  <img class="seq-img" src="assets/03_middle_layer_to-right_seq.svg">
 </div>
 
 </body>

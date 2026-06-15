@@ -19,6 +19,7 @@ import os
 import argparse
 import subprocess
 import glob
+import math as _math
 from typing import List
 
 # ============================================================================
@@ -98,6 +99,45 @@ MOVE_DEFS = {
         [_idx(U, 4), _idx(F, 4), _idx(D, 4), _idx(B, 4)],
         [_idx(U, 7), _idx(F, 7), _idx(D, 7), _idx(B, 1)],
     ]),
+}
+
+# Solved state
+SOLVED = list('wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg')
+
+GOAL_STATES = {
+    '01_white_cross': list('dwdwwwdwd' + 'd'*9 + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd'),
+    '02_white_corners': list('w'*9 + 'd'*9 + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
+    '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddodooo' + 'dddrrdrrr' + 'ddddgdggg'),
+}
+
+STEPS = {
+    '01_white_cross': [
+        {'variant': 'upside-down', 'algorithm': "F2"},
+        {'variant': 'elevator', 'algorithm': "D M D' M'"},
+    ],
+    '02_white_corners': [
+        {'variant': 'elevator', 'algorithm': "D' R' D R"},
+        {'variant': 'elevator-inversed', 'algorithm': "D F D' F'"},
+        {'variant': 'upside-down', 'algorithm': "R' D2 R D",
+         'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
+    ],
+    '03_middle_layer': [
+        {'variant': 'to-right', 'algorithm': "U R U' R' U' F' U F"},
+    ],
+    # '04_yellow_cross': [
+    #     {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
+    #     {'variant': 'L', 'description': 'L-shape (two adjacent edges)', 'algorithm': 'F U R U\' R\' F\''},
+    #     {'variant': 'dot', 'description': 'Dot pattern (no edges)', 'algorithm': 'F R U R\' U\' F\' U2 F U R U\' R\' F\''},
+    # ],
+    # '05_orient_yellow': [
+    #     {'variant': 'sune', 'description': 'Sune (one corner yellow on top)', 'algorithm': 'R U2 R\' U\' R U\' R\''},
+    # ],
+    # '06_permute_corners': [
+    #     {'variant': 'a_perm', 'description': '3-corner cycle', 'algorithm': 'L\' U R U\' L U R\' U\''},
+    # ],
+    # '07_final_edges': [
+    #     {'variant': 'antisune_sune', 'description': 'Antisune then Sune', 'algorithm': 'L\' U2 L U L\' U L R U2 R\' U\' R U\' R\''},
+    # ],
 }
 
 
@@ -220,7 +260,6 @@ def string_to_state(s: str) -> List[str]:
 # ============================================================================
 # SVG RENDERING  –  3-D perspective engine
 # ============================================================================
-import math as _math
 
 # ── Perspective camera ───────────────────────────────────────────────────────
 # Coordinate system: x=right, y=depth (into screen), z=up.
@@ -239,7 +278,7 @@ def _vec_norm(a):
     return (a[0]/m, a[1]/m, a[2]/m)
 
 _CAM_AZ_DEG  = 30.0    # azimuth: 0=front(-y), 90=right(+x)  →  front-right view
-_CAM_EL_DEG  = 25.0    # elevation above ground
+_CAM_EL_DEG  = 30.0    # elevation above ground
 _CAM_DIST    = 4.0     # distance from cube centre
 _CAM_FOV     = 4.0     # focal-length scale (higher = less wide-angle distortion)
 
@@ -564,9 +603,9 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         # outlines (thick border drawn separately, these just serve as face background)
         (0, None), (1, None), (2, None),
         # R face
-        (3,  (R, 0)), (4,  (R, 1)), (5,  (R, 2)),
-        (6,  (R, 3)), (7,  (R, 4)), (8,  (R, 5)),
-        (9,  (R, 6)), (10, (R, 7)), (11, (R, 8)),
+        (3,  (R, 2)), (4,  (R, 1)), (5,  (R, 0)),
+        (6,  (R, 5)), (7,  (R, 4)), (8,  (R, 3)),
+        (9,  (R, 8)), (10, (R, 7)), (11, (R, 6)),
         # U face
         (12, (U, 0)), (13, (U, 1)), (14, (U, 2)),
         (15, (U, 3)), (16, (U, 4)), (17, (U, 5)),
@@ -607,22 +646,20 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
                      f"points='{points_str}'/>")
 
     # Render Phase 2: Cube faces (R, U, F) + outlines
+    tile_outline_stroke: float = 0.03
     for poly_idx in cube_tile_indices:
         face_info = sticker_order[poly_idx][1]
         points_str = EXPLODED_POLYGONS[poly_idx]
         if face_info is None:
             # Outline polygons
             lines.append(f"    <polygon fill='none' stroke='#000000' "
-                         f"stroke-width='0.06' points='{points_str}'/>")
+                         f"stroke-width='{tile_outline_stroke}' points='{points_str}'/>")
         else:
             face, pos = face_info
             color_char = state[_idx(face, pos)]
             color = color_map.get(color_char, '#CCCCCC')
             lines.append(f"    <polygon fill='{color}' stroke='#000000' "
-                         f"points='{points_str}'/>")
-
-    # ── Bold cube edges on top ────────────────────────────────────────────────
-    lines.extend(_cube_edge_lines())
+                         f"stroke-width='{tile_outline_stroke}' points='{points_str}'/>")
 
     lines.append("  </g>")
     return '\n'.join(lines)
@@ -719,41 +756,54 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     return '\n'.join(lines)
 
 
-# ============================================================================
-# GUIDE GENERATION
-# ============================================================================
-
-# Solved state
-SOLVED = list('wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg')
-
-STEPS = {
-    '01_white_cross': [
-        {'variant': 'red_bottom_1', 'description': 'White-red block at bottom (V1)', 'algorithm': 'F2'},
-        {'variant': 'red_bottom_2', 'description': 'White-red at bottom via M (V2)', 'algorithm': "D M D' M'"},
-    ],
-    # '02_white_corners': [
-    #     {'variant': 'rfu', 'description': 'Corner at RFU (white on right)', 'algorithm': 'R U R\''},
-    #     {'variant': 'fur', 'description': 'Corner at FUR (white on front)', 'algorithm': 'F U\' F\''},
-    # ],
-    # '03_second_layer': [
-    #     {'variant': 'fr', 'description': 'Edge to FR slot', 'algorithm': 'U R U\' R\' U\' F\' U F'},
-    #     {'variant': 'fl', 'description': 'Edge to FL slot', 'algorithm': 'U\' L\' U L U F U\' F\''},
-    # ],
-    # '04_yellow_cross': [
-    #     {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
-    #     {'variant': 'L', 'description': 'L-shape (two adjacent edges)', 'algorithm': 'F U R U\' R\' F\''},
-    #     {'variant': 'dot', 'description': 'Dot pattern (no edges)', 'algorithm': 'F R U R\' U\' F\' U2 F U R U\' R\' F\''},
-    # ],
-    # '05_orient_yellow': [
-    #     {'variant': 'sune', 'description': 'Sune (one corner yellow on top)', 'algorithm': 'R U2 R\' U\' R U\' R\''},
-    # ],
-    # '06_permute_corners': [
-    #     {'variant': 'a_perm', 'description': '3-corner cycle', 'algorithm': 'L\' U R U\' L U R\' U\''},
-    # ],
-    # '07_final_edges': [
-    #     {'variant': 'antisune_sune', 'description': 'Antisune then Sune', 'algorithm': 'L\' U2 L U L\' U L R U2 R\' U\' R U\' R\''},
-    # ],
-}
+def render_svg_notation(size: int = 600) -> str:
+    """Render move notation SVG showing cube with directional arrows for each face rotation."""
+    vb = f'{_VB_X0:.4f} {_VB_Y0:.4f} {_VB_W:.4f} {_VB_H:.4f}'
+    
+    # Arrow style
+    arrow_color = '#333333'
+    arrow_width = 0.04
+    head_size = 0.10
+    
+    lines = [
+        "<?xml version='1.0' encoding='UTF-8'?>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}' viewBox='{vb}'>",
+        f"  <rect fill='#FFFFFF' x='{_VB_X0:.4f}' y='{_VB_Y0:.4f}' "
+        f"width='{_VB_W:.4f}' height='{_VB_H:.4f}'/>",
+        f"  <defs>",
+        f"    <marker id='arrowhead' markerWidth='{head_size}' markerHeight='{head_size}' "
+        f"refX='{head_size*0.8}' refY='{head_size/2}' orient='auto'>",
+        f"      <polygon points='0,0 {head_size},{head_size/2} 0,{head_size}' fill='{arrow_color}'/>",
+        f"    </marker>",
+        f"  </defs>",
+    ]
+    
+    # Render the solved cube
+    lines.append(render_cube_group(SOLVED))
+    
+    # Arrow positions computed from 3D face centers projected to screen
+    # Each arrow shows CW rotation direction when looking at that face from outside
+    arrows = [
+        ('R', 'M 0.8947,0.1180 Q 0.8901,0.2570 0.6934,0.3405', (0.8375, 0.3821)),
+        ('L', 'M -0.8692,-0.1287 Q -0.8431,-0.2434 -0.6248,-0.3026', (-0.7690, -0.3442)),
+        ('U', 'M -0.1462,-0.8456 Q 0.0000,-0.9119 0.1462,-0.7781', (0.1462, -0.9281)),
+        ('D', 'M -0.1420,0.7093 Q 0.0000,0.8575 0.1420,0.8058', (0.1420, 0.9558)),
+        ('F', 'M -0.6829,0.4210 Q -0.6160,0.5335 -0.3980,0.5150', (-0.5114, 0.6132)),
+        ('B', 'M 0.6384,-0.3898 Q 0.5687,-0.4925 0.3479,-0.4644', (0.4612, -0.5626)),
+    ]
+    
+    for label, path_d, (lx, ly) in arrows:
+        lines.append(f"  <path d='{path_d}' fill='none' stroke='{arrow_color}' "
+                     f"stroke-width='{arrow_width}' marker-end='url(#arrowhead)'/>")
+        lines.append(f"  <text x='{lx}' y='{ly}' font-size='0.18' font-weight='bold' "
+                     f"text-anchor='middle' fill='{arrow_color}'>{label}</text>")
+    
+    # M label (middle layer) - positioned below the cube
+    lines.append(f"  <text x='{0.5}' y='{_VB_Y0 + _VB_H - 0.05}' font-size='0.16' font-weight='bold' "
+                 f"text-anchor='middle' fill='{arrow_color}'>M (middle)</text>")
+    
+    lines.append("</svg>")
+    return '\n'.join(lines)
 
 
 def generate_test_cube(output_file: str, use_exploded: bool = True):
@@ -789,67 +839,25 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
     """Generate all 7 steps with per-move image sequences."""
     os.makedirs(output_dir, exist_ok=True)
     
-    step_labels = {
-        '01_white_cross': 'Step 1: White Cross',
-        '02_white_corners': 'Step 2: White Corners',
-        '03_second_layer': 'Step 3: Second Layer',
-        '04_yellow_cross': 'Step 4: Yellow Cross',
-        '05_orient_yellow': 'Step 5: Orient Yellow',
-        '06_permute_corners': 'Step 6: Permute Corners',
-        '07_final_edges': 'Step 7: Final Edges',
-    }
+    # Generate notation SVG
+    notation_svg = render_svg_notation()
+    notation_file = os.path.join(output_dir, 'notation.svg')
+    with open(notation_file, 'w') as f:
+        f.write(notation_svg)
+    print(f"  Generated notation: {notation_file}")
     
     total = 0
     for step_name, variants in STEPS.items():
-        solved_svg = render_svg_exploded(SOLVED)
-        
-        if step_name == '01_white_cross':
-            # Goal: White Cross on U face, colored centers and matching edges on sides
-            # U: white cross (white center U4, edges U1,U3,U5,U7), corners gray
-            # F: red center F4, red edge F1, rest gray
-            # R: blue center R4, blue edge R1, rest gray
-            # B: orange center B4, orange edge B1, rest gray
-            # L: green center L4, green edge L1, rest gray
-            # D: all gray
-            goal_state = list('dwdwwwdwd' + 'd'*9 + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd')
-            solved_svg = render_svg_exploded(goal_state)
-            
-            # Now generate variants for Step 1
-            for variant in variants:
-                alg = variant['algorithm']
-                var_id = variant['variant']
-                moves = parse_algorithm(alg)
-                
-                # Start state (inverse of alg applied to goal state)
-                inv_alg = inverse_algorithm(alg)
-                start_state = apply_algorithm(goal_state, inv_alg)
-                
-                # Generate sequence
-                states = [start_state]
-                current = list(start_state)
-                move_labels = []
-                for move in moves:
-                    current = apply_move_sequence(current, [move])
-                    states.append(list(current))
-                    move_labels.append(move)
-                
-                seq_svg = render_svg_sequence(states, move_labels, cell_size=240)
-                seq_file = os.path.join(output_dir, f'{step_name}_{var_id}_seq.svg')
-                with open(seq_file, 'w') as f:
-                    f.write(seq_svg)
-                print(f"  {step_name}/{var_id}: sequence = {seq_file}")
-                total += 1
-            continue
         
         for variant in variants:
             alg = variant['algorithm']
             var_id = variant['variant']
-            desc = variant['description']
+            goal_state: list[str] = variant.get('goal', GOAL_STATES[step_name])
             moves = parse_algorithm(alg)
             
             # Compute start state (apply inverse to solved)
             inv_alg = inverse_algorithm(alg)
-            start_state = apply_algorithm(SOLVED.copy(), inv_alg)
+            start_state = apply_algorithm(goal_state, inv_alg)
             
             # Generate per-move sequence of states
             states = [start_state]
@@ -869,25 +877,25 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             total += 1
             
             # Generate individual start/goal SVGs
-            start_svg = render_svg_exploded(start_state)
-            start_file = os.path.join(output_dir, f'{step_name}_{var_id}_start.svg')
-            with open(start_file, 'w') as f:
-                f.write(start_svg)
+            # start_svg = render_svg_exploded(start_state)
+            # start_file = os.path.join(output_dir, f'{step_name}_{var_id}_start.svg')
+            # with open(start_file, 'w') as f:
+            #     f.write(start_svg)
             
-            goal_state = apply_algorithm(start_state.copy(), alg)
-            goal_svg = render_svg_exploded(goal_state)
-            goal_file = os.path.join(output_dir, f'{step_name}_{var_id}_goal.svg')
-            with open(goal_file, 'w') as f:
-                f.write(goal_svg)
-            total += 2
+            # goal_state = apply_algorithm(start_state.copy(), alg)
+            # goal_svg = render_svg_exploded(goal_state)
+            # goal_file = os.path.join(output_dir, f'{step_name}_{var_id}_goal.svg')
+            # with open(goal_file, 'w') as f:
+            #     f.write(goal_svg)
+            # total += 2
             
-            # Per-move individual frames
-            for i, s in enumerate(states):
-                frame_svg = render_svg_exploded(s)
-                frame_file = os.path.join(output_dir, f'{step_name}_{var_id}_f{i}.svg')
-                with open(frame_file, 'w') as f:
-                    f.write(frame_svg)
-                total += 1
+            # # Per-move individual frames
+            # for i, s in enumerate(states):
+            #     frame_svg = render_svg_exploded(s)
+            #     frame_file = os.path.join(output_dir, f'{step_name}_{var_id}_f{i}.svg')
+            #     with open(frame_file, 'w') as f:
+            #         f.write(frame_svg)
+            #     total += 1
     
     print(f"\nDone! Generated {total} SVGs in {output_dir}")
 
