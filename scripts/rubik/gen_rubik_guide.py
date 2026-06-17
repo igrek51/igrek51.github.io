@@ -756,52 +756,214 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     return '\n'.join(lines)
 
 
-def render_svg_notation(size: int = 600) -> str:
-    """Render move notation SVG showing cube with directional arrows for each face rotation."""
-    vb = f'{_VB_X0:.4f} {_VB_Y0:.4f} {_VB_W:.4f} {_VB_H:.4f}'
-    
-    # Arrow style
-    arrow_color = '#333333'
-    arrow_width = 0.04
-    head_size = 0.10
-    
+def render_svg_notation() -> str:
+    import math
+    W, H = 1040, 760
+    SCALE = 82.0
+    PCX, PCY = 280.0, 385.0
+    vb_cx = _VB_X0 + _VB_W / 2
+    vb_cy = _VB_Y0 + _VB_H / 2
+    ox = PCX - vb_cx * SCALE
+    oy = PCY - vb_cy * SCALE
+
+    def p2p(x, y, z):
+        sx, sy = _proj(x, y, z)
+        return (ox + sx * SCALE, oy + sy * SCALE)
+
+    centers = {
+        'R': (1.0, 0.5, 0.5), 'U': (0.5, 0.5, 1.0), 'F': (0.5, 0.0, 0.5),
+        'L': (-_MIRROR_GAP_L, 0.5, 0.5), 'D': (0.5, 0.5, -_MIRROR_GAP_D),
+        'B': (0.5, 1.0 + _MIRROR_GAP_B, 0.5),
+    }
+    axes = {
+        'R': ((0, -1, 0), (0, 0, -1)), 'U': ((1, 0, 0), (0, -1, 0)),
+        'F': ((1, 0, 0), (0, 0, -1)), 'L': ((0, 1, 0), (0, 0, -1)),
+        'D': ((1, 0, 0), (0, -1, 0)), 'B': ((-1, 0, 0), (0, 0, -1)),
+    }
+    normals = {
+        'R': (1, 0, 0), 'U': (0, 0, 1), 'F': (0, -1, 0),
+        'L': (-1, 0, 0), 'D': (0, 0, -1), 'B': (0, 1, 0),
+    }
+    arrow_colors = {
+        'R': '#FF3333', 'U': '#FFFFFF', 'F': '#0066FF',
+        'L': '#FF9500', 'D': '#FFD700', 'B': '#00AA44',
+    }
+    RAD = 0.38
+    SWEEP_DEG = 160
+    AHS = 15
     lines = [
         "<?xml version='1.0' encoding='UTF-8'?>",
-        f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}' viewBox='{vb}'>",
-        f"  <rect fill='#FFFFFF' x='{_VB_X0:.4f}' y='{_VB_Y0:.4f}' "
-        f"width='{_VB_W:.4f}' height='{_VB_H:.4f}'/>",
-        f"  <defs>",
-        f"    <marker id='arrowhead' markerWidth='{head_size}' markerHeight='{head_size}' "
-        f"refX='{head_size*0.8}' refY='{head_size/2}' orient='auto'>",
-        f"      <polygon points='0,0 {head_size},{head_size/2} 0,{head_size}' fill='{arrow_color}'/>",
-        f"    </marker>",
-        f"  </defs>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}' "
+        f"viewBox='0 0 {W} {H}'>",
+        f"  <rect fill='#F5F5F5' x='0' y='0' width='{W}' height='{H}'/>",
     ]
-    
-    # Render the solved cube
-    lines.append(render_cube_group(SOLVED))
-    
-    # Arrow positions computed from 3D face centers projected to screen
-    # Each arrow shows CW rotation direction when looking at that face from outside
-    arrows = [
-        ('R', 'M 0.8947,0.1180 Q 0.8901,0.2570 0.6934,0.3405', (0.8375, 0.3821)),
-        ('L', 'M -0.8692,-0.1287 Q -0.8431,-0.2434 -0.6248,-0.3026', (-0.7690, -0.3442)),
-        ('U', 'M -0.1462,-0.8456 Q 0.0000,-0.9119 0.1462,-0.7781', (0.1462, -0.9281)),
-        ('D', 'M -0.1420,0.7093 Q 0.0000,0.8575 0.1420,0.8058', (0.1420, 0.9558)),
-        ('F', 'M -0.6829,0.4210 Q -0.6160,0.5335 -0.3980,0.5150', (-0.5114, 0.6132)),
-        ('B', 'M 0.6384,-0.3898 Q 0.5687,-0.4925 0.3479,-0.4644', (0.4612, -0.5626)),
-    ]
-    
-    for label, path_d, (lx, ly) in arrows:
-        lines.append(f"  <path d='{path_d}' fill='none' stroke='{arrow_color}' "
-                     f"stroke-width='{arrow_width}' marker-end='url(#arrowhead)'/>")
-        lines.append(f"  <text x='{lx}' y='{ly}' font-size='0.18' font-weight='bold' "
-                     f"text-anchor='middle' fill='{arrow_color}'>{label}</text>")
-    
-    # M label (middle layer) - positioned below the cube
-    lines.append(f"  <text x='{0.5}' y='{_VB_Y0 + _VB_H - 0.05}' font-size='0.16' font-weight='bold' "
-                 f"text-anchor='middle' fill='{arrow_color}'>M (middle)</text>")
-    
+    lines.append(
+        "  <text x='40' y='50' font-family='Arial,sans-serif' "
+        "font-size='28' font-weight='bold' fill='#222'>"
+        "Rubik's Cube Notation</text>"
+    )
+    lines.append(
+        "  <text x='40' y='78' font-family='Arial,sans-serif' "
+        "font-size='14' fill='#666'>"
+        "Each letter means turning that face 90\u00b0 clockwise "
+        "(as seen from outside)</text>"
+    )
+    lines.append(render_cube_group(SOLVED, ox, oy, SCALE))
+    for name in ['R', 'U', 'F', 'L', 'D']:
+        cx, cy, cz = centers[name]
+        ax1, ax2 = axes[name]
+        col = arrow_colors[name]
+        fc = _proj(cx, cy, cz)
+        nx, ny, nz = normals[name]
+        fn = _proj(cx + nx * 0.01, cy + ny * 0.01, cz + nz * 0.01)
+        sdx = fn[0] - fc[0]
+        sdy = fn[1] - fc[1]
+        sdm = math.hypot(sdx, sdy)
+        if sdm > 1e-10:
+            sdx /= sdm
+            sdy /= sdm
+        best_t = 0.0
+        best_dot = -1e10
+        for i in range(720):
+            t = 2 * math.pi * i / 720
+            px = cx + RAD * (math.cos(t) * ax1[0] + math.sin(t) * ax2[0])
+            py = cy + RAD * (math.cos(t) * ax1[1] + math.sin(t) * ax2[1])
+            pz = cz + RAD * (math.cos(t) * ax1[2] + math.sin(t) * ax2[2])
+            ps = _proj(px, py, pz)
+            dot = (ps[0] - fc[0]) * sdx + (ps[1] - fc[1]) * sdy
+            if dot > best_dot:
+                best_dot = dot
+                best_t = t
+        t0 = best_t + math.radians(SWEEP_DEG)
+        t1 = best_t
+        if name in ('U', 'F'):
+            t0 = best_t - math.radians(SWEEP_DEG)
+            t1 = best_t
+        n_seg = 32
+        arc_pts = []
+        for i in range(n_seg + 1):
+            t = t0 + (t1 - t0) * i / n_seg
+            px = cx + RAD * (math.cos(t) * ax1[0] + math.sin(t) * ax2[0])
+            py = cy + RAD * (math.cos(t) * ax1[1] + math.sin(t) * ax2[1])
+            pz = cz + RAD * (math.cos(t) * ax1[2] + math.sin(t) * ax2[2])
+            arc_pts.append(p2p(px, py, pz))
+        path_d = f"M {arc_pts[0][0]:.2f} {arc_pts[0][1]:.2f}"
+        for pt in arc_pts[1:]:
+            path_d += f" L {pt[0]:.2f} {pt[1]:.2f}"
+        lines.append(
+            f"  <path d='{path_d}' fill='none' stroke='#000' "
+            f"stroke-width='5.5' stroke-linecap='round'/>"
+        )
+        lines.append(
+            f"  <path d='{path_d}' fill='none' stroke='{col}' "
+            f"stroke-width='4' stroke-linecap='round'/>"
+        )
+        tip_t = t1
+        tx = cx + RAD * (math.cos(tip_t) * ax1[0] + math.sin(tip_t) * ax2[0])
+        ty = cy + RAD * (math.cos(tip_t) * ax1[1] + math.sin(tip_t) * ax2[1])
+        tz = cz + RAD * (math.cos(tip_t) * ax1[2] + math.sin(tip_t) * ax2[2])
+        tip_p = p2p(tx, ty, tz)
+        adx = sdx
+        ady = sdy
+        arr_angle = math.atan2(ady, adx)
+        perp = arr_angle + math.pi / 2
+        back = 0.55
+        bx = tip_p[0] + AHS * back * adx
+        by = tip_p[1] + AHS * back * ady
+        hs = AHS * 0.6
+        p1 = (bx + hs * math.cos(perp), by + hs * math.sin(perp))
+        p2 = (bx - hs * math.cos(perp), by - hs * math.sin(perp))
+        lines.append(
+            f"  <polygon points='{tip_p[0]:.2f},{tip_p[1]:.2f} "
+            f"{p1[0]:.2f},{p1[1]:.2f} {p2[0]:.2f},{p2[1]:.2f}' "
+            f"fill='{col}' stroke='#000' stroke-width='1.5' stroke-linejoin='round'/>"
+        )
+        badge_dist = 38
+        badge_x = tip_p[0] + badge_dist * adx
+        badge_y = tip_p[1] + badge_dist * ady
+        lines.append(
+            f"  <circle cx='{badge_x:.1f}' cy='{badge_y:.1f}' "
+            f"r='14' fill='{col}' stroke='#FFF' stroke-width='2.5'/>"
+        )
+        lines.append(
+            f"  <text x='{badge_x:.1f}' y='{badge_y + 5.5:.1f}' "
+            f"text-anchor='middle' font-family='Arial,sans-serif' "
+            f"font-size='16' font-weight='bold' fill='#FFF'>"
+            f"{name}</text>"
+        )
+    legend_x = 580
+    legend_y = 150
+    lines.append(
+        f"  <rect x='{legend_x - 20}' y='{legend_y - 30}' "
+        f"width='420' height='420' rx='12' fill='#FFF' "
+        f"stroke='#DDD' stroke-width='1.5'/>"
+    )
+    lines.append(
+        f"  <text x='{legend_x}' y='{legend_y + 10}' "
+        f"font-family='Arial,sans-serif' font-size='20' font-weight='bold' "
+        f"fill='#333'>Face Moves</text>"
+    )
+    face_names = {
+        'R': 'Right face', 'U': 'Upper face', 'F': 'Front face',
+        'L': 'Left face', 'D': 'Down face', 'B': 'Back face',
+    }
+    ly = legend_y + 55
+    for name in ['R', 'U', 'F', 'L', 'D']:
+        lines.append(
+            f"  <circle cx='{legend_x + 12}' cy='{ly}' r='9' "
+            f"fill='{arrow_colors[name]}'/>"
+        )
+        lines.append(
+            f"  <text x='{legend_x + 12}' y='{ly + 4}' text-anchor='middle' "
+            f"font-family='Arial,sans-serif' font-size='11' font-weight='bold' "
+            f"fill='#FFF'>{name}</text>"
+        )
+        lines.append(
+            f"  <text x='{legend_x + 35}' y='{ly + 5}' "
+            f"font-family='Arial,sans-serif' font-size='15' "
+            f"fill='#444'>{face_names[name]}</text>"
+        )
+        ly += 35
+    ly += 15
+    lines.append(
+        f"  <text x='{legend_x}' y='{ly}' "
+        f"font-family='Arial,sans-serif' font-size='18' font-weight='bold' "
+        f"fill='#333'>Suffix Rules</text>"
+    )
+    ly += 35
+    for label, desc in [
+        ('R', 'Clockwise (no suffix)'),
+        ("R'", 'Counter-clockwise (apostrophe)'),
+        ('R2', 'Half turn (180\u00b0)'),
+    ]:
+        lines.append(
+            f"  <text x='{legend_x}' y='{ly}' "
+            f"font-family='monospace' font-size='16' font-weight='bold' "
+            f"fill='#333'>{label}</text>"
+        )
+        lines.append(
+            f"  <text x='{legend_x + 55}' y='{ly}' "
+            f"font-family='Arial,sans-serif' font-size='15' "
+            f"fill='#666'>\u2014  {desc}</text>"
+        )
+        ly += 30
+    ly += 10
+    lines.append(
+        f"  <text x='{legend_x}' y='{ly}' "
+        f"font-family='Arial,sans-serif' font-size='16' font-weight='bold' "
+        f"fill='#333'>Special Moves</text>"
+    )
+    ly += 30
+    lines.append(
+        f"  <text x='{legend_x}' y='{ly}' "
+        f"font-family='monospace' font-size='15' font-weight='bold' "
+        f"fill='#333'>M</text>"
+    )
+    lines.append(
+        f"  <text x='{legend_x + 55}' y='{ly}' "
+        f"font-family='Arial,sans-serif' font-size='15' fill='#666'>"
+        f"\u2014  Middle slice (like D, between R and L)</text>"
+    )
     lines.append("</svg>")
     return '\n'.join(lines)
 

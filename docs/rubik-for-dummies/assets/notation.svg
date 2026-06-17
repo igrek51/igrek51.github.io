@@ -1,12 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='-1.5944 -1.2132 2.9259 2.9307'>
-  <rect fill='#FFFFFF' x='-1.5944' y='-1.2132' width='2.9259' height='2.9307'/>
-  <defs>
-    <marker id='arrowhead' markerWidth='0.1' markerHeight='0.1' refX='0.08000000000000002' refY='0.05' orient='auto'>
-      <polygon points='0,0 0.1,0.05 0,0.1' fill='#333333'/>
-    </marker>
-  </defs>
-  <g transform='translate(0.0,0.0) scale(1.0)' style='stroke:#000000;stroke-width:0.028;stroke-linejoin:round;stroke-linecap:round'>
+<svg xmlns='http://www.w3.org/2000/svg' width='1040' height='760' viewBox='0 0 1040 760'>
+  <rect fill='#F5F5F5' x='0' y='0' width='1040' height='760'/>
+  <text x='40' y='50' font-family='Arial,sans-serif' font-size='28' font-weight='bold' fill='#222'>Rubik's Cube Notation</text>
+  <text x='40' y='78' font-family='Arial,sans-serif' font-size='14' fill='#666'>Each letter means turning that face 90° clockwise (as seen from outside)</text>
+  <g transform='translate(290.7794176303394,364.32252426178104) scale(82.0)' style='stroke:#000000;stroke-width:0.028;stroke-linejoin:round;stroke-linecap:round'>
     <line x1='-0.7606977520307524' y1='-0.3803488760153762' x2='-1.4944200557540142' y2='-0.5758633850454026' stroke='#888888' stroke-width='0.022' stroke-dasharray='0.07,0.05' stroke-linecap='round'/>
     <line x1='-0.1686167768496636' y1='-0.7135947666362797' x2='-0.8369314668152389' y2='-0.8497777076321643' stroke='#888888' stroke-width='0.022' stroke-dasharray='0.07,0.05' stroke-linecap='round'/>
     <line x1='-0.6677371542970045' y1='0.5127882083986405' x2='-1.328246689858708' y2='0.25855796962606464' stroke='#888888' stroke-width='0.022' stroke-dasharray='0.07,0.05' stroke-linecap='round'/>
@@ -74,17 +71,51 @@
     <polygon fill='#FF3333' stroke='#000000' stroke-width='0.03' points='-0.41723300778067524,0.3377088457568672 -0.1162350397060636,0.4427858854133463 -0.11114080714207811,0.7270222423052134 -0.3996156120112873,0.6159882381414381'/>
     <polygon fill='#FF3333' stroke='#000000' stroke-width='0.03' points='-0.1162350397060636,0.4427858854133463 0.2096469301776239,0.556549818412095 0.20009623571662902,0.8468174359560516 -0.11114080714207811,0.7270222423052134'/>
   </g>
-  <path d='M 0.8947,0.1180 Q 0.8901,0.2570 0.6934,0.3405' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='0.8375' y='0.3821' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>R</text>
-  <path d='M -0.8692,-0.1287 Q -0.8431,-0.2434 -0.6248,-0.3026' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='-0.769' y='-0.3442' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>L</text>
-  <path d='M -0.1462,-0.8456 Q 0.0000,-0.9119 0.1462,-0.7781' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='0.1462' y='-0.9281' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>U</text>
-  <path d='M -0.1420,0.7093 Q 0.0000,0.8575 0.1420,0.8058' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='0.142' y='0.9558' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>D</text>
-  <path d='M -0.6829,0.4210 Q -0.6160,0.5335 -0.3980,0.5150' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='-0.5114' y='0.6132' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>F</text>
-  <path d='M 0.6384,-0.3898 Q 0.5687,-0.4925 0.3479,-0.4644' fill='none' stroke='#333333' stroke-width='0.04' marker-end='url(#arrowhead)'/>
-  <text x='0.4612' y='-0.5626' font-size='0.18' font-weight='bold' text-anchor='middle' fill='#333333'>B</text>
-  <text x='0.5' y='1.6675043336384407' font-size='0.16' font-weight='bold' text-anchor='middle' fill='#333333'>M (middle)</text>
+  <path d='M 321.10 360.37 L 322.30 357.75 L 323.54 355.28 L 324.81 353.00 L 326.10 350.92 L 327.39 349.07 L 328.67 347.44 L 329.93 346.06 L 331.16 344.93 L 332.35 344.05 L 333.50 343.44 L 334.58 343.07 L 335.60 342.97 L 336.55 343.11 L 337.42 343.49 L 338.21 344.11 L 338.91 344.94 L 339.53 346.00 L 340.05 347.25 L 340.47 348.68 L 340.81 350.29 L 341.05 352.06 L 341.19 353.98 L 341.24 356.02 L 341.20 358.18 L 341.06 360.44 L 340.84 362.78 L 340.53 365.20 L 340.14 367.66 L 339.67 370.17 L 339.12 372.71 L 338.49 375.25 L 337.80 377.79' fill='none' stroke='#003399' stroke-width='4' stroke-linecap='round'/>
+  <polygon points='337.80,377.79 343.23,388.73 348.22,371.43' fill='#003399' stroke='none'/>
+  <circle cx='374.3' cy='388.3' r='14' fill='#003399' stroke='#FFF' stroke-width='2.5'/>
+  <text x='374.3' y='393.8' text-anchor='middle' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#FFF'>R</text>
+  <path d='M 278.39 340.06 L 275.52 339.54 L 272.79 338.91 L 270.24 338.18 L 267.88 337.37 L 265.72 336.47 L 263.80 335.51 L 262.11 334.48 L 260.67 333.40 L 259.50 332.28 L 258.58 331.14 L 257.93 329.97 L 257.54 328.79 L 257.41 327.62 L 257.54 326.45 L 257.92 325.30 L 258.54 324.17 L 259.39 323.08 L 260.46 322.03 L 261.73 321.03 L 263.20 320.08 L 264.86 319.19 L 266.68 318.36 L 268.65 317.60 L 270.76 316.91 L 272.99 316.29 L 275.33 315.75 L 277.77 315.29 L 280.28 314.91 L 282.85 314.61 L 285.47 314.40 L 288.12 314.27 L 290.78 314.23' fill='none' stroke='#555555' stroke-width='4' stroke-linecap='round'/>
+  <polygon points='290.78,314.23 299.78,305.98 281.78,305.98' fill='#555555' stroke='none'/>
+  <circle cx='290.8' cy='276.2' r='14' fill='#555555' stroke='#FFF' stroke-width='2.5'/>
+  <text x='290.8' y='281.7' text-anchor='middle' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#FFF'>U</text>
+  <path d='M 294.44 377.88 L 295.67 380.68 L 296.67 383.50 L 297.43 386.30 L 297.95 389.06 L 298.23 391.75 L 298.26 394.36 L 298.06 396.86 L 297.63 399.24 L 296.96 401.47 L 296.08 403.53 L 295.00 405.42 L 293.72 407.13 L 292.26 408.63 L 290.63 409.93 L 288.86 411.02 L 286.94 411.88 L 284.92 412.53 L 282.79 412.96 L 280.57 413.17 L 278.29 413.17 L 275.95 412.95 L 273.58 412.51 L 271.20 411.88 L 268.81 411.05 L 266.43 410.03 L 264.08 408.83 L 261.78 407.45 L 259.53 405.92 L 257.35 404.23 L 255.25 402.41 L 253.25 400.45 L 251.36 398.38' fill='none' stroke='#CC0000' stroke-width='4' stroke-linecap='round'/>
+  <polygon points='251.36,398.38 239.23,396.98 251.01,410.59' fill='#CC0000' stroke='none'/>
+  <circle cx='222.6' cy='423.3' r='14' fill='#CC0000' stroke='#FFF' stroke-width='2.5'/>
+  <text x='222.6' y='428.8' text-anchor='middle' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#FFF'>F</text>
+  <path d='M 220.55 334.99 L 220.60 332.87 L 220.51 330.77 L 220.30 328.72 L 219.96 326.73 L 219.49 324.82 L 218.89 322.98 L 218.17 321.25 L 217.33 319.63 L 216.36 318.13 L 215.29 316.77 L 214.10 315.55 L 212.82 314.50 L 211.44 313.62 L 209.97 312.92 L 208.43 312.41 L 206.83 312.09 L 205.17 311.98 L 203.47 312.08 L 201.74 312.39 L 199.99 312.91 L 198.25 313.65 L 196.52 314.59 L 194.82 315.74 L 193.16 317.09 L 191.57 318.62 L 190.06 320.33 L 188.63 322.21 L 187.32 324.23 L 186.12 326.38 L 185.05 328.64 L 184.12 330.99 L 183.34 333.41' fill='none' stroke='#006633' stroke-width='4' stroke-linecap='round'/>
+  <polygon points='183.34,333.41 177.91,322.47 172.92,339.77' fill='#006633' stroke='none'/>
+  <circle cx='146.8' cy='322.9' r='14' fill='#006633' stroke='#FFF' stroke-width='2.5'/>
+  <text x='146.8' y='328.4' text-anchor='middle' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#FFF'>L</text>
+  <path d='M 282.40 439.98 L 280.41 440.55 L 278.48 441.24 L 276.62 442.06 L 274.86 442.99 L 273.20 444.02 L 271.65 445.16 L 270.24 446.40 L 268.95 447.73 L 267.82 449.14 L 266.84 450.63 L 266.04 452.18 L 265.41 453.79 L 264.96 455.44 L 264.71 457.12 L 264.65 458.82 L 264.79 460.53 L 265.14 462.24 L 265.69 463.92 L 266.44 465.57 L 267.40 467.18 L 268.55 468.72 L 269.88 470.18 L 271.40 471.56 L 273.09 472.83 L 274.93 473.98 L 276.92 475.01 L 279.03 475.89 L 281.25 476.63 L 283.55 477.22 L 285.92 477.64 L 288.34 477.89 L 290.78 477.98' fill='none' stroke='#B8960F' stroke-width='4' stroke-linecap='round'/>
+  <polygon points='290.78,477.98 281.78,486.23 299.78,486.23' fill='#B8960F' stroke='none'/>
+  <circle cx='290.8' cy='516.0' r='14' fill='#B8960F' stroke='#FFF' stroke-width='2.5'/>
+  <text x='290.8' y='521.5' text-anchor='middle' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#FFF'>D</text>
+  <rect x='560' y='120' width='420' height='420' rx='12' fill='#FFF' stroke='#DDD' stroke-width='1.5'/>
+  <text x='580' y='160' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='#333'>Face Moves</text>
+  <circle cx='592' cy='205' r='9' fill='#003399'/>
+  <text x='592' y='209' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' font-weight='bold' fill='#FFF'>R</text>
+  <text x='615' y='210' font-family='Arial,sans-serif' font-size='15' fill='#444'>Right face</text>
+  <circle cx='592' cy='240' r='9' fill='#555555'/>
+  <text x='592' y='244' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' font-weight='bold' fill='#FFF'>U</text>
+  <text x='615' y='245' font-family='Arial,sans-serif' font-size='15' fill='#444'>Upper face</text>
+  <circle cx='592' cy='275' r='9' fill='#CC0000'/>
+  <text x='592' y='279' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' font-weight='bold' fill='#FFF'>F</text>
+  <text x='615' y='280' font-family='Arial,sans-serif' font-size='15' fill='#444'>Front face</text>
+  <circle cx='592' cy='310' r='9' fill='#006633'/>
+  <text x='592' y='314' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' font-weight='bold' fill='#FFF'>L</text>
+  <text x='615' y='315' font-family='Arial,sans-serif' font-size='15' fill='#444'>Left face</text>
+  <circle cx='592' cy='345' r='9' fill='#B8960F'/>
+  <text x='592' y='349' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' font-weight='bold' fill='#FFF'>D</text>
+  <text x='615' y='350' font-family='Arial,sans-serif' font-size='15' fill='#444'>Down face</text>
+  <text x='580' y='395' font-family='Arial,sans-serif' font-size='18' font-weight='bold' fill='#333'>Suffix Rules</text>
+  <text x='580' y='430' font-family='monospace' font-size='16' font-weight='bold' fill='#333'>R</text>
+  <text x='635' y='430' font-family='Arial,sans-serif' font-size='15' fill='#666'>—  Clockwise (no suffix)</text>
+  <text x='580' y='460' font-family='monospace' font-size='16' font-weight='bold' fill='#333'>R'</text>
+  <text x='635' y='460' font-family='Arial,sans-serif' font-size='15' fill='#666'>—  Counter-clockwise (apostrophe)</text>
+  <text x='580' y='490' font-family='monospace' font-size='16' font-weight='bold' fill='#333'>R2</text>
+  <text x='635' y='490' font-family='Arial,sans-serif' font-size='15' fill='#666'>—  Half turn (180°)</text>
+  <text x='580' y='530' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='#333'>Special Moves</text>
+  <text x='580' y='560' font-family='monospace' font-size='15' font-weight='bold' fill='#333'>M</text>
+  <text x='635' y='560' font-family='Arial,sans-serif' font-size='15' fill='#666'>—  Middle slice (like D, between R and L)</text>
 </svg>
