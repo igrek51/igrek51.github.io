@@ -117,8 +117,7 @@ STEPS = {
     ],
     '02_white_corners': [
         {'variant': 'elevator', 'algorithm': "D' R' D R"},
-        {'variant': 'elevator-inversed', 'algorithm': "D F D' F'"},
-        {'variant': 'elevator-m', 'algorithm': "D' R' D R", 'mirrored': True},
+        {'variant': 'elevator-m', 'algorithm': "D L D' L'", 'mirrored': True},
         {'variant': 'upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
     ],
