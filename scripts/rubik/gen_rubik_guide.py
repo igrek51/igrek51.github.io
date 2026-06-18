@@ -118,6 +118,7 @@ STEPS = {
     '02_white_corners': [
         {'variant': 'elevator', 'algorithm': "D' R' D R"},
         {'variant': 'elevator-inversed', 'algorithm': "D F D' F'"},
+        {'variant': 'elevator-m', 'algorithm': "D' R' D R", 'mirrored': True},
         {'variant': 'upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
     ],
@@ -292,6 +293,8 @@ _CAM_AZ_DEG  = 30.0    # azimuth: 0=front(-y), 90=right(+x)  →  front-right vi
 _CAM_EL_DEG  = 30.0    # elevation above ground
 _CAM_DIST    = 4.0     # distance from cube centre
 _CAM_FOV     = 4.0     # focal-length scale (higher = less wide-angle distortion)
+# Mirrored camera & rendering (az = -30)
+_CAM_AZ_DEG_M = -30.0
 
 _target = (0.5, 0.5, 0.5)
 _up_world = (0.0, 0.0, 1.0)
@@ -489,6 +492,125 @@ _VB_W  = max(p[0] for p in _all_pts) - _VB_X0 + _VB_MARGIN
 _VB_H  = max(p[1] for p in _all_pts) - _VB_Y0 + _VB_MARGIN
 
 
+def _build_camera_at(az_deg: float):
+    az = _math.radians(az_deg)
+    el = _math.radians(_CAM_EL_DEG)
+    cam = (
+        _target[0] + _CAM_DIST * _math.cos(el) * _math.sin(az),
+        _target[1] - _CAM_DIST * _math.cos(el) * _math.cos(az),
+        _target[2] + _CAM_DIST * _math.sin(el),
+    )
+    fwd   = _vec_norm(_vec_sub(_target, cam))
+    right = _vec_norm(_vec_cross(fwd, _up_world))
+    up    = _vec_cross(right, fwd)
+    return cam, fwd, right, up
+
+_CAM_M, _CAM_FWD_M, _CAM_RIGHT_M, _CAM_UP_M = _build_camera_at(-30.0)
+
+def _proj_m(x: float, y: float, z: float):
+    d = _vec_sub((x, y, z), _CAM_M)
+    px = _vec_dot(d, _CAM_RIGHT_M)
+    py = _vec_dot(d, _CAM_UP_M)
+    pz = _vec_dot(d, _CAM_FWD_M)
+    if pz < 0.01: pz = 0.01
+    sx = px / pz * _CAM_FOV
+    sy = -py / pz * _CAM_FOV
+    return (sx, sy)
+
+# Mirrored: body faces = L, U, F ; mirror faces = R, D, B
+_MIRROR_GAP_R_M = _MIRROR_GAP_L  # approximate, R mirror uses same distance
+_MIRROR_GAP_D_M = _MIRROR_GAP_D
+_MIRROR_GAP_B_M = _MIRROR_GAP_B
+_R_MIRROR_M = _shifted(_R_FACE, _MIRROR_GAP_R_M, 0, 0)
+_D_MIRROR_M = _shifted(_D_FACE, 0, 0, -_MIRROR_GAP_D_M)
+_B_MIRROR_M = _shifted(_B_FACE, 0, _MIRROR_GAP_B_M, 0)
+
+def _build_mirrored_polygons() -> List[str]:
+    polys = []
+    for face in (_L_FACE, _U_FACE, _F_FACE):
+        o, u, v = face
+        corners = [
+            _proj_m(*o),
+            _proj_m(o[0]+u[0], o[1]+u[1], o[2]+u[2]),
+            _proj_m(o[0]+u[0]+v[0], o[1]+u[1]+v[1], o[2]+u[2]+v[2]),
+            _proj_m(o[0]+v[0], o[1]+v[1], o[2]+v[2]),
+        ]
+        polys.append(_fmt_poly(corners))
+    for face in (_L_FACE, _U_FACE, _F_FACE):
+        o, u, v = face
+        for row in range(3):
+            for col in range(3):
+                polys.append(_fmt_poly(_tile_quad_proj(o, u, v, row, col, _proj_m)))
+    for face in (_R_MIRROR_M, _D_MIRROR_M, _B_MIRROR_M):
+        o, u, v = face
+        for row in range(3):
+            for col in range(3):
+                polys.append(_fmt_poly(_tile_quad_proj(o, u, v, row, col, _proj_m)))
+    return polys
+
+def _tile_quad_proj(o, u, v, row, col, proj_fn, n=3):
+    c0, c1 = col / n, (col + 1) / n
+    r0, r1 = row / n, (row + 1) / n
+    return [
+        proj_fn(o[0]+c0*u[0]+r0*v[0], o[1]+c0*u[1]+r0*v[1], o[2]+c0*u[2]+r0*v[2]),
+        proj_fn(o[0]+c1*u[0]+r0*v[0], o[1]+c1*u[1]+r0*v[1], o[2]+c1*u[2]+r0*v[2]),
+        proj_fn(o[0]+c1*u[0]+r1*v[0], o[1]+c1*u[1]+r1*v[1], o[2]+c1*u[2]+r1*v[2]),
+        proj_fn(o[0]+c0*u[0]+r1*v[0], o[1]+c0*u[1]+r1*v[1], o[2]+c0*u[2]+r1*v[2]),
+    ]
+
+EXPLODED_POLYGONS_M = _build_mirrored_polygons()
+
+_all_pts_m = [
+    (float(tok.split(',')[0]), float(tok.split(',')[1]))
+    for poly in EXPLODED_POLYGONS_M
+    for tok in poly.split()
+]
+_VB_X0_M = min(p[0] for p in _all_pts_m) - _VB_MARGIN
+_VB_Y0_M = min(p[1] for p in _all_pts_m) - _VB_MARGIN
+_VB_W_M  = max(p[0] for p in _all_pts_m) - _VB_X0_M + _VB_MARGIN
+_VB_H_M  = max(p[1] for p in _all_pts_m) - _VB_Y0_M + _VB_MARGIN
+
+def _cube_edge_lines_mirrored() -> List[str]:
+    edges_3d = [
+        ((0,0,1), (0,1,1)),   # L-U top edge
+        ((0,0,1), (1,0,1)),   # U-F top edge
+        ((0,0,1), (0,0,0)),   # L-F left edge
+    ]
+    sw = 0.055
+    lines = []
+    for (x0,y0,z0), (x1,y1,z1) in edges_3d:
+        p0 = _proj_m(x0, y0, z0)
+        p1 = _proj_m(x1, y1, z1)
+        lines.append(
+            f"    <line x1='{p0[0]}' y1='{p0[1]}' x2='{p1[0]}' y2='{p1[1]}' "
+            f"stroke='#000000' stroke-width='{sw}' stroke-linecap='round'/>"
+        )
+    return lines
+
+def _connector_lines_mirrored() -> List[str]:
+    sw, dash = 0.022, '0.07,0.05'
+    connector_pairs = []
+    gR = _MIRROR_GAP_R_M
+    for xyz in [(1,0,1), (1,1,1), (1,0,0), (1,1,0)]:
+        connector_pairs.append((xyz, (xyz[0]+gR, xyz[1], xyz[2])))
+    gD = _MIRROR_GAP_D_M
+    for xyz in [(0,0,0), (1,0,0), (0,1,0), (1,1,0)]:
+        connector_pairs.append((xyz, (xyz[0], xyz[1], xyz[2]-gD)))
+    gB = _MIRROR_GAP_B_M
+    for xyz in [(0,1,0), (1,1,0), (0,1,1), (1,1,1)]:
+        connector_pairs.append((xyz, (xyz[0], xyz[1]+gB, xyz[2])))
+    lines = []
+    for cube_xyz, mirror_xyz in connector_pairs:
+        p0 = _proj_m(*cube_xyz)
+        p1 = _proj_m(*mirror_xyz)
+        lines.append(
+            f"    <line x1='{p0[0]}' y1='{p0[1]}' x2='{p1[0]}' y2='{p1[1]}' "
+            f"stroke='#888888' stroke-width='{sw}' stroke-dasharray='{dash}' "
+            f"stroke-linecap='round'/>"
+        )
+    return lines
+
+
 def _cube_edge_lines() -> List[str]:
     """Return SVG <line> strings for the 3 bold visible cube edges.
 
@@ -555,14 +677,19 @@ def _connector_lines() -> List[str]:
 
 
 def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
-                      scale: float = 1.0) -> str:
-    """Render cube state as SVG <g> elements at given offset and scale."""
+                      scale: float = 1.0, mirrored: bool = False) -> str:
+    """Render cube state as SVG <g> elements at given offset and scale.
+    
+    If mirrored=True, uses az=-30 camera with L/U/F on body and R/D/B as mirrors.
+    """
     state = list(state)
     color_map = {
         'w': '#FFFFFF', 'y': '#FFD700', 'r': '#FF3333',
         'o': '#FF9500', 'b': '#0066FF', 'g': '#00AA44',
         'l': '#aaaaaa', 'd': '#777777',
     }
+    if mirrored:
+        return _render_cube_group_mirrored(state, ox, oy, scale, color_map)
     transform = f"transform='translate({ox},{oy}) scale({scale})'"
     lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.028;"
              f"stroke-linejoin:round;stroke-linecap:round'>"]
@@ -676,6 +803,76 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
     return '\n'.join(lines)
 
 
+def _render_cube_group_mirrored(state: List[str], ox: float, oy: float,
+                                 scale: float, color_map: dict) -> str:
+    """Render cube from mirrored perspective (az=-30), L/U/F on body, R/D/B mirrors."""
+    transform = f"transform='translate({ox},{oy}) scale({scale})'"
+    lines = [f"  <g {transform} style='stroke:#000000;stroke-width:0.028;"
+             f"stroke-linejoin:round;stroke-linecap:round'>"]
+
+    lines.extend(_connector_lines_mirrored())
+
+    sticker_order_m = [
+        (0, None), (1, None), (2, None),
+        # L face (body)
+        (3, (L, 2)), (4, (L, 1)), (5, (L, 0)),
+        (6, (L, 5)), (7, (L, 4)), (8, (L, 3)),
+        (9, (L, 8)), (10, (L, 7)), (11, (L, 6)),
+        # U face (body)
+        (12, (U, 0)), (13, (U, 1)), (14, (U, 2)),
+        (15, (U, 3)), (16, (U, 4)), (17, (U, 5)),
+        (18, (U, 6)), (19, (U, 7)), (20, (U, 8)),
+        # F face (body)
+        (21, (F, 0)), (22, (F, 1)), (23, (F, 2)),
+        (24, (F, 3)), (25, (F, 4)), (26, (F, 5)),
+        (27, (F, 6)), (28, (F, 7)), (29, (F, 8)),
+        # R mirror
+        (30, (R, 0)), (31, (R, 1)), (32, (R, 2)),
+        (33, (R, 3)), (34, (R, 4)), (35, (R, 5)),
+        (36, (R, 6)), (37, (R, 7)), (38, (R, 8)),
+        # D mirror – rows reversed
+        (39, (D, 6)), (40, (D, 7)), (41, (D, 8)),
+        (42, (D, 3)), (43, (D, 4)), (44, (D, 5)),
+        (45, (D, 0)), (46, (D, 1)), (47, (D, 2)),
+        # B mirror – standard
+        (48, (B, 0)), (49, (B, 1)), (50, (B, 2)),
+        (51, (B, 3)), (52, (B, 4)), (53, (B, 5)),
+        (54, (B, 6)), (55, (B, 7)), (56, (B, 8)),
+    ]
+
+    mirror_indices = range(30, 57)
+    cube_tile_indices = range(3, 30)
+
+    def _proj_wrap(x, y, z):
+        return _proj_m(x, y, z)
+
+    for poly_idx in mirror_indices:
+        face_info = sticker_order_m[poly_idx][1]
+        points_str = EXPLODED_POLYGONS_M[poly_idx]
+        face, pos = face_info
+        color_char = state[_idx(face, pos)]
+        color = color_map.get(color_char, '#CCCCCC')
+        lines.append(f"    <polygon fill='{color}' stroke='#000000' "
+                     f"points='{points_str}'/>")
+
+    tile_outline_stroke: float = 0.03
+    for poly_idx in cube_tile_indices:
+        face_info = sticker_order_m[poly_idx][1]
+        points_str = EXPLODED_POLYGONS_M[poly_idx]
+        if face_info is None:
+            lines.append(f"    <polygon fill='none' stroke='#000000' "
+                         f"stroke-width='{tile_outline_stroke}' points='{points_str}'/>")
+        else:
+            face, pos = face_info
+            color_char = state[_idx(face, pos)]
+            color = color_map.get(color_char, '#CCCCCC')
+            lines.append(f"    <polygon fill='{color}' stroke='#000000' "
+                         f"stroke-width='{tile_outline_stroke}' points='{points_str}'/>")
+
+    lines.append("  </g>")
+    return '\n'.join(lines)
+
+
 def render_svg_exploded(state: List[str], size: int = 600) -> str:
     """Render cube state as SVG with exploded view (main + reference faces)."""
     vb = f'{_VB_X0:.4f} {_VB_Y0:.4f} {_VB_W:.4f} {_VB_H:.4f}'
@@ -692,15 +889,16 @@ def render_svg_exploded(state: List[str], size: int = 600) -> str:
 
 def render_svg_sequence(states: List[List[str]], labels: List[str],
                          cell_size: int = 120, arrow_gap: int = 50,
-                         label_height: int = 30) -> str:
+                         label_height: int = 30, mirrored: bool = False) -> str:
     """Render multiple cube states in a row with arrows and move labels.
-    
+     
     Args:
         states: List of cube states (each is list of 54 strings)
         labels: List of move labels (len = len(states) - 1)
         cell_size: Width/height for each cube cell in px
         arrow_gap: Gap between cubes for arrow in px
         label_height: Extra bottom space for move labels
+        mirrored: Use mirrored perspective (az=-30)
     """
     n = len(states)
     m = len(labels)
@@ -710,7 +908,13 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     # Layout: each cube in a cell of (cell_size x cell_size),
     # then arrow_gap, then next cube, etc.
     # Scale so the full viewBox fits inside cell_size in the larger dimension.
-    scale = cell_size / max(_VB_W, _VB_H)
+    if mirrored:
+        vb_w, vb_h = _VB_W_M, _VB_H_M
+        vb_x0, vb_y0 = _VB_X0_M, _VB_Y0_M
+    else:
+        vb_w, vb_h = _VB_W, _VB_H
+        vb_x0, vb_y0 = _VB_X0, _VB_Y0
+    scale = cell_size / max(vb_w, vb_h)
     cell_step = cell_size + arrow_gap
     total_width = (n - 1) * cell_step + cell_size
     total_height = cell_size + label_height
@@ -727,11 +931,11 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
         # The viewBox centre in 3D-engine coords is (_VB_X0 + _VB_W/2, _VB_Y0 + _VB_H/2).
         cx = i * cell_step + cell_size / 2
         cy = cell_size / 2
-        vb_cx = _VB_X0 + _VB_W / 2
-        vb_cy = _VB_Y0 + _VB_H / 2
+        vb_cx = vb_x0 + vb_w / 2
+        vb_cy = vb_y0 + vb_h / 2
         ox = cx - vb_cx * scale
         oy = cy - vb_cy * scale
-        lines.append(render_cube_group(state, ox, oy, scale))
+        lines.append(render_cube_group(state, ox, oy, scale, mirrored=mirrored))
         
         # Arrow to next cube (if not last)
         if i < n - 1:
@@ -1018,6 +1222,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
         for variant in variants:
             alg = variant['algorithm']
             var_id = variant['variant']
+            mirrored = variant.get('mirrored', False)
             goal_state: list[str] = variant.get('goal', GOAL_STATES[step_name])
             moves = parse_algorithm(alg)
             
@@ -1035,7 +1240,8 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
                 move_labels.append(move)
             
             # Generate sequence SVG with arrows
-            seq_svg = render_svg_sequence(states, move_labels, cell_size=240)
+            seq_svg = render_svg_sequence(states, move_labels, cell_size=240,
+                                           mirrored=mirrored)
             seq_file = os.path.join(output_dir, f'{step_name}_{var_id}_seq.svg')
             with open(seq_file, 'w') as f:
                 f.write(seq_svg)
