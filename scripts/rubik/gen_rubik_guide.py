@@ -113,7 +113,7 @@ GOAL_STATES = {
 STEPS = {
     '01_white_cross': [
         {'variant': 'upside-down', 'algorithm': "FF"},
-        {'variant': 'elevator', 'algorithm': "D M D' M'"},
+        {'variant': 'elevator', 'algorithm': "F' U' R U"},
     ],
     '02_white_corners': [
         {'variant': 'elevator', 'algorithm': "D' R' D R"},
