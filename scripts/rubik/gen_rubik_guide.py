@@ -112,13 +112,13 @@ GOAL_STATES = {
 
 STEPS = {
     '01_white_cross': [
-        {'variant': 'upside-down', 'algorithm': "F2"},
+        {'variant': 'upside-down', 'algorithm': "FF"},
         {'variant': 'elevator', 'algorithm': "D M D' M'"},
     ],
     '02_white_corners': [
         {'variant': 'elevator', 'algorithm': "D' R' D R"},
         {'variant': 'elevator-inversed', 'algorithm': "D F D' F'"},
-        {'variant': 'upside-down', 'algorithm': "R' D2 R D",
+        {'variant': 'upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
     ],
     '03_middle_layer': [
@@ -1002,11 +1002,11 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
     os.makedirs(output_dir, exist_ok=True)
     
     # Generate notation SVG
-    notation_svg = render_svg_notation()
-    notation_file = os.path.join(output_dir, 'notation.svg')
-    with open(notation_file, 'w') as f:
-        f.write(notation_svg)
-    print(f"  Generated notation: {notation_file}")
+    #notation_svg = render_svg_notation()
+    #notation_file = os.path.join(output_dir, 'notation.svg')
+    #with open(notation_file, 'w') as f:
+    #    f.write(notation_svg)
+    #print(f"  Generated notation: {notation_file}")
     
     total = 0
     for step_name, variants in STEPS.items():
