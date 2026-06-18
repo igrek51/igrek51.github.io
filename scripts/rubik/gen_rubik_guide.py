@@ -116,13 +116,17 @@ STEPS = {
         {'variant': 'elevator', 'algorithm': "F' U' R U"},
     ],
     '02_white_corners': [
-        {'variant': 'elevator', 'algorithm': "D' R' D R"},
-        {'variant': 'elevator-m', 'algorithm': "D L D' L'", 'mirrored': True},
+        # {'variant': 'elevator', 'algorithm': "D' R' D R"},
+        # {'variant': 'elevator-m', 'algorithm': "D L D' L'", 'mirrored': True},
+        {'variant': 'elevator', 'algorithm': "F D F'"},
+        {'variant': 'elevator-m', 'algorithm': "F' D' F", 'mirrored': True},
         {'variant': 'upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
     ],
     '03_middle_layer': [
         {'variant': 'to-right', 'algorithm': "U R U' R' U' F' U F"},
+        {'variant': 'to-left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
+         'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddodooo' + 'ddddrdrrr' + 'ddddggggg')},
     ],
     # '04_yellow_cross': [
     #     {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
@@ -825,10 +829,10 @@ def _render_cube_group_mirrored(state: List[str], ox: float, oy: float,
         (21, (F, 0)), (22, (F, 1)), (23, (F, 2)),
         (24, (F, 3)), (25, (F, 4)), (26, (F, 5)),
         (27, (F, 6)), (28, (F, 7)), (29, (F, 8)),
-        # R mirror
-        (30, (R, 0)), (31, (R, 1)), (32, (R, 2)),
-        (33, (R, 3)), (34, (R, 4)), (35, (R, 5)),
-        (36, (R, 6)), (37, (R, 7)), (38, (R, 8)),
+        # R mirror – columns swapped (left col ↔ right col)
+        (30, (R, 2)), (31, (R, 1)), (32, (R, 0)),
+        (33, (R, 5)), (34, (R, 4)), (35, (R, 3)),
+        (36, (R, 8)), (37, (R, 7)), (38, (R, 6)),
         # D mirror – rows reversed
         (39, (D, 6)), (40, (D, 7)), (41, (D, 8)),
         (42, (D, 3)), (43, (D, 4)), (44, (D, 5)),
