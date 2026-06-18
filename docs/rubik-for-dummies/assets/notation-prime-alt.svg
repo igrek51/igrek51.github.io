@@ -5,7 +5,7 @@
    viewBox="0 0 300 250"
    version="1.1"
    id="svg92"
-   sodipodi:docname="notation-alt.svg"
+   sodipodi:docname="notation-prime-alt.svg"
    inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -22,9 +22,9 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
-     inkscape:zoom="5.8354916"
-     inkscape:cx="144.37515"
-     inkscape:cy="90.652174"
+     inkscape:zoom="2.9177458"
+     inkscape:cx="84.140298"
+     inkscape:cy="109.33098"
      inkscape:window-width="1920"
      inkscape:window-height="995"
      inkscape:window-x="0"
@@ -461,45 +461,45 @@
        points="-0.11114081,0.72702224 -0.11623504,0.44278589 0.20964693,0.55654982 0.20009624,0.84681744 "
        id="polygon66" />
     <path
-       style="fill:#595959;fill-opacity:1;stroke:#b8960f;stroke-width:0.029561;stroke-dasharray:none;stroke-opacity:1"
-       d="m -0.51459944,0.48327202 0.50755351,0.17192317"
+       style="fill:#595959;fill-opacity:1;stroke:#b8960f;stroke-width:0.0297284;stroke-dasharray:none;stroke-opacity:1"
+       d="M -0.04681697,0.65027387 -0.52802305,0.4668771"
        id="path1-5"
        sodipodi:nodetypes="cc" />
     <path
        id="polygon68-6"
-       style="fill:#ffd700;fill-opacity:1;stroke:#b8960f;stroke-width:0.0243902;stroke-dasharray:none;stroke-opacity:1"
-       d="M -0.07359435,0.58514685 -0.07476121,0.6906738 0.03477065,0.67254904 Z"
+       style="fill:#ffd700;fill-opacity:1;stroke:#b8960f;stroke-width:0.0245283;stroke-dasharray:none;stroke-opacity:1"
+       d="m -0.46492913,0.54160024 0.001106,-0.11256949 -0.10384602,0.0193344 z"
        sodipodi:nodetypes="cccc" />
   </g>
   <path
-     style="fill:#595959;fill-opacity:1;stroke:#9a9a9a;stroke-width:2.424;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 108.50297,87.538484 48.38832,13.240876"
+     style="fill:#595959;fill-opacity:1;stroke:#9a9a9a;stroke-width:2.22717;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 153.08466,99.752092 -44.7625,-12.08332"
      id="path1"
      sodipodi:nodetypes="cc" />
   <path
      id="polygon68"
-     style="fill:#ffffff;fill-opacity:1;stroke:#9a9a9a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 113.1098,83.824326 -0.01,9.830194 -11.15323,-7.497235 z"
+     style="fill:#ffffff;fill-opacity:1;stroke:#9a9a9a;stroke-width:1.8376;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 148.82303,103.14155 0.009,-8.970807 10.3175,6.841797 z"
      sodipodi:nodetypes="cccc" />
   <path
-     style="fill:#595959;fill-opacity:1;stroke:#003399;stroke-width:2.424;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 164.23431,111.46337 0.0175,50.16722"
+     style="fill:#595959;fill-opacity:1;stroke:#003399;stroke-width:2.21492;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 163.57031,154.2577 -0.0156,-46.99883"
      id="path1-6"
      sodipodi:nodetypes="cc" />
   <path
      id="polygon68-75"
-     style="fill:#0066ff;fill-opacity:1;stroke:#003399;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 169.21441,115.36602 -9.57504,-2.61292 4.75264,-9.35572 z"
+     style="fill:#0066ff;fill-opacity:1;stroke:#003399;stroke-width:1.8275;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 159.13195,150.60153 8.53346,2.44791 -4.23564,8.76484 z"
      sodipodi:nodetypes="cccc" />
   <path
-     style="fill:#595959;fill-opacity:1;stroke:#006633;stroke-width:2.424;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 101.89535,92.622208 3.10207,40.313722"
+     style="fill:#595959;fill-opacity:1;stroke:#006633;stroke-width:2.20012;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 104.79387,137.73891 -2.4868,-41.428048"
      id="path1-6-9"
      sodipodi:nodetypes="cc" />
   <path
      id="polygon68-75-1"
-     style="fill:#00aa44;fill-opacity:1;stroke:#006633;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 108.79417,134.45752 -7.05728,-2.35587 3.39464,10.48553 z"
+     style="fill:#00aa44;fill-opacity:1;stroke:#006633;stroke-width:2.21235;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+     d="m 98.43375,94.08151 7.48816,2.716811 L 102.32,84.706327 Z"
      sodipodi:nodetypes="cccc" />
   <path
      style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;fill:#ff3333;fill-opacity:1;stroke:#960000;stroke-width:1.516;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
@@ -508,7 +508,7 @@
   <path
      id="polygon68-75-1-7"
      style="fill:#ff3333;fill-opacity:1;stroke:#960000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-     d="m 154.95891,123.42804 -8.81377,0.81439 4.89408,8.64335 z"
+     d="m 121.02252,126.01069 -9.60823,0.80326 5.92584,9.68267 z"
      sodipodi:nodetypes="cccc" />
   <circle
      cx="133.40968"
@@ -537,7 +537,7 @@
      font-weight="bold"
      fill="#ffffff"
      id="text67"
-     style="stroke-width:0.702218">R</text>
+     style="stroke-width:0.702218">R'</text>
   <text
      x="133.40968"
      y="86.685516"
@@ -547,7 +547,7 @@
      font-weight="bold"
      fill="#ffffff"
      id="text68"
-     style="stroke-width:0.640414">U</text>
+     style="stroke-width:0.640414">U'</text>
   <circle
      cx="132.64291"
      cy="124.26137"
@@ -566,7 +566,7 @@
      font-weight="bold"
      fill="#ffffff"
      id="text69"
-     style="stroke-width:0.720984">F</text>
+     style="stroke-width:0.720984">F'</text>
   <ellipse
      cx="91.518753"
      cy="112.81317"
@@ -587,7 +587,7 @@
      fill="#ffffff"
      id="text70"
      style="stroke-width:0.688278"
-     transform="scale(0.9867509,1.013427)">L</text>
+     transform="scale(0.9867509,1.013427)">L'</text>
   <circle
      cx="131.69229"
      cy="163.19888"
@@ -606,5 +606,5 @@
      font-weight="bold"
      fill="#ffffff"
      id="text71"
-     style="stroke-width:0.660053">D</text>
+     style="stroke-width:0.660053">D'</text>
 </svg>
