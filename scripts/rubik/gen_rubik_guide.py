@@ -107,7 +107,7 @@ SOLVED = list('wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg')
 GOAL_STATES = {
     '01_white_cross': list('dwdwwwdwd' + 'd'*9 + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd'),
     '02_white_corners': list('w'*9 + 'd'*9 + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
-    '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddodooo' + 'dddrrdrrr' + 'ddddgdggg'),
+    '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
 }
 
 STEPS = {
@@ -126,7 +126,7 @@ STEPS = {
     '03_middle_layer': [
         {'variant': 'to-right', 'algorithm': "U R U' R' U' F' U F"},
         {'variant': 'to-left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
-         'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddodooo' + 'ddddrdrrr' + 'ddddggggg')},
+         'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddgdggg' + 'ddddrdrrr' + 'ddddooooo')},
     ],
     # '04_yellow_cross': [
     #     {'variant': 'line', 'description': 'Line pattern (two opposite edges)', 'algorithm': 'F R U R\' U\' F\''},
