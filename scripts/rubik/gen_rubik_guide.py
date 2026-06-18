@@ -180,6 +180,7 @@ def parse_algorithm(algorithm: str) -> List[str]:
     algorithm = algorithm.strip()
     if not algorithm:
         return []
+    valid_moves = {'R', 'L', 'U', 'D', 'F', 'B', 'M'}
     # If contains spaces, tokenize by whitespace
     if ' ' in algorithm:
         tokens = algorithm.split()
@@ -187,13 +188,14 @@ def parse_algorithm(algorithm: str) -> List[str]:
         for token in tokens:
             if token.endswith("'") or token.endswith("2"):
                 moves.append(token)
+            elif len(token) == 2 and token[0] in valid_moves and token[0] == token[1]:
+                moves.append(token)
             else:
                 moves.append(token)
         return moves
     # No spaces: parse character by character
     moves = []
     i = 0
-    valid_moves = {'R', 'L', 'U', 'D', 'F', 'B', 'M'}
     while i < len(algorithm):
         c = algorithm[i]
         if c in valid_moves:
@@ -202,6 +204,9 @@ def parse_algorithm(algorithm: str) -> List[str]:
                 i += 2
             elif i + 1 < len(algorithm) and algorithm[i + 1] == '2':
                 moves.append(c + '2')
+                i += 2
+            elif i + 1 < len(algorithm) and algorithm[i + 1] == c:
+                moves.append(c + c)
                 i += 2
             else:
                 moves.append(c)
@@ -212,17 +217,19 @@ def parse_algorithm(algorithm: str) -> List[str]:
 
 
 def invert_move(move: str) -> str:
-    """Return the inverse of a move (R -> R', R' -> R, R2 -> R2)."""
+    """Return the inverse of a move (R -> R', R' -> R, R2 -> R2, RR -> RR)."""
     if move.endswith("'"):
         return move[:-1]  # R' -> R
     elif move.endswith("2"):
         return move  # R2 -> R2
+    elif len(move) == 2 and move[0] == move[1]:
+        return move  # RR -> RR (self-inverse)
     else:
         return move + "'"  # R -> R'
 
 
 def apply_move_sequence(state: List[str], moves: List[str]) -> List[str]:
-    """Apply a sequence of moves (handling ', 2 notation)."""
+    """Apply a sequence of moves (handling ', 2, and double-letter notation)."""
     for move in moves:
         if move.endswith("'"):
             base_move = move[:-1]
@@ -231,6 +238,10 @@ def apply_move_sequence(state: List[str], moves: List[str]) -> List[str]:
             state = apply_move(state, base_move)
         elif move.endswith("2"):
             base_move = move[:-1]
+            state = apply_move(state, base_move)
+            state = apply_move(state, base_move)
+        elif len(move) == 2 and move[0] == move[1]:
+            base_move = move[0]
             state = apply_move(state, base_move)
             state = apply_move(state, base_move)
         else:
@@ -934,7 +945,7 @@ def render_svg_notation() -> str:
     for label, desc in [
         ('R', 'Clockwise (no suffix)'),
         ("R'", 'Counter-clockwise (apostrophe)'),
-        ('R2', 'Half turn (180\u00b0)'),
+        ('RR', 'Half turn (180\u00b0)'),
     ]:
         lines.append(
             f"  <text x='{legend_x}' y='{ly}' "
@@ -1000,13 +1011,6 @@ def generate_custom_cube(state_str: str, moves_str: str, output_file: str, use_e
 def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
     """Generate all 7 steps with per-move image sequences."""
     os.makedirs(output_dir, exist_ok=True)
-    
-    # Generate notation SVG
-    #notation_svg = render_svg_notation()
-    #notation_file = os.path.join(output_dir, 'notation.svg')
-    #with open(notation_file, 'w') as f:
-    #    f.write(notation_svg)
-    #print(f"  Generated notation: {notation_file}")
     
     total = 0
     for step_name, variants in STEPS.items():
