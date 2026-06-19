@@ -96,7 +96,7 @@ STEPS = {
         {'variant': 'elevator-m', 'label': 'Elevator on the left', 'algorithm': "F' D' F", 'mirrored': True},
         {'variant': 'upside-down', 'label': 'Upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd'),
-         'suffix': '+ repeat 2B'},
+         'suffix': '& repeat 2B'},
     ],
     '03_middle_layer': [
         {'variant': 'to-right', 'label': 'To right', 'algorithm': "U R U' R' U' F' U F"},
@@ -1083,13 +1083,34 @@ def variant_label(step_name: str, step_idx: int, label: str, alg: str) -> str:
 
 
 def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
-    """Generate all steps: per-move cube SVGs, arrow SVGs, and rubik_guide.html."""
+    """Generate all steps: per-move cube SVGs, shared transition SVGs, and rubik_guide.html."""
     os.makedirs(output_dir, exist_ok=True)
     parent_dir = os.path.dirname(output_dir.rstrip('/'))
     assets_prefix = os.path.basename(output_dir.rstrip('/')) + '/'
 
     total = 0
-    # Collect variant data for HTML generation (SVGs written first)
+
+    # First pass: collect all unique move labels across every variant
+    all_unique_moves = set()
+    for _step_name, variants in STEPS.items():
+        for variant in variants:
+            all_unique_moves.update(parse_algorithm(variant['algorithm']))
+
+    # Generate one shared transition SVG per unique move label
+    def _transition_filename(label: str) -> str:
+        return f'transition-{label.replace("'", "-prime")}.svg'
+
+    transition_cache = {}
+    for move_label in sorted(all_unique_moves):
+        svg = render_transition_svg(move_label, arrow_gap=50)
+        name = _transition_filename(move_label)
+        path = os.path.join(output_dir, name)
+        with open(path, 'w') as f:
+            f.write(svg)
+        transition_cache[move_label] = name
+        total += 1
+
+    # Second pass: generate cube SVGs and collect variant data
     variant_data = []  # list of (step_name, step_idx, label, alg, state_files, arrow_files, suffix)
 
     for step_name, variants in STEPS.items():
@@ -1108,11 +1129,9 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             # Generate per-move sequence of states
             states = [start_state]
             current = list(start_state)
-            move_labels = []
             for move in moves:
                 current = apply_move_sequence(current, [move])
                 states.append(list(current))
-                move_labels.append(move)
 
             prefix = f'{step_name}_{var_id}'
 
@@ -1127,16 +1146,8 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
                 state_files.append(name)
                 total += 1
 
-            # Write individual arrow SVGs
-            arrow_files = []
-            for i, l in enumerate(move_labels):
-                svg = render_transition_svg(l, arrow_gap=50)
-                name = f'{prefix}_a{i}.svg'
-                path = os.path.join(output_dir, name)
-                with open(path, 'w') as f:
-                    f.write(svg)
-                arrow_files.append(name)
-                total += 1
+            # Reference shared transition SVGs
+            arrow_files = [transition_cache[m] for m in moves]
 
             label = variant.get('label', var_id)
             variant_data.append((step_name, idx, label, alg, state_files, arrow_files, suffix))
@@ -1171,7 +1182,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
         for i in range(len(state_files)):
             body.append(f'    <img class="cube" src="{assets_prefix}{state_files[i]}">')
             if i < len(arrow_files):
-                body.append(f'    <img class="transform" src="{assets_prefix}{arrow_files[i]}">')
+                body.append(f'    <img class="transition" src="{assets_prefix}{arrow_files[i]}">')
         body.append('  </div>')
         if suffix:
             body.append(f'  {suffix}')
@@ -1235,7 +1246,7 @@ h2 {{
   height: 400px;
   width: auto;
 }}
-.seq-row img.transform {{
+.seq-row img.transition {{
   height: {400 * (8 + 20 + 4) / 240:.0f}px;
   width: auto;
 }}
