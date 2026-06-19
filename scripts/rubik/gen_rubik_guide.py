@@ -112,20 +112,19 @@ GOAL_STATES = {
 
 STEPS = {
     '01_white_cross': [
-        {'variant': 'upside-down', 'algorithm': "FF"},
-        {'variant': 'elevator', 'algorithm': "F' U' R U"},
+        {'variant': 'upside-down', 'label': 'Upside down', 'algorithm': "FF"},
+        {'variant': 'elevator', 'label': 'Elevator', 'algorithm': "F' U' R U"},
     ],
     '02_white_corners': [
-        # {'variant': 'elevator', 'algorithm': "D' R' D R"},
-        # {'variant': 'elevator-m', 'algorithm': "D L D' L'", 'mirrored': True},
-        {'variant': 'elevator', 'algorithm': "F D F'"},
-        {'variant': 'elevator-m', 'algorithm': "F' D' F", 'mirrored': True},
-        {'variant': 'upside-down', 'algorithm': "R' DD R D",
-         'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd')},
+        {'variant': 'elevator', 'label': 'Elevator on the right', 'algorithm': "F D F'"},
+        {'variant': 'elevator-m', 'label': 'Elevator on the left', 'algorithm': "F' D' F", 'mirrored': True},
+        {'variant': 'upside-down', 'label': 'Upside-down', 'algorithm': "R' DD R D",
+         'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd'),
+         'suffix': '+ repeat 2B'},
     ],
     '03_middle_layer': [
-        {'variant': 'to-right', 'algorithm': "U R U' R' U' F' U F"},
-        {'variant': 'to-left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
+        {'variant': 'to-right', 'label': 'To right', 'algorithm': "U R U' R' U' F' U F"},
+        {'variant': 'to-left', 'label': 'To left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
          'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddgdggg' + 'ddddrdrrr' + 'ddddooooo')},
     ],
     # '04_yellow_cross': [
@@ -974,6 +973,74 @@ def render_svg_sequence(states: List[List[str]], labels: List[str],
     return '\n'.join(lines)
 
 
+def render_cube_svg(state: List[str], cell_size: int = 120,
+                    label_height: int = 0, mirrored: bool = False) -> str:
+    """Render a single cube state as a standalone SVG.
+
+    Result is a complete <svg> document sized cell_size x (cell_size + label_height).
+    The cube visual sits in the top cell_size portion; label_height adds white space below.
+    """
+    total_height = cell_size + label_height
+    if mirrored:
+        vb_w, vb_h = _VB_W_M, _VB_H_M
+        vb_x0, vb_y0 = _VB_X0_M, _VB_Y0_M
+    else:
+        vb_w, vb_h = _VB_W, _VB_H
+        vb_x0, vb_y0 = _VB_X0, _VB_Y0
+    scale = cell_size / max(vb_w, vb_h)
+    cx = cell_size / 2
+    cy = cell_size / 2
+    vb_cx = vb_x0 + vb_w / 2
+    vb_cy = vb_y0 + vb_h / 2
+    ox = cx - vb_cx * scale
+    oy = cy - vb_cy * scale
+    lines = [
+        "<?xml version='1.0' encoding='UTF-8'?>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{cell_size}' height='{total_height}' "
+        f"viewBox='0 0 {cell_size} {total_height}'>",
+        f"  <rect fill='#FFFFFF' width='{cell_size}' height='{total_height}'/>",
+        render_cube_group(state, ox, oy, scale, mirrored=mirrored),
+        "</svg>",
+    ]
+    return '\n'.join(lines)
+
+
+def render_arrow_svg(move_label: str, cell_size: int = 120,
+                     arrow_gap: int = 50, label_height: int = 30) -> str:
+    """Render an arrow with move label as a standalone SVG.
+
+    Result is a complete <svg> document sized arrow_gap x (cell_size + label_height).
+    Arrow sits at y = cell_size/2; label at y = cell_size/2 + label_height/2 + 4.
+    """
+    total_height = cell_size + label_height
+    lines = [
+        "<?xml version='1.0' encoding='UTF-8'?>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{arrow_gap}' height='{total_height}' "
+        f"viewBox='0 0 {arrow_gap} {total_height}'>",
+        "  <defs>",
+        "    <marker id='arr' viewBox='0 0 10 10' refX='8' refY='5'",
+        "      markerWidth='6' markerHeight='6' orient='auto-start-reverse'>",
+        "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
+        "    </marker>",
+        "  </defs>",
+        f"  <rect fill='transparent' width='{arrow_gap}' height='{total_height}'/>",
+    ]
+    arrow_y = cell_size / 2
+    lines.append(
+        f"  <line x1='5' y1='{arrow_y}' "
+        f"x2='{arrow_gap - 5}' y2='{arrow_y}' "
+        f"stroke='#333333' stroke-width='2' marker-end='url(#arr)'/>"
+    )
+    label_y = cell_size / 2 + label_height / 2 + 4
+    lines.append(
+        f"  <text x='{arrow_gap / 2}' y='{label_y}' "
+        f"text-anchor='middle' font-family='monospace' font-size='13' "
+        f"fill='#333333'>{move_label}</text>"
+    )
+    lines.append("</svg>")
+    return '\n'.join(lines)
+
+
 def render_svg_notation() -> str:
     import math
     W, H = 1040, 760
@@ -1215,24 +1282,48 @@ def generate_custom_cube(state_str: str, moves_str: str, output_file: str, use_e
     print(f"Generated: {output_file}")
 
 
+def step_title(step_name: str) -> str:
+    """Convert '01_white_cross' to '1. White Cross' with optional emoji."""
+    parts = step_name.split('_', 1)
+    num = parts[0].lstrip('0')
+    name = parts[1].replace('_', ' ').title() if len(parts) > 1 else ''
+    emoji = {'03_middle_layer': '\U0001F503 '}.get(step_name, '')
+    return f'{emoji}{num}. {name}'
+
+
+_STEP_LETTER = 'ABCDEFGH'
+
+
+def variant_label(step_name: str, step_idx: int, label: str, alg: str) -> str:
+    """Build variant label like '1A. Upside down: <span class="alg">FF</span>'."""
+    step_num = step_name.split('_', 1)[0].lstrip('0')
+    letter = _STEP_LETTER[step_idx]
+    return f'{step_num}{letter}. {label}: <span class="alg">{alg}</span>'
+
+
 def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
-    """Generate all 7 steps with per-move image sequences."""
+    """Generate all steps: per-move cube SVGs, arrow SVGs, and rubik_guide.html."""
     os.makedirs(output_dir, exist_ok=True)
-    
+    parent_dir = os.path.dirname(output_dir.rstrip('/'))
+    assets_prefix = os.path.basename(output_dir.rstrip('/')) + '/'
+
     total = 0
+    # Collect variant data for HTML generation (SVGs written first)
+    variant_data = []  # list of (step_name, step_idx, var_id, alg, mirrored, state_files, arrow_files, suffix)
+
     for step_name, variants in STEPS.items():
-        
-        for variant in variants:
+        for idx, variant in enumerate(variants):
             alg = variant['algorithm']
             var_id = variant['variant']
             mirrored = variant.get('mirrored', False)
+            suffix = variant.get('suffix', '')
             goal_state: list[str] = variant.get('goal', GOAL_STATES[step_name])
             moves = parse_algorithm(alg)
-            
+
             # Compute start state (apply inverse to solved)
             inv_alg = inverse_algorithm(alg)
             start_state = apply_algorithm(goal_state, inv_alg)
-            
+
             # Generate per-move sequence of states
             states = [start_state]
             current = list(start_state)
@@ -1241,38 +1332,159 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
                 current = apply_move_sequence(current, [move])
                 states.append(list(current))
                 move_labels.append(move)
-            
-            # Generate sequence SVG with arrows
-            seq_svg = render_svg_sequence(states, move_labels, cell_size=240,
-                                           mirrored=mirrored)
-            seq_file = os.path.join(output_dir, f'{step_name}_{var_id}_seq.svg')
-            with open(seq_file, 'w') as f:
-                f.write(seq_svg)
-            print(f"  {step_name}/{var_id}: sequence = {seq_file}")
-            total += 1
-            
-            # Generate individual start/goal SVGs
-            # start_svg = render_svg_exploded(start_state)
-            # start_file = os.path.join(output_dir, f'{step_name}_{var_id}_start.svg')
-            # with open(start_file, 'w') as f:
-            #     f.write(start_svg)
-            
-            # goal_state = apply_algorithm(start_state.copy(), alg)
-            # goal_svg = render_svg_exploded(goal_state)
-            # goal_file = os.path.join(output_dir, f'{step_name}_{var_id}_goal.svg')
-            # with open(goal_file, 'w') as f:
-            #     f.write(goal_svg)
-            # total += 2
-            
-            # # Per-move individual frames
-            # for i, s in enumerate(states):
-            #     frame_svg = render_svg_exploded(s)
-            #     frame_file = os.path.join(output_dir, f'{step_name}_{var_id}_f{i}.svg')
-            #     with open(frame_file, 'w') as f:
-            #         f.write(frame_svg)
-            #     total += 1
-    
-    print(f"\nDone! Generated {total} SVGs in {output_dir}")
+
+            prefix = f'{step_name}_{var_id}'
+
+            # Write individual cube state SVGs
+            state_files = []
+            for i, s in enumerate(states):
+                svg = render_cube_svg(s, cell_size=240, label_height=30,
+                                      mirrored=mirrored)
+                name = f'{prefix}_s{i}.svg'
+                path = os.path.join(output_dir, name)
+                with open(path, 'w') as f:
+                    f.write(svg)
+                state_files.append(name)
+                total += 1
+
+            # Write individual arrow SVGs
+            arrow_files = []
+            for i, l in enumerate(move_labels):
+                svg = render_arrow_svg(l, cell_size=240, arrow_gap=50,
+                                       label_height=30)
+                name = f'{prefix}_a{i}.svg'
+                path = os.path.join(output_dir, name)
+                with open(path, 'w') as f:
+                    f.write(svg)
+                arrow_files.append(name)
+                total += 1
+
+            label = variant.get('label', var_id)
+            variant_data.append((step_name, idx, label, alg, state_files, arrow_files, suffix))
+
+            print(f"  {step_name}/{var_id}: {len(state_files)} states + "
+                  f"{len(arrow_files)} arrows")
+
+    # Build HTML body
+    body = []
+    body.append('<p class="title">Rubik\'s Cube for Dummies</p>')
+    body.append('')
+
+    body.append('<h2>Moves Notation</h2>')
+    body.append('')
+    body.append('<div class="notation">')
+    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-alt.svg" alt="Move Notation">')
+    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-prime-alt.svg" alt="Move Notation Prime">')
+    body.append('</div>')
+    body.append('')
+
+    current_step = None
+    for step_name, idx, label, alg, state_files, arrow_files, suffix in variant_data:
+        if step_name != current_step:
+            body.append(f'<h2>{step_title(step_name)}</h2>')
+            body.append('')
+            current_step = step_name
+
+        label_html = variant_label(step_name, idx, label, alg)
+        body.append('<div class="variant">')
+        body.append(f'  <div class="label">{label_html}</div>')
+        body.append('  <div class="seq-row">')
+        for i in range(len(state_files)):
+            body.append(f'    <img src="{assets_prefix}{state_files[i]}">')
+            if i < len(arrow_files):
+                body.append(f'    <img src="{assets_prefix}{arrow_files[i]}">')
+        body.append('  </div>')
+        if suffix:
+            body.append(f'  {suffix}')
+        body.append('</div>')
+        body.append('')
+
+    # Placeholder sections for steps 4-7
+    for num, name in [(4, 'Orient Yellow Cross'), (5, 'Permute Yellow Edges'),
+                      (6, 'Permute Last Layer'), (7, 'Orient Last Layer')]:
+        body.append(f'<h2>{num}. {name}</h2>')
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=297mm">
+<title>Rubik's Cube for Dummies</title>
+<style>
+@page {{ size: A4 landscape; margin: 1cm; }}
+* {{ margin: 0; padding: 0; box-sizing: border-box; }}
+body {{
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.4;
+  color: #222;
+  padding: 2em;
+}}
+.title {{
+  font-size: 22pt;
+  text-align: center;
+  margin-bottom: 0.8em;
+  letter-spacing: 1pt;
+}}
+h2 {{
+  font-size: 18pt;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.2em;
+}}
+.variant {{
+  margin-bottom: 1.5em;
+}}
+.variant .label {{
+  font-size: 11pt;
+  margin-bottom: 0.3em;
+  color: #444;
+}}
+.variant .label .alg {{
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: bold;
+  color: #111;
+  background: #f5f5f5;
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  font-size: 10pt;
+}}
+.seq-row {{
+  white-space: nowrap;
+  margin-bottom: 1em;
+}}
+.seq-row img {{
+  display: inline-block;
+  vertical-align: top;
+  height: 400px;
+  width: auto;
+}}
+.notation {{
+  margin-bottom: 1.5em;
+}}
+.notation-img {{
+  display: block;
+  width: 480px;
+  height: auto;
+}}
+</style>
+</head>
+<body>
+
+{chr(10).join(body)}
+
+</body>
+</html>
+"""
+
+    html_path = os.path.join(parent_dir, 'rubik_guide.html')
+    with open(html_path, 'w') as f:
+        f.write(html)
+    print(f"  root HTML = {html_path}")
+    total += 1
+
+    print(f"\nDone! Generated {total} files")
 
 
 def main():
