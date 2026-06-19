@@ -81,6 +81,9 @@ GOAL_STATES = {
     '02_white_corners': list('w'*9 + 'd'*9 + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
     '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
     '04_orient_yellow_cross': list('dydyyydyd' + 'w'*9 + 'dddbbbbbb' + 'dddgggggg' + 'dddrrrrrr' + 'dddoooooo'),
+    '05_permute_yellow_edges': list('dydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dgdgggggg' + 'drdrrrrrr' + 'dodoooooo'),
+    '06_permute_last_layer': list('lydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dglgggggg' + 'drdrrrrrr' + 'lodoooooo'),
+    '07_orient_last_layer': list('y'*9 + 'w'*9 + 'b'*9 + 'g'*9 + 'r'*9 + 'o'*9),
 }
 
 STEPS = {
@@ -103,6 +106,15 @@ STEPS = {
     '04_orient_yellow_cross': [
         {'variant': 'minus', 'label': 'Minus', 'algorithm': "F R U R' U' F'"},
         {'variant': 'l-shape', 'label': 'L Shape', 'algorithm': "F U R U' R' F'"},
+    ],
+    '05_permute_yellow_edges': [
+        {'variant': 'a', 'label': 'A', 'algorithm': "R UU R' U' R U' R' U'"},
+    ],
+    '06_permute_last_layer': [
+        {'variant': 'rotate', 'label': 'Rotate', 'algorithm': "L' U R U' L U R' U'"},
+    ],
+    '07_orient_last_layer': [
+        {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' U2 L U L' U L R U2 R' U' R U' R'"},
     ],
 }
 
@@ -1168,11 +1180,6 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             body.append(f'  {suffix}')
         body.append('</div>')
         body.append('')
-
-    # Placeholder sections for steps 4-7
-    for num, name in [(4, 'Orient Yellow Cross'), (5, 'Permute Yellow Edges'),
-                      (6, 'Permute Last Layer'), (7, 'Orient Last Layer')]:
-        body.append(f'<h2>{num}. {name}</h2>')
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
