@@ -783,33 +783,32 @@ def render_cube_svg(state: List[str], cell_size: int = 120,
     return '\n'.join(lines)
 
 
-def render_transition_svg(move_label: str, cell_size: int = 120,
-                     arrow_gap: int = 50, label_height: int = 30) -> str:
-    """Render a transition arrow with move label as a standalone SVG.
+def render_transition_svg(move_label: str, arrow_gap: int = 50) -> str:
+    """Render a transition arrow with embedded move label as standalone SVG.
 
-    Result is a complete <svg> document sized arrow_gap x (cell_size + label_height).
-    Arrow sits at y = cell_size/2; label at y = cell_size/2 + label_height/2 + 4.
+    Canvas is tightly cropped to content -- no wasted space above or below.
+    CSS will scale the image to the desired display size.
     """
-    total_height = cell_size + label_height
+    arrow_y = 8
+    label_y = arrow_y + 20
+    canvas_h = label_y + 4
     lines = [
         "<?xml version='1.0' encoding='UTF-8'?>",
-        f"<svg xmlns='http://www.w3.org/2000/svg' width='{arrow_gap}' height='{total_height}' "
-        f"viewBox='0 0 {arrow_gap} {total_height}'>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{arrow_gap}' height='{canvas_h}' "
+        f"viewBox='0 0 {arrow_gap} {canvas_h}'>",
         "  <defs>",
         "    <marker id='arr' viewBox='0 0 10 10' refX='8' refY='5'",
         "      markerWidth='6' markerHeight='6' orient='auto-start-reverse'>",
         "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
         "  </defs>",
-        f"  <rect fill='transparent' width='{arrow_gap}' height='{total_height}'/>",
+        f"  <rect fill='transparent' width='{arrow_gap}' height='{canvas_h}'/>",
     ]
-    arrow_y = cell_size / 2
     lines.append(
         f"  <line x1='5' y1='{arrow_y}' "
         f"x2='{arrow_gap - 5}' y2='{arrow_y}' "
         f"stroke='#333333' stroke-width='2' marker-end='url(#arr)'/>"
     )
-    label_y = cell_size / 2 + label_height / 2 + 4
     lines.append(
         f"  <text x='{arrow_gap / 2}' y='{label_y}' "
         f"text-anchor='middle' font-family='monospace' font-size='13' "
@@ -1091,7 +1090,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
 
     total = 0
     # Collect variant data for HTML generation (SVGs written first)
-    variant_data = []  # list of (step_name, step_idx, var_id, alg, mirrored, state_files, arrow_files, suffix)
+    variant_data = []  # list of (step_name, step_idx, label, alg, state_files, arrow_files, suffix)
 
     for step_name, variants in STEPS.items():
         for idx, variant in enumerate(variants):
@@ -1120,8 +1119,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             # Write individual cube state SVGs
             state_files = []
             for i, s in enumerate(states):
-                svg = render_cube_svg(s, cell_size=240, label_height=30,
-                                      mirrored=mirrored)
+                svg = render_cube_svg(s, cell_size=240, mirrored=mirrored)
                 name = f'{prefix}_s{i}.svg'
                 path = os.path.join(output_dir, name)
                 with open(path, 'w') as f:
@@ -1132,8 +1130,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             # Write individual arrow SVGs
             arrow_files = []
             for i, l in enumerate(move_labels):
-                svg = render_transition_svg(l, cell_size=240, arrow_gap=50,
-                                       label_height=30)
+                svg = render_transition_svg(l, arrow_gap=50)
                 name = f'{prefix}_a{i}.svg'
                 path = os.path.join(output_dir, name)
                 with open(path, 'w') as f:
@@ -1172,9 +1169,9 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
         body.append(f'  <div class="label">{label_html}</div>')
         body.append('  <div class="seq-row">')
         for i in range(len(state_files)):
-            body.append(f'    <img src="{assets_prefix}{state_files[i]}">')
+            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[i]}">')
             if i < len(arrow_files):
-                body.append(f'    <img src="{assets_prefix}{arrow_files[i]}">')
+                body.append(f'    <img class="transform" src="{assets_prefix}{arrow_files[i]}">')
         body.append('  </div>')
         if suffix:
             body.append(f'  {suffix}')
@@ -1228,22 +1225,29 @@ h2 {{
   font-size: 10pt;
 }}
 .seq-row {{
-  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 1em;
 }}
-.seq-row img {{
-  display: inline-block;
-  vertical-align: top;
+.seq-row img.cube {{
   height: 400px;
+  width: auto;
+}}
+.seq-row img.transform {{
+  height: {400 * (8 + 20 + 4) / 240:.0f}px;
   width: auto;
 }}
 .notation {{
   margin-bottom: 1.5em;
+  white-space: nowrap;
 }}
 .notation-img {{
-  display: block;
+  display: inline-block;
   width: 480px;
   height: auto;
+  margin-right: 1em;
 }}
 </style>
 </head>
