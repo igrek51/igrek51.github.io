@@ -77,12 +77,12 @@ MOVE_DEFS = {
 SOLVED = list('wwwwwwwwwyyyyyyyyyrrrrrrrrrooooooooobbbbbbbbbggggggggg')
 
 GOAL_STATES = {
-    '01_white_cross': list('dwdwwwdwd' + 'd'*9 + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd'),
-    '02_white_corners': list('w'*9 + 'd'*9 + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
-    '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
+    '01_white_cross': list('dwdwwwdwd' + 'ddddydddd' + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd'),
+    '02_white_corners': list('w'*9 + 'ddddydddd' + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
+    '03_middle_layer': list('ddddydddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
     '04_orient_yellow_cross': list('dydyyydyd' + 'w'*9 + 'dddbbbbbb' + 'dddgggggg' + 'dddrrrrrr' + 'dddoooooo'),
     '05_permute_yellow_edges': list('dydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dgdgggggg' + 'drdrrrrrr' + 'dodoooooo'),
-    '06_permute_last_layer': list('lydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dglgggggg' + 'drdrrrrrr' + 'lodoooooo'),
+    '06_permute_last_layer': list('lydyyydyy' + 'w'*9 + 'dbbbbbbbb' + 'dglgggggg' + 'rrdrrrrrr' + 'lodoooooo'),
     '07_orient_last_layer': list('y'*9 + 'w'*9 + 'b'*9 + 'g'*9 + 'r'*9 + 'o'*9),
 }
 
@@ -95,26 +95,26 @@ STEPS = {
         {'variant': 'elevator', 'label': 'Elevator on the right', 'algorithm': "F D F'"},
         {'variant': 'elevator-m', 'label': 'Elevator on the left', 'algorithm': "F' D' F", 'mirrored': True},
         {'variant': 'upside-down', 'label': 'Upside-down', 'algorithm': "R' DD R D",
-         'goal': list('wwwwwwwwd' + 'ddbdddddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd'),
+         'goal': list('wwwwwwwwd' + 'ddbdydddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd'),
          'suffix': '& repeat 2B'},
     ],
     '03_middle_layer': [
-        {'variant': 'to-right', 'label': 'To right', 'algorithm': "U R U' R' U' F' U F"},
-        {'variant': 'to-left', 'label': 'To left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
-         'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddgdggg' + 'ddddrdrrr' + 'ddddooooo')},
+        {'variant': 'to-right', 'label': 'Insert right', 'algorithm': "U R U' R' U' F' U F"},
+        {'variant': 'to-left', 'label': 'Insert left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
+         'goal': list('ddddydddd' + 'w'*9 + 'dddbbdbbb' + 'ddddgdggg' + 'ddddrdrrr' + 'ddddooooo')},
     ],
     '04_orient_yellow_cross': [
         {'variant': 'minus', 'label': 'Minus', 'algorithm': "F R U R' U' F'"},
         {'variant': 'l-shape', 'label': 'L Shape', 'algorithm': "F U R U' R' F'"},
     ],
     '05_permute_yellow_edges': [
-        {'variant': 'a', 'label': 'A', 'algorithm': "R UU R' U' R U' R' U'"},
+        {'variant': 'a', 'label': 'Swap Neighbours', 'algorithm': "R UU R' U' R U' R' U'"},
     ],
     '06_permute_last_layer': [
-        {'variant': 'rotate', 'label': 'Rotate', 'algorithm': "L' U R U' L U R' U'"},
+        {'variant': 'rotate', 'label': 'Rotate 3', 'algorithm': "L' U R U' L U R' U'"},
     ],
     '07_orient_last_layer': [
-        {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' U2 L U L' U L R U2 R' U' R U' R'"},
+        {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' UU L U L' U L R UU R' U' R U' R'"},
     ],
 }
 
@@ -783,37 +783,121 @@ def render_cube_svg(state: List[str], cell_size: int = 120,
     return '\n'.join(lines)
 
 
-def render_transition_svg(move_label: str, arrow_gap: int = 50) -> str:
-    """Render a transition arrow with embedded move label as standalone SVG.
+def _bare_move(move_label: str) -> str:
+    """Extract the bare face letter from a move label (e.g. F' -> F, FF -> F)."""
+    s = move_label.replace("'", "").replace("2", "")
+    if len(s) == 2 and s[0] == s[1]:
+        s = s[0]
+    return s
 
-    Canvas is tightly cropped to content -- no wasted space above or below.
-    CSS will scale the image to the desired display size.
+
+def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
+    """Render a transition visualization as a 3x3 grid with a move arrow.
+
+    For layer moves (U/D/R/L) a straight arrow spans the three affected tiles.
+    For face moves (F) a rounded/spiral arrow sits across all nine tiles.
+    A progress arrow below the grid points right toward the next state.
+    The move label is drawn below the progress arrow.
     """
-    arrow_y = 8
-    label_y = arrow_y + 20
-    canvas_h = label_y + 4
+    C = 15
+    GW = GH = C * 3
+    SVG_W = GW + 2 * 5 + 1  # grid + margins + marker overhang
+    GX = 5
+    GY = 2
+    CX = GX + GW / 2
+    CY = GY + GH / 2
+    AR = C * 0.6  # arc radius for F move
+    ARROW_Y = GY + GH + 24
+    LY = GY + GH + 17
+    SVG_H = ARROW_Y + 6
+
     lines = [
         "<?xml version='1.0' encoding='UTF-8'?>",
-        f"<svg xmlns='http://www.w3.org/2000/svg' width='{arrow_gap}' height='{canvas_h}' "
-        f"viewBox='0 0 {arrow_gap} {canvas_h}'>",
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{SVG_W}' height='{SVG_H}' "
+        f"viewBox='0 0 {SVG_W} {SVG_H}'>",
         "  <defs>",
         "    <marker id='arr' viewBox='0 0 10 10' refX='8' refY='5'",
-        "      markerWidth='6' markerHeight='6' orient='auto-start-reverse'>",
+        "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
+                "    <marker id='arr-flip' viewBox='0 0 10 10' refX='10' refY='5'",
+        "      markerWidth='4' markerHeight='4' orient='auto'>",
+        "      <path d='M 10 0 L 0 5 L 10 10 z' fill='#333333'/>",
+        "    </marker>",
+        "    <marker id='arr-progress' viewBox='0 0 10 10' refX='8' refY='5'",
+        "      markerWidth='4' markerHeight='4' orient='auto'>",
+        "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#cccccc'/>",
+        "    </marker>",
+
+
         "  </defs>",
-        f"  <rect fill='transparent' width='{arrow_gap}' height='{canvas_h}'/>",
+        f"  <rect x='{GX}' y='{GY}' width='{GW}' height='{GH}' "
+        f"fill='#f0f0f0' stroke='#888' stroke-width='1'/>",
+        f"  <line x1='{GX + C}' y1='{GY}' x2='{GX + C}' y2='{GY + GH}' stroke='#aaa' stroke-width='0.5'/>",
+        f"  <line x1='{GX + 2*C}' y1='{GY}' x2='{GX + 2*C}' y2='{GY + GH}' stroke='#aaa' stroke-width='0.5'/>",
+        f"  <line x1='{GX}' y1='{GY + C}' x2='{GX + GW}' y2='{GY + C}' stroke='#aaa' stroke-width='0.5'/>",
+        f"  <line x1='{GX}' y1='{GY + 2*C}' x2='{GX + GW}' y2='{GY + 2*C}' stroke='#aaa' stroke-width='0.5'/>",
     ]
+
+    bare = _bare_move(move_label)
+
+    if bare == 'F':
+        if "'" in move_label.replace("2", ""):
+            lines.append(
+                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,0 {CX + AR:.1f},{CY:.1f}' "
+                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+        else:
+            lines.append(
+                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {CX - AR:.1f},{CY:.1f}' "
+                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+    elif bare == 'U':
+        my = GY + C // 2
+        if "'" in move_label:
+            lines.append(
+                f"  <line x1='{GX + 3}' y1='{my}' x2='{GX + GW - 3}' y2='{my}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+        else:
+            lines.append(
+                f"  <line x1='{GX + GW - 3}' y1='{my}' x2='{GX + 3}' y2='{my}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+    elif bare == 'D':
+        my = GY + 2 * C + C // 2
+        if "'" in move_label:
+            lines.append(
+                f"  <line x1='{GX + GW - 3}' y1='{my}' x2='{GX + 3}' y2='{my}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+        else:
+            lines.append(
+                f"  <line x1='{GX + 3}' y1='{my}' x2='{GX + GW - 3}' y2='{my}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+    elif bare == 'R':
+        mx = GX + 2 * C + C // 2
+        if "'" in move_label:
+            lines.append(
+                f"  <line x1='{mx}' y1='{GY + 3}' x2='{mx}' y2='{GY + GH - 3}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+        else:
+            lines.append(
+                f"  <line x1='{mx}' y1='{GY + GH - 3}' x2='{mx}' y2='{GY + 3}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+    elif bare == 'L':
+        mx = GX + C // 2
+        if "'" in move_label:
+            lines.append(
+                f"  <line x1='{mx}' y1='{GY + GH - 3}' x2='{mx}' y2='{GY + 3}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+        else:
+            lines.append(
+                f"  <line x1='{mx}' y1='{GY + 3}' x2='{mx}' y2='{GY + GH - 3}' "
+                f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+
     lines.append(
-        f"  <line x1='5' y1='{arrow_y}' "
-        f"x2='{arrow_gap - 5}' y2='{arrow_y}' "
-        f"stroke='#333333' stroke-width='2' marker-end='url(#arr)'/>"
-    )
+        f"  <text x='{SVG_W / 2}' y='{LY}' "
+        f"text-anchor='middle' font-family='Consolas, monospace' font-size='14' "
+        f"fill='#333333'>{move_label}</text>")
     lines.append(
-        f"  <text x='{arrow_gap / 2}' y='{label_y}' "
-        f"text-anchor='middle' font-family='monospace' font-size='13' "
-        f"fill='#333333'>{move_label}</text>"
-    )
+        f"  <line x1='{GX + 3}' y1='{ARROW_Y}' x2='{GX + GW - 3}' y2='{ARROW_Y}' "
+        f"stroke='#ccc' stroke-width='1.5' marker-end='url(#arr-progress)'/>")
     lines.append("</svg>")
     return '\n'.join(lines)
 
@@ -1243,11 +1327,11 @@ h2 {{
   margin-bottom: 1em;
 }}
 .seq-row img.cube {{
-  height: 400px;
+  height: 360px;
   width: auto;
 }}
 .seq-row img.transition {{
-  height: {400 * (8 + 20 + 4) / 240:.0f}px;
+  height: 128px;
   width: auto;
 }}
 .notation {{

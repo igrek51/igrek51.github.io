@@ -23,7 +23,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:zoom="5.8354916"
-     inkscape:cx="144.37515"
+     inkscape:cx="144.28947"
      inkscape:cy="90.652174"
      inkscape:window-width="1920"
      inkscape:window-height="995"
@@ -511,15 +511,6 @@
      d="m 154.95891,123.42804 -8.81377,0.81439 4.89408,8.64335 z"
      sodipodi:nodetypes="cccc" />
   <circle
-     cx="133.40968"
-     cy="83.163239"
-     fill="#555555"
-     stroke="#ffffff"
-     stroke-width="1.60104"
-     id="circle68"
-     r="8.9657974"
-     style="fill:#9a9a9a;fill-opacity:1;stroke-width:1.701;stroke-dasharray:none;stroke:#e9e9e9;stroke-opacity:1" />
-  <circle
      cx="175.64809"
      cy="135.39813"
      r="9.8310509"
@@ -538,16 +529,6 @@
      fill="#ffffff"
      id="text67"
      style="stroke-width:0.702218">R</text>
-  <text
-     x="133.40968"
-     y="86.685516"
-     text-anchor="middle"
-     font-family="Arial, sans-serif"
-     font-size="10.2466px"
-     font-weight="bold"
-     fill="#ffffff"
-     id="text68"
-     style="stroke-width:0.640414">U</text>
   <circle
      cx="132.64291"
      cy="124.26137"
@@ -597,16 +578,16 @@
      stroke-width="2.71984"
      id="circle71"
      style="stroke-width:1.7;stroke-dasharray:none;stroke:#ffd700;stroke-opacity:1" />
-   <text
-      x="131.69229"
-      y="166.82922"
-      text-anchor="middle"
-      font-family="Arial, sans-serif"
-      font-size="10.5609px"
-      font-weight="bold"
-      fill="#ffffff"
-      id="text71"
-      style="stroke-width:0.660053">D</text>
+  <text
+     x="131.69229"
+     y="166.82922"
+     text-anchor="middle"
+     font-family="Arial, sans-serif"
+     font-size="10.5609px"
+     font-weight="bold"
+     fill="#ffffff"
+     id="text71"
+     style="stroke-width:0.660053">D</text>
   <!-- rounded arrows (from notation.svg) -->
   <path
      style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;fill:#e0e0e0;fill-opacity:1;stroke:#9a9a9a;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
@@ -639,6 +620,25 @@
      style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;fill:#ffd700;fill-opacity:1;stroke:#b8960f;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
      d="m 150.41253,178.09569 -2.05274,0.58789 -2.05859,0.73633 -1.99023,0.87695 -1.88282,0.9961 -1.78711,1.10742 -1.68359,1.23828 -1.53516,1.35156 -1.41015,1.45508 -1.24805,1.55664 -1.08984,1.65625 -0.89649,1.73633 -0.70703,1.80469 -0.50781,1.86718 -0.28516,1.91016 -0.0684,1.92969 0.16016,1.94531 0.39648,1.94141 0.6211,1.89257 0.8418,1.85157 1.07031,1.79492 1.26953,1.70117 1.45898,1.60352 1.66016,1.50586 1.83203,1.37695 1.98242,1.23828 2.13477,1.10547 2.2539,0.93945 2.35743,0.78516 2.4414,0.62695 2.51563,0.44531 2.55859,0.26563 2.50586,0.0918 a 2,2 0 0 0 2.07227,-1.92383 2,2 0 0 0 -1.92578,-2.07422 l -2.37305,-0.0859 -2.2832,-0.23633 -2.22461,-0.39453 -2.15821,-0.55273 -2.08203,-0.69532 -1.9668,-0.82031 -1.84375,-0.95508 -1.69921,-1.06054 -1.54688,-1.16211 -1.38086,-1.25391 -1.20117,-1.31836 -1.0293,-1.3789 -0.84961,-1.42579 -0.6582,-1.44726 -0.48047,-1.4668 -0.30273,-1.48047 -0.1211,-1.47265 0.0527,-1.47071 0.21484,-1.45117 0.39063,-1.43164 0.55468,-1.41406 0.70313,-1.36524 0.87109,-1.32226 1.01172,-1.26367 1.16992,-1.20508 1.28321,-1.13086 1.41797,-1.04102 1.5332,-0.95117 1.63672,-0.86523 1.72851,-0.76172 1.80274,-0.64453 1.92773,-0.55274 a 2,2 0 0 0 1.3711,-2.47265 2,2 0 0 0 -2.47266,-1.37305 z"
      id="path-d-round" />
+  <circle
+     cx="133.40968"
+     cy="83.163239"
+     fill="#555555"
+     stroke="#ffffff"
+     stroke-width="1.60104"
+     id="circle68"
+     r="8.9657974"
+     style="fill:#9a9a9a;fill-opacity:1;stroke-width:1.701;stroke-dasharray:none;stroke:#e9e9e9;stroke-opacity:1" />
+  <text
+     x="133.40968"
+     y="86.685516"
+     text-anchor="middle"
+     font-family="Arial, sans-serif"
+     font-size="10.2466px"
+     font-weight="bold"
+     fill="#ffffff"
+     id="text68"
+     style="stroke-width:0.640414">U</text>
   <path
      id="polygon-d-round"
      style="fill:#ffd700;fill-opacity:1;stroke:#b8960f;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
