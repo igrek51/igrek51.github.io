@@ -80,6 +80,7 @@ GOAL_STATES = {
     '01_white_cross': list('dwdwwwdwd' + 'd'*9 + 'drddrdddd' + 'doddodddd' + 'dbddbdddd' + 'dgddgdddd'),
     '02_white_corners': list('w'*9 + 'd'*9 + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
     '03_middle_layer': list('ddddddddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
+    '04_orient_yellow_cross': list('dydyyydyd' + 'w'*9 + 'dddbbbbbb' + 'dddgggggg' + 'dddrrrrrr' + 'dddoooooo'),
 }
 
 STEPS = {
@@ -98,6 +99,10 @@ STEPS = {
         {'variant': 'to-right', 'label': 'To right', 'algorithm': "U R U' R' U' F' U F"},
         {'variant': 'to-left', 'label': 'To left', 'algorithm': "U' L' U L U F U' F'", 'mirrored': True,
          'goal': list('ddddddddd' + 'w'*9 + 'dddbbdbbb' + 'ddddgdggg' + 'ddddrdrrr' + 'ddddooooo')},
+    ],
+    '04_orient_yellow_cross': [
+        {'variant': 'minus', 'label': 'Minus', 'algorithm': "F R U R' U' F'"},
+        {'variant': 'l-shape', 'label': 'L Shape', 'algorithm': "F U R U' R' F'"},
     ],
 }
 

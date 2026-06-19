@@ -38,7 +38,7 @@ Look at the yellow pattern at the top. There are 3 cases.
 
 To make the yellow cross, run:
 ```
-FRU R'U'F
+FRU R'U'F'
 ```
 (mnemonic: "through roof")
 
