@@ -428,7 +428,7 @@ def _build_exploded_polygons() -> List[str]:
 EXPLODED_POLYGONS = _build_exploded_polygons()
 
 # Compute viewbox from polygon extents
-_VB_MARGIN = 0.10
+_VB_MARGIN = 0.04
 _all_pts = [
     (float(tok.split(',')[0]), float(tok.split(',')[1]))
     for poly in EXPLODED_POLYGONS
@@ -1279,72 +1279,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=297mm">
 <title>Rubik's Cube for Dummies</title>
-<style>
-@page {{ size: A4 landscape; margin: 1cm; }}
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-body {{
-  font-family: 'Segoe UI', Arial, sans-serif;
-  font-size: 11pt;
-  line-height: 1.4;
-  color: #222;
-  padding: 2em;
-}}
-.title {{
-  font-size: 22pt;
-  text-align: center;
-  margin-bottom: 0.8em;
-  letter-spacing: 1pt;
-}}
-h2 {{
-  font-size: 18pt;
-  margin-top: 1.2em;
-  margin-bottom: 0.4em;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 0.2em;
-}}
-.variant {{
-  margin-bottom: 1.5em;
-}}
-.variant .label {{
-  font-size: 11pt;
-  margin-bottom: 0.3em;
-  color: #444;
-}}
-.variant .label .alg {{
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-weight: bold;
-  color: #111;
-  background: #f5f5f5;
-  padding: 0.1em 0.4em;
-  border-radius: 2px;
-  font-size: 10pt;
-}}
-.seq-row {{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 1em;
-}}
-.seq-row img.cube {{
-  height: 360px;
-  width: auto;
-}}
-.seq-row img.transition {{
-  height: 128px;
-  width: auto;
-}}
-.notation {{
-  margin-bottom: 1.5em;
-  white-space: nowrap;
-}}
-.notation-img {{
-  display: inline-block;
-  width: 480px;
-  height: auto;
-  margin-right: 1em;
-}}
-</style>
+<link rel="stylesheet" href="assets/guide.css">
 </head>
 <body>
 

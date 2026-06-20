@@ -5,6 +5,7 @@
 # ]
 # ///
 from nuclear import nuke
+from pathlib import Path
 
 class Config:
     dry: bool = False
@@ -13,3 +14,10 @@ config, sh = nuke.init(Config)
 
 def guide():
     sh<<'python scripts/rubik/gen_rubik_guide.py --guide --output docs/rubik-for-dummies/assets'
+
+def pdf():
+    guide()
+    root = Path('docs/rubik-for-dummies').resolve()
+    html = root / 'rubik_guide.html'
+    pdf_path = root / 'rubik_guide.pdf'
+    sh << f'google-chrome --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="{pdf_path}" "file://{html}"'
