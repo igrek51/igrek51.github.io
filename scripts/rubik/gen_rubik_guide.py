@@ -1166,8 +1166,11 @@ def variant_label(step_name: str, step_idx: int, label: str, alg: str) -> str:
     return f'{step_num}{letter}. {label}: <span class="alg">{alg}</span>'
 
 
-def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
-    """Generate all steps: per-move cube SVGs, shared transition SVGs, and rubik_guide.html."""
+def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', short: bool = False):
+    """Generate all steps: per-move cube SVGs, shared transition SVGs, and rubik_guide.html.
+    
+    When short=True, each variant shows only the first state, all transitions, and the last state.
+    """
     os.makedirs(output_dir, exist_ok=True)
     parent_dir = os.path.dirname(output_dir.rstrip('/'))
     assets_prefix = os.path.basename(output_dir.rstrip('/')) + '/'
@@ -1263,23 +1266,31 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
         body.append('<div class="variant">')
         body.append(f'  <div class="label">{label_html}</div>')
         body.append('  <div class="seq-row">')
-        for i in range(len(state_files)):
-            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[i]}">')
-            if i < len(arrow_files):
-                body.append(f'    <img class="transition" src="{assets_prefix}{arrow_files[i]}">')
+        if short:
+            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[0]}">')
+            for a in arrow_files:
+                body.append(f'    <img class="transition" src="{assets_prefix}{a}">')
+            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[-1]}">')
+        else:
+            for i in range(len(state_files)):
+                body.append(f'    <img class="cube" src="{assets_prefix}{state_files[i]}">')
+                if i < len(arrow_files):
+                    body.append(f'    <img class="transition" src="{assets_prefix}{arrow_files[i]}">')
         body.append('  </div>')
         if suffix:
             body.append(f'  {suffix}')
         body.append('</div>')
         body.append('')
 
+    css_file = 'guide-short.css' if short else 'guide.css'
+    title = 'Rubik\'s Cube for Dummies (short)' if short else 'Rubik\'s Cube for Dummies'
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=297mm">
-<title>Rubik's Cube for Dummies</title>
-<link rel="stylesheet" href="assets/guide.css">
+<title>{title}</title>
+<link rel="stylesheet" href="assets/{css_file}">
 </head>
 <body>
 
@@ -1289,7 +1300,8 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
 </html>
 """
 
-    html_path = os.path.join(parent_dir, 'rubik_guide.html')
+    html_name = 'guide-short.html' if short else 'rubik_guide.html'
+    html_path = os.path.join(parent_dir, html_name)
     with open(html_path, 'w') as f:
         f.write(html)
     print(f"  root HTML = {html_path}")
@@ -1312,6 +1324,8 @@ Examples:
     
     parser.add_argument('--guide', action='store_true',
                         help='Generate full 7-step guide')
+    parser.add_argument('--guide-short', action='store_true',
+                        help='Generate short guide (first cube, transitions, last cube)')
     parser.add_argument('--test', action='store_true',
                         help='Generate test cube (solved state)')
     parser.add_argument('--state', type=str, default=None,
@@ -1325,9 +1339,9 @@ Examples:
     
     args = parser.parse_args()
     
-    if args.guide:
+    if args.guide or args.guide_short:
         out_dir = args.output or 'docs/rubik-for-dummies/assets'
-        generate_guide(out_dir)
+        generate_guide(out_dir, short=args.guide_short)
         if args.png:
             files = glob.glob(os.path.join(out_dir, '*.svg'))
             for f in files:
@@ -1337,7 +1351,7 @@ Examples:
                                 '--export-background=white'],
                                capture_output=True)
                 print(f'  PNG: {png}')
-    
+
     elif args.test or args.state:
         out_file = args.output or '/tmp/test.svg'
         if args.state:

@@ -21,3 +21,13 @@ def pdf():
     html = root / 'rubik_guide.html'
     pdf_path = root / 'rubik_guide.pdf'
     sh << f'google-chrome --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="{pdf_path}" "file://{html}"'
+
+def guide_short():
+    sh << 'python scripts/rubik/gen_rubik_guide.py --guide-short --output docs/rubik-for-dummies/assets'
+
+def pdf_short():
+    guide_short()
+    root = Path('docs/rubik-for-dummies').resolve()
+    html = root / 'guide-short.html'
+    pdf_path = root / 'guide-short.pdf'
+    sh << f'google-chrome --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="{pdf_path}" "file://{html}"'
