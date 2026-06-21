@@ -1,7 +1,13 @@
-# Rubik's Cube Cheatsheet
+# Rubik's Cube Guide
+
+- [Rubik's Cube for Dummies in HTML](../rubik-for-dummies/guide.html)
+- [Rubik's Cube for Dummies in PDF](../rubik-for-dummies/rubik_guide.pdf)
+- [Full Guide with intermediate states](../rubik-for-dummies/guide-long.html)
+
 ## Move Notation
 
-![](../assets/misc/rubiks-cube-notation.webp)
+![](../rubik-for-dummies/assets/notation-alt.svg)
+![](../rubik-for-dummies/assets/notation-prime-alt.svg)
 
 An apostrophe `'` (pronounced as prime) means to turn the face in the opposite direction (counterclockwise),
 e.g. `L'`.

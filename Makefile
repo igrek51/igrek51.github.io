@@ -5,7 +5,7 @@ setup:
 	pip install -r requirements.txt
 
 mkdocs-local:
-	mkdocs serve
+	mkdocs serve --dev-addr 0.0.0.0:8001
 
 mkdocs-push:
 	mkdocs gh-deploy --force --clean --verbose
