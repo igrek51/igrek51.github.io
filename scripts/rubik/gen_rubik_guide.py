@@ -32,6 +32,7 @@ def _idx(face: int, pos: int) -> int:
 # Face rotation indices for 90° CW and CCW (re-index stickers on rotated face)
 CW_FACE = [2, 5, 8, 1, 4, 7, 0, 3, 6]
 CCW_FACE = [6, 3, 0, 7, 4, 1, 8, 5, 2]
+SHORT_TRANSITIONS = True
 
 MOVE_DEFS = {
     # Format: (face_to_rotate, face_positions, cw_index, adjacent_cycles)
@@ -96,7 +97,7 @@ STEPS = {
         {'variant': 'elevator-m', 'label': 'Elevator on the left', 'algorithm': "F' D' F", 'mirrored': True},
         {'variant': 'upside-down', 'label': 'Upside-down', 'algorithm': "R' DD R D",
          'goal': list('wwwwwwwwd' + 'ddbdydddd' + 'rrddrdddr' + 'ooododddd' + 'dbbdbdwdd' + 'gggdgdddd'),
-         'suffix': '& repeat 2B'},
+         'suffix': ''},
     ],
     '03_middle_layer': [
         {'variant': 'to-right', 'label': 'Insert right', 'algorithm': "U R U' R' U' F' U F"},
@@ -111,7 +112,7 @@ STEPS = {
         {'variant': 'a', 'label': 'Swap Neighbours', 'algorithm': "R UU R' U' R U' R' U'"},
     ],
     '06_permute_last_layer': [
-        {'variant': 'rotate', 'label': 'Rotate 3', 'algorithm': "L' U R U' L U R' U'"},
+        {'variant': 'rotate', 'label': 'Swap 3', 'algorithm': "L' U R U' L U R' U'"},
     ],
     '07_orient_last_layer': [
         {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' UU L U L' U L R UU R' U' R U' R'"},
@@ -824,7 +825,7 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 10 0 L 0 5 L 10 10 z' fill='#333333'/>",
         "    </marker>",
-        "    <marker id='arr-flip2' viewBox='0 0 10 10' refX='4' refY='5'",
+        "    <marker id='arr-flip2' viewBox='0 0 10 10' refX='5' refY='5'",
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
@@ -863,11 +864,11 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
                 f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {CX - AR:.1f},{CY:.1f}' "
                 "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
             if is_double:
-                mid_a = -45 * math.pi / 180
+                mid_a = -115 * math.pi / 180
                 mx2 = CX + AR * math.cos(mid_a)
                 my2 = CY - AR * math.sin(mid_a)
                 lines.append(
-                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {mx2:.1f},{my2:.1f}' "
+                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {mx2:.1f},{my2:.1f}' "
                     "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
     elif bare == 'U':
         my = GY + C // 2
@@ -1230,13 +1231,14 @@ def variant_label(step_name: str, step_idx: int, label: str, alg: str) -> str:
     """Build variant label like '1A. Upside down: <span class="alg">FF</span>'."""
     step_num = step_name.split('_', 1)[0].lstrip('0')
     letter = _STEP_LETTER[step_idx]
-    return f'{step_num}{letter}. {label}: <span class="alg">{alg}</span>'
+    alg_notation = f': <span class="alg">{alg}</span>' if not SHORT_TRANSITIONS else ''
+    return f'{step_num}{letter}. {label}{alg_notation}'
 
 
-def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', short: bool = False):
+def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
     """Generate all steps: per-move cube SVGs, shared transition SVGs, and rubik_guide.html.
     
-    When short=True, each variant shows only the first state, all transitions, and the last state.
+    When SHORT_TRANSITIONS=True, each variant shows only the first state, all transitions, and the last state.
     """
     os.makedirs(output_dir, exist_ok=True)
     parent_dir = os.path.dirname(output_dir.rstrip('/'))
@@ -1333,7 +1335,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', short: boo
         body.append('<div class="variant">')
         body.append(f'  <div class="label">{label_html}</div>')
         body.append('  <div class="seq-row">')
-        if short:
+        if SHORT_TRANSITIONS:
             body.append(f'    <img class="cube" src="{assets_prefix}{state_files[0]}">')
             for a in arrow_files:
                 body.append(f'    <img class="transition" src="{assets_prefix}{a}">')
@@ -1349,8 +1351,8 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', short: boo
         body.append('</div>')
         body.append('')
 
-    css_file = 'guide-short.css' if short else 'guide.css'
-    title = 'Rubik\'s Cube for Dummies (short)' if short else 'Rubik\'s Cube for Dummies'
+    css_file = 'guide-short.css' if SHORT_TRANSITIONS else 'guide.css'
+    title = 'Rubik\'s Cube for Dummies'
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1367,7 +1369,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', short: boo
 </html>
 """
 
-    html_name = 'guide-short.html' if short else 'rubik_guide.html'
+    html_name = 'guide.html'
     html_path = os.path.join(parent_dir, html_name)
     with open(html_path, 'w') as f:
         f.write(html)
@@ -1391,8 +1393,6 @@ Examples:
     
     parser.add_argument('--guide', action='store_true',
                         help='Generate full 7-step guide')
-    parser.add_argument('--guide-short', action='store_true',
-                        help='Generate short guide (first cube, transitions, last cube)')
     parser.add_argument('--test', action='store_true',
                         help='Generate test cube (solved state)')
     parser.add_argument('--state', type=str, default=None,
@@ -1406,9 +1406,9 @@ Examples:
     
     args = parser.parse_args()
     
-    if args.guide or args.guide_short:
+    if args.guide:
         out_dir = args.output or 'docs/rubik-for-dummies/assets'
-        generate_guide(out_dir, short=args.guide_short)
+        generate_guide(out_dir)
         if args.png:
             files = glob.glob(os.path.join(out_dir, '*.svg'))
             for f in files:
