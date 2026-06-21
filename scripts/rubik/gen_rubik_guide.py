@@ -820,9 +820,13 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
-                "    <marker id='arr-flip' viewBox='0 0 10 10' refX='10' refY='5'",
+        "    <marker id='arr-flip' viewBox='0 0 10 10' refX='10' refY='5'",
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 10 0 L 0 5 L 10 10 z' fill='#333333'/>",
+        "    </marker>",
+        "    <marker id='arr-flip2' viewBox='0 0 10 10' refX='4' refY='5'",
+        "      markerWidth='4' markerHeight='4' orient='auto'>",
+        "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
         "    <marker id='arr-progress' viewBox='0 0 10 10' refX='8' refY='5'",
         "      markerWidth='4' markerHeight='4' orient='auto'>",
@@ -840,56 +844,119 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
     ]
 
     bare = _bare_move(move_label)
+    is_double = "2" in move_label or len(move_label.replace("'", "")) == 2
 
     if bare == 'F':
         if "'" in move_label.replace("2", ""):
             lines.append(
                 f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,0 {CX + AR:.1f},{CY:.1f}' "
                 "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+            if is_double:
+                mid_a = 135 * math.pi / 180
+                mx2 = CX + AR * math.cos(mid_a)
+                my2 = CY - AR * math.sin(mid_a)
+                lines.append(
+                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,0 {mx2:.1f},{my2:.1f}' "
+                    "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
         else:
             lines.append(
                 f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {CX - AR:.1f},{CY:.1f}' "
                 "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+            if is_double:
+                mid_a = -45 * math.pi / 180
+                mx2 = CX + AR * math.cos(mid_a)
+                my2 = CY - AR * math.sin(mid_a)
+                lines.append(
+                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {mx2:.1f},{my2:.1f}' "
+                    "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
     elif bare == 'U':
         my = GY + C // 2
         if "'" in move_label:
+            x1, x2 = GX + 3, GX + GW - 3
             lines.append(
-                f"  <line x1='{GX + 3}' y1='{my}' x2='{GX + GW - 3}' y2='{my}' "
+                f"  <line x1='{x1}' y1='{my}' x2='{x2}' y2='{my}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_x = (x1 + x2) / 2
+                lines.append(
+                    f"  <line x1='{x1}' y1='{my}' x2='{mid_x:.1f}' y2='{my}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
         else:
+            x1, x2 = GX + GW - 3, GX + 3
             lines.append(
-                f"  <line x1='{GX + GW - 3}' y1='{my}' x2='{GX + 3}' y2='{my}' "
+                f"  <line x1='{x1}' y1='{my}' x2='{x2}' y2='{my}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_x = (x1 + x2) / 2
+                lines.append(
+                    f"  <line x1='{x1}' y1='{my}' x2='{mid_x:.1f}' y2='{my}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
     elif bare == 'D':
         my = GY + 2 * C + C // 2
         if "'" in move_label:
+            x1, x2 = GX + GW - 3, GX + 3
             lines.append(
-                f"  <line x1='{GX + GW - 3}' y1='{my}' x2='{GX + 3}' y2='{my}' "
+                f"  <line x1='{x1}' y1='{my}' x2='{x2}' y2='{my}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_x = (x1 + x2) / 2
+                lines.append(
+                    f"  <line x1='{x1}' y1='{my}' x2='{mid_x:.1f}' y2='{my}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
         else:
+            x1, x2 = GX + 3, GX + GW - 3
             lines.append(
-                f"  <line x1='{GX + 3}' y1='{my}' x2='{GX + GW - 3}' y2='{my}' "
+                f"  <line x1='{x1}' y1='{my}' x2='{x2}' y2='{my}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_x = (x1 + x2) / 2
+                lines.append(
+                    f"  <line x1='{x1}' y1='{my}' x2='{mid_x:.1f}' y2='{my}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
     elif bare == 'R':
         mx = GX + 2 * C + C // 2
         if "'" in move_label:
+            y1, y2 = GY + 3, GY + GH - 3
             lines.append(
-                f"  <line x1='{mx}' y1='{GY + 3}' x2='{mx}' y2='{GY + GH - 3}' "
+                f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{y2}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_y = (y1 + y2) / 2
+                lines.append(
+                    f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{mid_y:.1f}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
         else:
+            y1, y2 = GY + GH - 3, GY + 3
             lines.append(
-                f"  <line x1='{mx}' y1='{GY + GH - 3}' x2='{mx}' y2='{GY + 3}' "
+                f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{y2}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_y = (y1 + y2) / 2
+                lines.append(
+                    f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{mid_y:.1f}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
     elif bare == 'L':
         mx = GX + C // 2
         if "'" in move_label:
+            y1, y2 = GY + GH - 3, GY + 3
             lines.append(
-                f"  <line x1='{mx}' y1='{GY + GH - 3}' x2='{mx}' y2='{GY + 3}' "
+                f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{y2}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_y = (y1 + y2) / 2
+                lines.append(
+                    f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{mid_y:.1f}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
         else:
+            y1, y2 = GY + 3, GY + GH - 3
             lines.append(
-                f"  <line x1='{mx}' y1='{GY + 3}' x2='{mx}' y2='{GY + GH - 3}' "
+                f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{y2}' "
                 f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
+            if is_double:
+                mid_y = (y1 + y2) / 2
+                lines.append(
+                    f"  <line x1='{mx}' y1='{y1}' x2='{mx}' y2='{mid_y:.1f}' "
+                    f"stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>")
 
     lines.append(
         f"  <text x='{SVG_W / 2}' y='{LY}' "
