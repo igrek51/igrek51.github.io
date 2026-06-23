@@ -83,7 +83,7 @@ GOAL_STATES = {
     '03_middle_layer': list('ddddydddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
     '04_orient_yellow_cross': list('dydyyydyd' + 'w'*9 + 'dddbbbbbb' + 'dddgggggg' + 'dddrrrrrr' + 'dddoooooo'),
     '05_permute_yellow_edges': list('dydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dgdgggggg' + 'drdrrrrrr' + 'dodoooooo'),
-    '06_permute_last_layer': list('lydyyydyy' + 'w'*9 + 'dbbbbbbbb' + 'dglgggggg' + 'rrdrrrrrr' + 'lodoooooo'),
+    '06_permute_last_layer': list('lydyyykyy' + 'w'*9 + 'kbbbbbbbb' + 'dglgggggg' + 'rrdrrrrrr' + 'lokoooooo'),
     '07_orient_last_layer': list('y'*9 + 'w'*9 + 'b'*9 + 'g'*9 + 'r'*9 + 'o'*9),
 }
 
@@ -112,7 +112,7 @@ STEPS = {
         {'variant': 'a', 'label': 'Swap Neighbours', 'algorithm': "R UU R' U' R U' R' U'"},
     ],
     '06_permute_last_layer': [
-        {'variant': 'rotate', 'label': 'Swap 3', 'algorithm': "L' U R U' L U R' U'"},
+        {'variant': 'rotate', 'label': 'Cycle 3', 'algorithm': "L' U R U' L U R' U'"},
     ],
     '07_orient_last_layer': [
         {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' UU L U L' U L R UU R' U' R U' R'"},
@@ -608,7 +608,7 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
     color_map = {
         'w': '#FFFFFF', 'y': '#FFD700', 'r': '#FF3333',
         'o': '#FF9500', 'b': '#0066FF', 'g': '#00AA44',
-        'l': '#aaaaaa', 'd': '#777777',
+        'l': '#aaaaaa', 'd': '#777777', 'k': '#444444',
     }
     if mirrored:
         return _render_cube_group_mirrored(state, ox, oy, scale, color_map)
