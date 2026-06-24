@@ -81,9 +81,9 @@ GOAL_STATES = {
     '02_white_corners': list('w'*9 + 'ddddydddd' + 'rrrdrdddd' + 'ooododddd' + 'bbbdbdddd' + 'gggdgdddd'),
     '03_middle_layer': list('ddddydddd' + 'w'*9 + 'ddddbbbbb' + 'ddddgdggg' + 'dddrrdrrr' + 'ddddodooo'),
     '04_orient_yellow_cross': list('dydyyydyd' + 'w'*9 + 'dddbbbbbb' + 'dddgggggg' + 'dddrrrrrr' + 'dddoooooo'),
-    '05_permute_yellow_edges': list('dydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dgdgggggg' + 'drdrrrrrr' + 'dodoooooo'),
-    '06_permute_last_layer': list('lydyyykyy' + 'w'*9 + 'kbbbbbbbb' + 'dglgggggg' + 'rrdrrrrrr' + 'lokoooooo'),
-    '07_orient_last_layer': list('y'*9 + 'w'*9 + 'b'*9 + 'g'*9 + 'r'*9 + 'o'*9),
+    '05_move_yellow_edges': list('dydyyydyd' + 'w'*9 + 'dbdbbbbbb' + 'dgdgggggg' + 'drdrrrrrr' + 'dodoooooo'),
+    '06_move_yellow_corners': list('gyryyyoyy' + 'w'*9 + 'ybbbbbbbb' + 'ygogggggg' + 'rrgrrrrrr' + 'yoboooooo'),
+    '07_orient_yellow_corners': list('y'*9 + 'w'*9 + 'b'*9 + 'g'*9 + 'r'*9 + 'o'*9),
 }
 
 STEPS = {
@@ -107,13 +107,13 @@ STEPS = {
         {'variant': 'minus', 'label': 'Minus', 'algorithm': "F R U R' U' F'"},
         {'variant': 'l-shape', 'label': 'L Shape', 'algorithm': "F U R U' R' F'"},
     ],
-    '05_permute_yellow_edges': [
+    '05_move_yellow_edges': [
         {'variant': 'a', 'label': 'Swap Neighbours', 'algorithm': "R UU R' U' R U' R' U'"},
     ],
-    '06_permute_last_layer': [
+    '06_move_yellow_corners': [
         {'variant': 'rotate', 'label': 'Cycle 3', 'algorithm': "L' U R U' L U R' U'"},
     ],
-    '07_orient_last_layer': [
+    '07_orient_yellow_corners': [
         {'variant': 'orient', 'label': 'Orient', 'algorithm': "L' UU L U L' U L R UU R' U' R U' R'"},
     ],
 }
