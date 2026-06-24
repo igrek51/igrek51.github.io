@@ -9,11 +9,13 @@ from pathlib import Path
 
 class Config:
     dry: bool = False
+    gray: bool = False
 
 config, sh = nuke.init(Config)
 
 def guide():
-    sh<<'python scripts/rubik/gen_rubik_guide.py --guide --output docs/rubik-for-dummies/assets'
+    gray_flag = '--gray' if config.gray else ''
+    sh<<f'python scripts/rubik/gen_rubik_guide.py --guide {gray_flag} --output docs/rubik-for-dummies/assets'
 
 def pdf():
     guide()

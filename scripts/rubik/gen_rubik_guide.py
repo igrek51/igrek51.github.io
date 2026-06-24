@@ -6,6 +6,7 @@ and algorithms, exported as SVG or HTML documents.
 
 Usage:
   python gen_rubik_guide.py --guide                  # Full guide
+  python gen_rubik_guide.py --guide --gray           # Grayscale guide
   python gen_rubik_guide.py --test                   # Test solved cube
   python gen_rubik_guide.py --state "wwwww..." --moves "R U R'"  # Custom
 """
@@ -87,7 +88,7 @@ GOAL_STATES = {
 
 STEPS = {
     '01_white_cross': [
-        {'variant': 'upside-down', 'label': 'Upside down', 'algorithm': "RR"},
+        {'variant': 'upside-down', 'label': 'Upside down', 'algorithm': "FF"},
         {'variant': 'elevator', 'label': 'Elevator', 'algorithm': "F' U' R U"},
     ],
     '02_white_corners': [
@@ -600,7 +601,8 @@ def _connector_lines() -> List[str]:
 
 
 def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
-                      scale: float = 1.0, mirrored: bool = False) -> str:
+                      scale: float = 1.0, mirrored: bool = False,
+                      gray: bool = False) -> str:
     """Render cube state as SVG group elements at given position and scale."""
     state = list(state)
     color_map = {
@@ -608,6 +610,9 @@ def render_cube_group(state: List[str], ox: float = 0.0, oy: float = 0.0,
         'o': '#FF9500', 'b': '#0066FF', 'g': '#00AA44',
         'l': '#aaaaaa', 'd': '#777777', 'k': '#444444',
     }
+    if gray:
+        for ch in ('r', 'b', 'y', 'g', 'o'):
+            color_map[ch] = '#FFFFFF'
     if mirrored:
         return _render_cube_group_mirrored(state, ox, oy, scale, color_map)
     
@@ -736,7 +741,7 @@ def _render_cube_group_mirrored(state: List[str], ox: float, oy: float,
     return '\n'.join(lines)
 
 
-def render_svg_exploded(state: List[str], size: int = 600) -> str:
+def render_svg_exploded(state: List[str], size: int = 600, gray: bool = False) -> str:
     """Render cube state as SVG with exploded view (main + reference faces)."""
     vb = f'{_VB_X0:.4f} {_VB_Y0:.4f} {_VB_W:.4f} {_VB_H:.4f}'
     lines = [
@@ -744,14 +749,15 @@ def render_svg_exploded(state: List[str], size: int = 600) -> str:
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{size}' height='{size}' viewBox='{vb}'>",
         f"  <rect fill='#FFFFFF' x='{_VB_X0:.4f}' y='{_VB_Y0:.4f}' "
         f"width='{_VB_W:.4f}' height='{_VB_H:.4f}'/>",
-        render_cube_group(state),
+        render_cube_group(state, gray=gray),
         "</svg>",
     ]
     return '\n'.join(lines)
 
 
 def render_cube_svg(state: List[str], cell_size: int = 120,
-                    label_height: int = 0, mirrored: bool = False) -> str:
+                    label_height: int = 0, mirrored: bool = False,
+                    gray: bool = False) -> str:
     """Render a single cube state as a standalone SVG.
 
     Result is a complete <svg> document sized cell_size x (cell_size + label_height).
@@ -776,7 +782,7 @@ def render_cube_svg(state: List[str], cell_size: int = 120,
         f"<svg xmlns='http://www.w3.org/2000/svg' width='{cell_size}' height='{total_height}' "
         f"viewBox='0 0 {cell_size} {total_height}'>",
         f"  <rect fill='#FFFFFF' width='{cell_size}' height='{total_height}'/>",
-        render_cube_group(state, ox, oy, scale, mirrored=mirrored),
+        render_cube_group(state, ox, oy, scale, mirrored=mirrored, gray=gray),
         "</svg>",
     ]
     return '\n'.join(lines)
@@ -823,7 +829,7 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 10 0 L 0 5 L 10 10 z' fill='#333333'/>",
         "    </marker>",
-        "    <marker id='arr-flip2' viewBox='0 0 10 10' refX='5' refY='5'",
+        "    <marker id='arr-flip2' viewBox='0 0 10 10' refX='3' refY='5'",
         "      markerWidth='4' markerHeight='4' orient='auto'>",
         "      <path d='M 0 0 L 10 5 L 0 10 z' fill='#333333'/>",
         "    </marker>",
@@ -845,29 +851,27 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
     bare = _bare_move(move_label)
     is_double = "2" in move_label or len(move_label.replace("'", "")) == 2
 
+    def draw_arc(alpha1: float, alpha2: float, clockwise: bool):
+        mx1 = CX + AR * math.cos(alpha1 * math.pi / 180)
+        my1 = CY - AR * math.sin(alpha1 * math.pi / 180)
+        mx2 = CX + AR * math.cos(alpha2 * math.pi / 180)
+        my2 = CY - AR * math.sin(alpha2 * math.pi / 180)
+        x_axis_rotation = 0 # angle (in degrees) by which the entire ellipse is rotated
+        large_arc = 0 # arc should be greater or less than 180 degrees. 0 draws a shorter arc; 1 draws a longer arc
+        sweep = int(clockwise) # 0 draws it in a counter-clockwise direction, while 1 draws it clockwise.
+        lines.append(
+            f"  <path d='M {mx1:.1f},{my1:.1f} A {AR:.1f},{AR:.1f} {x_axis_rotation} {large_arc},{sweep} {mx2:.1f},{my2:.1f}' "
+            "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
+
     if bare == 'F':
-        if "'" in move_label.replace("2", ""):
-            lines.append(
-                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,0 {CX:.1f},{CY + AR:.1f}' "
-                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
+        if "'" in move_label:
+            draw_arc(90, 180, False)
             if is_double:
-                alpha = 180
-                mx2 = CX + AR * math.cos(alpha * math.pi / 180)
-                my2 = CY - AR * math.sin(alpha * math.pi / 180)
-                lines.append(
-                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,0 {mx2:.1f},{my2:.1f}' "
-                    "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
+                draw_arc(90, 270, False)
         else:
-            lines.append(
-                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {CX:.1f},{CY + AR:.1f}' "
-                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
+            draw_arc(90, 0, True)
             if is_double:
-                alpha = 0
-                mx2 = CX + AR * math.cos(alpha * math.pi / 180)
-                my2 = CY - AR * math.sin(alpha * math.pi / 180)
-                lines.append(
-                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {mx2:.1f},{my2:.1f}' "
-                    "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
+                draw_arc(90, 270, True)
     elif bare == 'U':
         my = GY + C // 2
         if "'" in move_label:
@@ -1184,15 +1188,15 @@ def render_svg_notation() -> str:
     return '\n'.join(lines)
 
 
-def generate_test_cube(output_file: str, use_exploded: bool = True):
+def generate_test_cube(output_file: str, use_exploded: bool = True, gray: bool = False):
     """Generate a test cube (solved state)."""
-    svg = render_svg_exploded(SOLVED)
+    svg = render_svg_exploded(SOLVED, gray=gray)
     with open(output_file, 'w') as f:
         f.write(svg)
     print(f"Generated: {output_file}")
 
 
-def generate_custom_cube(state_str: str, moves_str: str, output_file: str, use_exploded: bool = True):
+def generate_custom_cube(state_str: str, moves_str: str, output_file: str, use_exploded: bool = True, gray: bool = False):
     """Generate a custom cube from state string and optional moves."""
     try:
         state = string_to_state(state_str)
@@ -1207,7 +1211,7 @@ def generate_custom_cube(state_str: str, moves_str: str, output_file: str, use_e
             print(f"Error applying moves: {e}")
             return
     
-    svg = render_svg_exploded(state)
+    svg = render_svg_exploded(state, gray=gray)
     with open(output_file, 'w') as f:
         f.write(svg)
     print(f"Generated: {output_file}")
@@ -1232,10 +1236,10 @@ def variant_label(step_name: str, step_idx: int, label: str) -> str:
     return f'{step_num}{letter}. {label}'
 
 
-def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
+def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', gray: bool = False):
     """Generate all steps: per-move cube SVGs, shared transition SVGs, and rubik_guide.html.
     
-    When SHORT_TRANSITIONS=True, each variant shows only the first state, all transitions, and the last state.
+    When gray=True, colored stickers are rendered white.
     """
     os.makedirs(output_dir, exist_ok=True)
     parent_dir = os.path.dirname(output_dir.rstrip('/'))
@@ -1291,7 +1295,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             # Write individual cube state SVGs
             state_files = []
             for i, s in enumerate(states):
-                svg = render_cube_svg(s, cell_size=240, mirrored=mirrored)
+                svg = render_cube_svg(s, cell_size=240, mirrored=mirrored, gray=gray)
                 name = f'{prefix}_s{i}.svg'
                 path = os.path.join(output_dir, name)
                 with open(path, 'w') as f:
@@ -1332,7 +1336,8 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             if step_name != current_step:
                 if short and step_name.startswith('03_'):
                     body.append('<div class="page-break"></div>')
-                    body.append('')
+                if not short and step_name.startswith('04_'):
+                    body.append('<div class="page-break"></div>')
                 body.append(f'<h2>{step_title(step_name)}</h2>')
                 body.append('')
                 current_step = step_name
@@ -1360,10 +1365,19 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
 
     _write_variants(short=False)
 
+
     body.append('<div class="page-break"></div>')
     body.append('')
 
-    body.append('<h2 class="recap-title">Quick Recap: Rubik\'s Cube for Dummies</h2>')
+    body.append('<p class="recap-title">Recap: Rubik\'s Cube for Dummies</p>')
+    body.append('')
+
+    body.append('<h2>Moves Notation</h2>')
+    body.append('')
+    body.append('<div class="notation">')
+    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-alt.svg" alt="Move Notation">')
+    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-prime-alt.svg" alt="Move Notation Prime">')
+    body.append('</div>')
     body.append('')
 
     _write_variants(short=True)
@@ -1420,12 +1434,14 @@ Examples:
                         help='Convert SVGs to PNG using inkscape')
     parser.add_argument('--output', type=str, default=None,
                         help='Output file or directory')
+    parser.add_argument('--gray', action='store_true',
+                        help='Render grayscale (all colored stickers white)')
     
     args = parser.parse_args()
     
     if args.guide:
         out_dir = args.output or 'docs/rubik-for-dummies/assets'
-        generate_guide(out_dir)
+        generate_guide(out_dir, gray=args.gray)
         if args.png:
             files = glob.glob(os.path.join(out_dir, '*.svg'))
             for f in files:
@@ -1439,9 +1455,9 @@ Examples:
     elif args.test or args.state:
         out_file = args.output or '/tmp/test.svg'
         if args.state:
-            generate_custom_cube(args.state, args.moves or '', out_file)
+            generate_custom_cube(args.state, args.moves or '', out_file, gray=args.gray)
         else:
-            generate_test_cube(out_file)
+            generate_test_cube(out_file, gray=args.gray)
     
     else:
         parser.print_help()

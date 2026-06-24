@@ -2,7 +2,6 @@
 
 - [Rubik's Cube for Dummies in HTML](../rubik-for-dummies/guide.html)
 - [Rubik's Cube for Dummies in PDF](../rubik-for-dummies/rubik_guide.pdf)
-- [Full Guide with intermediate states](../rubik-for-dummies/guide-long.html)
 
 ## Move Notation
 
