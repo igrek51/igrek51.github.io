@@ -32,8 +32,6 @@ def _idx(face: int, pos: int) -> int:
 # Face rotation indices for 90° CW and CCW (re-index stickers on rotated face)
 CW_FACE = [2, 5, 8, 1, 4, 7, 0, 3, 6]
 CCW_FACE = [6, 3, 0, 7, 4, 1, 8, 5, 2]
-SHORT_TRANSITIONS = True
-
 MOVE_DEFS = {
     # Format: (face_to_rotate, face_positions, cw_index, adjacent_cycles)
     # Cycles rotate 4 stickers: [pos1, pos2, pos3, pos4] → pos1←pos4, pos2←pos1, pos3←pos2, pos4←pos3
@@ -89,7 +87,7 @@ GOAL_STATES = {
 
 STEPS = {
     '01_white_cross': [
-        {'variant': 'upside-down', 'label': 'Upside down', 'algorithm': "FF"},
+        {'variant': 'upside-down', 'label': 'Upside down', 'algorithm': "RR"},
         {'variant': 'elevator', 'label': 'Elevator', 'algorithm': "F' U' R U"},
     ],
     '02_white_corners': [
@@ -800,17 +798,17 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
     A progress arrow below the grid points right toward the next state.
     The move label is drawn below the progress arrow.
     """
-    C = 15
-    GW = GH = C * 3
-    SVG_W = GW + 2 * 5 + 1  # grid + margins + marker overhang
-    GX = 5
-    GY = 2
+    C = 15 # cell size
+    GW = GH = C * 3 # grid width / height
+    SVG_W = GW + 2 * 1 + 0  # grid + margins + marker overhang
+    GX = 1
+    GY = 1
     CX = GX + GW / 2
     CY = GY + GH / 2
-    AR = C * 0.6  # arc radius for F move
-    ARROW_Y = GY + GH + 24
-    LY = GY + GH + 17
-    SVG_H = ARROW_Y + 6
+    AR = C * 1  # arc radius for F move
+    ARROW_Y = GY + GH + 28 # transition arrow (gray)
+    LY = GY + GH + 21 # Label position
+    SVG_H = ARROW_Y + 4
 
     lines = [
         "<?xml version='1.0' encoding='UTF-8'?>",
@@ -850,25 +848,25 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
     if bare == 'F':
         if "'" in move_label.replace("2", ""):
             lines.append(
-                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,0 {CX + AR:.1f},{CY:.1f}' "
-                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,0 {CX:.1f},{CY + AR:.1f}' "
+                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
             if is_double:
-                mid_a = 135 * math.pi / 180
-                mx2 = CX + AR * math.cos(mid_a)
-                my2 = CY - AR * math.sin(mid_a)
+                alpha = 180
+                mx2 = CX + AR * math.cos(alpha * math.pi / 180)
+                my2 = CY - AR * math.sin(alpha * math.pi / 180)
                 lines.append(
                     f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,0 {mx2:.1f},{my2:.1f}' "
                     "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
         else:
             lines.append(
-                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {CX - AR:.1f},{CY:.1f}' "
-                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip)'/>")
+                f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {CX:.1f},{CY + AR:.1f}' "
+                "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
             if is_double:
-                mid_a = -115 * math.pi / 180
-                mx2 = CX + AR * math.cos(mid_a)
-                my2 = CY - AR * math.sin(mid_a)
+                alpha = 0
+                mx2 = CX + AR * math.cos(alpha * math.pi / 180)
+                my2 = CY - AR * math.sin(alpha * math.pi / 180)
                 lines.append(
-                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 1,1 {mx2:.1f},{my2:.1f}' "
+                    f"  <path d='M {CX:.1f},{CY - AR:.1f} A {AR:.1f},{AR:.1f} 0 0,1 {mx2:.1f},{my2:.1f}' "
                     "fill='none' stroke='#333' stroke-width='2.5' marker-end='url(#arr-flip2)'/>")
     elif bare == 'U':
         my = GY + C // 2
@@ -961,7 +959,7 @@ def render_transition_svg(move_label: str, arrow_gap: int = 100) -> str:
 
     lines.append(
         f"  <text x='{SVG_W / 2}' y='{LY}' "
-        f"text-anchor='middle' font-family='Consolas, monospace' font-size='14' "
+        f"text-anchor='middle' font-family='Consolas, monospace' font-size='20' "
         f"fill='#333333'>{move_label}</text>")
     lines.append(
         f"  <line x1='{GX + 3}' y1='{ARROW_Y}' x2='{GX + GW - 3}' y2='{ARROW_Y}' "
@@ -1227,12 +1225,11 @@ def step_title(step_name: str) -> str:
 _STEP_LETTER = 'ABCDEFGH'
 
 
-def variant_label(step_name: str, step_idx: int, label: str, alg: str) -> str:
-    """Build variant label like '1A. Upside down: <span class="alg">FF</span>'."""
+def variant_label(step_name: str, step_idx: int, label: str) -> str:
+    """Build variant label like '1A. Upside down'."""
     step_num = step_name.split('_', 1)[0].lstrip('0')
     letter = _STEP_LETTER[step_idx]
-    alg_notation = f': <span class="alg">{alg}</span>' if not SHORT_TRANSITIONS else ''
-    return f'{step_num}{letter}. {label}{alg_notation}'
+    return f'{step_num}{letter}. {label}'
 
 
 def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
@@ -1311,7 +1308,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
             print(f"  {step_name}/{var_id}: {len(state_files)} states + "
                   f"{len(arrow_files)} arrows")
 
-    # Build HTML body
+    # Build HTML body — long version then Quick Recap
     body = []
     body.append('<p class="title">Rubik\'s Cube for Dummies</p>')
     body.append('')
@@ -1324,32 +1321,52 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
     body.append('</div>')
     body.append('')
 
-    current_step = None
-    for step_name, idx, label, alg, state_files, arrow_files, suffix in variant_data:
-        if step_name != current_step:
-            body.append(f'<h2>{step_title(step_name)}</h2>')
-            body.append('')
-            current_step = step_name
+    # Count variants per step
+    step_variant_count = {}
+    for step_name, *_ in variant_data:
+        step_variant_count[step_name] = step_variant_count.get(step_name, 0) + 1
 
-        label_html = variant_label(step_name, idx, label, alg)
-        body.append('<div class="variant">')
-        body.append(f'  <div class="label">{label_html}</div>')
-        body.append('  <div class="seq-row">')
-        if SHORT_TRANSITIONS:
-            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[0]}">')
-            for a in arrow_files:
-                body.append(f'    <img class="transition" src="{assets_prefix}{a}">')
-            body.append(f'    <img class="cube" src="{assets_prefix}{state_files[-1]}">')
-        else:
-            for i in range(len(state_files)):
-                body.append(f'    <img class="cube" src="{assets_prefix}{state_files[i]}">')
-                if i < len(arrow_files):
-                    body.append(f'    <img class="transition" src="{assets_prefix}{arrow_files[i]}">')
-        body.append('  </div>')
-        if suffix:
-            body.append(f'  {suffix}')
-        body.append('</div>')
-        body.append('')
+    def _write_variants(short: bool):
+        current_step = None
+        for step_name, idx, label, alg, state_files, arrow_files, suffix in variant_data:
+            if step_name != current_step:
+                if short and step_name.startswith('03_'):
+                    body.append('<div class="page-break"></div>')
+                    body.append('')
+                body.append(f'<h2>{step_title(step_name)}</h2>')
+                body.append('')
+                current_step = step_name
+
+            single = step_variant_count[step_name] == 1
+            label_html = variant_label(step_name, idx, label)
+            body.append('<div class="variant">')
+            if not single:
+                body.append(f'  <div class="label">{label_html}</div>')
+            body.append('  <div class="seq-row">')
+            if short:
+                body.append(f'    <img class="cube" src="{assets_prefix}{state_files[0]}">')
+                for a in arrow_files:
+                    body.append(f'    <img class="transition" src="{assets_prefix}{a}">')
+                body.append(f'    <img class="cube" src="{assets_prefix}{state_files[-1]}">')
+            else:
+                body.append(f'    <img class="cube" src="{assets_prefix}{state_files[0]}">')
+                for i in range(len(arrow_files)):
+                    body.append(f'    <span class="move-step"><img class="transition" src="{assets_prefix}{arrow_files[i]}"><img class="cube" src="{assets_prefix}{state_files[i+1]}"></span>')
+            body.append('  </div>')
+            if suffix:
+                body.append(f'  {suffix}')
+            body.append('</div>')
+            body.append('')
+
+    _write_variants(short=False)
+
+    body.append('<div class="page-break"></div>')
+    body.append('')
+
+    body.append('<h2 class="recap-title">Quick Recap: Rubik\'s Cube for Dummies</h2>')
+    body.append('')
+
+    _write_variants(short=True)
 
     css_file = 'guide.css'
     title = 'Rubik\'s Cube for Dummies'

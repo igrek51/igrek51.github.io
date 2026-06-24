@@ -23,7 +23,8 @@
   <line x1='31' y1='1' x2='31' y2='46' stroke='#aaa' stroke-width='0.5'/>
   <line x1='1' y1='16' x2='46' y2='16' stroke='#aaa' stroke-width='0.5'/>
   <line x1='1' y1='31' x2='46' y2='31' stroke='#aaa' stroke-width='0.5'/>
-  <line x1='4' y1='8' x2='43' y2='8' stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>
-  <text x='23.5' y='67' text-anchor='middle' font-family='Consolas, monospace' font-size='20' fill='#333333'>U'</text>
+  <line x1='38' y1='43' x2='38' y2='4' stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>
+  <line x1='38' y1='43' x2='38' y2='23.5' stroke='#333' stroke-width='2.5' marker-end='url(#arr)'/>
+  <text x='23.5' y='67' text-anchor='middle' font-family='Consolas, monospace' font-size='20' fill='#333333'>RR</text>
   <line x1='4' y1='74' x2='43' y2='74' stroke='#ccc' stroke-width='1.5' marker-end='url(#arr-progress)'/>
 </svg>
