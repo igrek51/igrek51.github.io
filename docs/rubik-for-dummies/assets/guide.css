@@ -6,6 +6,12 @@ body {
   line-height: 1.25;
   color: #222;
 }
+@media screen {
+  body { zoom: 2; }
+}
+@media print {
+  body { zoom: 1; }
+}
 .title {
   font-size: 16pt;
   text-align: center;
