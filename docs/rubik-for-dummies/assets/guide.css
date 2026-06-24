@@ -1,4 +1,4 @@
-@page { size: A4 landscape; margin: 0.6cm; }
+@page { size: A4; margin: 0.6cm; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -7,15 +7,15 @@ body {
   color: #222;
 }
 .title {
-  font-size: 18pt;
+  font-size: 16pt;
   text-align: center;
   margin-bottom: 0.2em;
-  letter-spacing: 0.6pt;
+  letter-spacing: 0.5pt;
 }
 h2 {
-  font-size: 14pt;
-  margin-top: 0.2em;
-  margin-bottom: 0.08em;
+  font-size: 12pt;
+  margin-top: 0.1em;
+  margin-bottom: 0.05em;
   border-top: 1px solid #ccc;
   padding-bottom: 0;
   page-break-after: avoid;
@@ -43,10 +43,10 @@ h2 {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 0.15em;
+  margin-bottom: 0.05em;
 }
 .seq-row img.cube {
-  height: 160px;
+  height: 140px;
   width: auto;
 }
 .seq-row img.transition {
@@ -59,7 +59,7 @@ h2 {
 }
 .notation-img {
   display: inline-block;
-  height: 150px;
+  height: 140px;
   width: auto;
-  margin-right: 0.4em;
+  margin-right: 0;
 }

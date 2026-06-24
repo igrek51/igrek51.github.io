@@ -1351,7 +1351,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets'):
         body.append('</div>')
         body.append('')
 
-    css_file = 'guide-short.css' if SHORT_TRANSITIONS else 'guide.css'
+    css_file = 'guide.css'
     title = 'Rubik\'s Cube for Dummies'
     html = f"""<!DOCTYPE html>
 <html lang="en">
