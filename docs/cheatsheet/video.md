@@ -113,9 +113,7 @@ ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4
 Extract normalized audio from video:
 ```sh
 ffmpeg -i input.mkv -map a \
-    -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
-    -filter:a "aresample=matrix_encoding=dplii" \
-    -filter:a "dynaudnorm=maxgain=50:framelen=400:gausssize=15" \
+    -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15" \
     -ac 2 -q:a 0 \
     output.mp3
 ```
@@ -210,9 +208,7 @@ for index, part in enumerate(parts):
         f' -i "{src_path}"'
         f' -ss {format_duration_m(minutes_from)} -to {format_duration_m(minutes_to)}'
         f' -c:v copy'
-        f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR"'  # Downmix to stereo
-        f' -filter:a "aresample=matrix_encoding=dplii"'
-        f' -filter:a "dynaudnorm=maxgain=50:framelen=400:gausssize=15"'  # Dynamic audio normalization
+        f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15"'  # Downmix to stereo, Dolby Pro Logic II, dynamic audio normalization
         f' -ac 2 -c:a aac -b:a 192k'
         f' "{out_path}"'
     )
