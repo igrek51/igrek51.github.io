@@ -81,7 +81,7 @@ yt-dlp -f "bestvideo[height<=1080]+bestaudio/best" --merge-output-format mp4 --n
 yt-dlp -f 'bestvideo[height<=1080]+bestaudio/best' \
   --merge-output-format mp4 \
   --no-playlist --remote-components ejs:github \
-  --postprocessor-args "Merger:-filter:a 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15' -c:v copy -c:a aac -ac 2" \
+  --postprocessor-args "Merger:-filter:a 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5' -c:v copy -c:a aac -ac 2" \
   -o "{target}" \
   "{yt_url}"
 ```
@@ -92,7 +92,7 @@ pip3 install --upgrade yt-dlp --break-system-packages
 # Download MP3 with normalized audio
 yt-dlp -x --audio-format mp3 --audio-quality 0 \
   --no-playlist --remote-components ejs:github \
-  --postprocessor-args "ExtractAudio:-filter:a 'dynaudnorm=maxgain=50:framelen=400:gausssize=15'" \
+  --postprocessor-args "ExtractAudio:-filter:a 'dynaudnorm=maxgain=50:framelen=200:gausssize=5'" \
   -o "{target}.mp3" \
   "{yt_url}"
 ```
@@ -103,17 +103,17 @@ or clipping the "loud" sections.
 In other words: The Dynamic Audio Normalizer will "even out" the volume of quiet and loud sections,
 in the sense that the volume of each section is brought to the same target level.
 ```sh
-ffmpeg -i "$INPUT.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "$INPUT.norm.mkv"
+ffmpeg -i "$INPUT.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=200:gausssize=5" -c:a aac -b:a 192k "$INPUT.norm.mkv"
 ```
 ```sh
-ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "%s.norm.mkv"'
-ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=50:framelen=400:gausssize=15" -c:a aac -b:a 192k "%s.norm.mp4"'
+ls -1 *.mkv | sed -e 's/\.mkv$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mkv" -c:v copy -af "dynaudnorm=maxgain=50:framelen=200:gausssize=5" -c:a aac -b:a 192k "%s.norm.mkv"'
+ls -1 *.mp4 | sed -e 's/\.mp4$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.mp4" -c:v copy -af "dynaudnorm=maxgain=50:framelen=200:gausssize=5" -c:a aac -b:a 192k "%s.norm.mp4"'
 ```
 
 Extract normalized audio from video:
 ```sh
 ffmpeg -i input.mkv -map a \
-    -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15" \
+    -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5" \
     -ac 2 -q:a 0 \
     output.mp3
 ```
@@ -156,7 +156,7 @@ def mkv_to_mp3():
     -map 0:a:1
     -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,
     aresample=matrix_encoding=dplii,
-    dynaudnorm=maxgain=50:framelen=400:gausssize=15"
+    dynaudnorm=maxgain=50:framelen=200:gausssize=5"
     -ac 2 -q:a 0
     "{target}"'''.replace('\n', '')
         sh<<cmd
@@ -170,7 +170,7 @@ def yt_to_mp3():
         sh<<f'''yt-dlp -f 'bestvideo[height<=1080]+bestaudio/best' \
 --merge-output-format mp4 \
 --no-playlist --remote-components ejs:github \
---postprocessor-args "Merger:-filter:a 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15' -c:v copy -c:a aac -ac 2" \
+--postprocessor-args "Merger:-filter:a 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5' -c:v copy -c:a aac -ac 2" \
 -o "{target}" \
 "{yt_url}"'''
 
@@ -208,7 +208,7 @@ for index, part in enumerate(parts):
         f' -i "{src_path}"'
         f' -ss {format_duration_m(minutes_from)} -to {format_duration_m(minutes_to)}'
         f' -c:v copy'
-        f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=400:gausssize=15"'  # Downmix to stereo, Dolby Pro Logic II, dynamic audio normalization
+        f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5"'  # Downmix to stereo, Dolby Pro Logic II, dynamic audio normalization
         f' -ac 2 -c:a aac -b:a 192k'
         f' "{out_path}"'
     )
@@ -268,7 +268,7 @@ def bluey():
             f' -ss 00:00:25'
             f' -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,'  # downmix 5.1 to stereo
             f'aresample=matrix_encoding=dplii,'  # Dolby Pro Logic II matrix
-            f'dynaudnorm=maxgain=50:framelen=400:gausssize=15"'  # Dynamic Audio Normalizer
+            f'dynaudnorm=maxgain=50:framelen=200:gausssize=5"'  # Dynamic Audio Normalizer
             f' -ac 2 -q:a 0'  # output 2 channels, variable bitrate
             f' "{target}"'
         )
