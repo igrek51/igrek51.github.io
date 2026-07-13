@@ -215,7 +215,15 @@ for index, part in enumerate(parts):
     logger.info(f'Created: {out_path}')
 ```
 
-## MKV to audiobook generator
+## Video to audiobook
+```sh
+ffmpeg -i "input.mkv" \
+  -ss 00:24:55 -to 00:31:00 \
+  -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5" \
+  -ac 2 -q:a 0 \
+  "output.mp3"
+```
+
 ```python
 #!/usr/bin/env -S uv run --script
 # /// script
@@ -276,3 +284,22 @@ def bluey():
 if __name__ == '__main__':
     nuke.run()
 ```
+
+## FFmpeg CLI reference
+
+- `-i "input.mkv"` - input file
+- `-ss 00:10:00 -to 00:20:00` - trim from 10:00 (10 minutes) to 20:00
+
+- `-map a` - select all audio streams from all inputs
+- `-map 0:a:1` - from input #0 select audio stream index #1 (the second audio track)
+- `-c:v copy` - copy video stream without re-encoding (fast, no quality loss)
+- `-c:a aac` - encode audio to AAC
+
+- `-filter:a "pan=stereo\|FL < 1.0*FL + 0.707*FC + 0.707*BL\|FR < 1.0*FR + 0.707*FC + 0.707*BR"` - audio filter: Downmix 5.1 surround to stereo with center/rear mixing
+- `-filter:a "aresample=matrix_encoding=dplii"` - audio filter: Dolby Pro Logic II matrix encoding for surround-encoded stereo
+- `-filter:a "dynaudnorm=maxgain=50:framelen=200:gausssize=5"` - audio filter: Dynamic Audio Normalizer - evens out quiet and loud sections
+- `-filter:a -filter:a "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR,aresample=matrix_encoding=dplii,dynaudnorm=maxgain=50:framelen=200:gausssize=5"` - apply audio filter chain (filters separated by commas)
+
+- `-b:a 192k` - audio bitrate (CBR)
+- `-q:a 0` - audio quality (VBR), 0 = best, 9 = worst
+- `-ac 2` - output 2 audio channels (stereo)
