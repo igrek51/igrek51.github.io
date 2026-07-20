@@ -1312,7 +1312,7 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', gray: bool
             print(f"  {step_name}/{var_id}: {len(state_files)} states + "
                   f"{len(arrow_files)} arrows")
 
-    # Build HTML body — long version then Quick Recap
+    # Build HTML body — short version (first/last cube per variant)
     body = []
     body.append('<p class="title">Rubik\'s Cube for Dummies</p>')
     body.append('')
@@ -1363,22 +1363,6 @@ def generate_guide(output_dir: str = 'docs/rubik-for-dummies/assets', gray: bool
             body.append('</div>')
             body.append('')
 
-    _write_variants(short=False)
-
-
-    body.append('<div class="page-break"></div>')
-    body.append('')
-
-    body.append('<p class="recap-title">Recap: Rubik\'s Cube for Dummies</p>')
-    body.append('')
-
-    body.append('<h2>Moves Notation</h2>')
-    body.append('')
-    body.append('<div class="notation">')
-    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-alt.svg" alt="Move Notation">')
-    body.append(f'  <img class="notation-img" src="{assets_prefix}notation-prime-alt.svg" alt="Move Notation Prime">')
-    body.append('</div>')
-    body.append('')
 
     _write_variants(short=True)
 
