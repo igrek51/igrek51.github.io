@@ -21,8 +21,8 @@ or open with VLC, with VLsub extension.
 
 #### Subliminal
 ```sh
-pip install subliminal
-subliminal download -l pl *.mkv
+uvx subliminal download -l pl *.mkv
+uvx subliminal download -l en *.mkv
 ```
 
 ### Detect encoding
@@ -56,6 +56,17 @@ ffmpeg -i 'S01E03.txt' 'S01E03.default.srt'
 ```
 ```sh
 ls -1 *.txt | sed -e 's/\.txt$//g' | xargs -d '\n' -I %s echo 'ffmpeg -i "%s.txt" "%s.default.srt"'
+```
+
+### Synchronize subtitles to movie
+Install [alass](https://github.com/kaegi/alass):
+```sh
+cargo install alass-cli
+```
+
+Synchronize subtitles to audio:
+```sh
+alass movie.mp4 incorrect_subtitle.srt output.srt
 ```
 
 ### Appendix
