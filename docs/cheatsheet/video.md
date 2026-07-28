@@ -8,7 +8,35 @@ Install:
 sudo apt install qnapi uchardet ffmpeg recode
 ```
 
+### Batch Normalize filenames
+```sh
+uvx regex-rename "S01E(\d+).*mp4" "Foundation S01E\1.mp4" #--rename
+```
+Jellyfin filename convention:
+```
+TV Shows/
+└── Series Name (Year)/
+    ├── Season 01/
+    │   ├── Series Name S01E01.mkv
+    │   ├── Series Name S01E01.en.srt
+    └── Season 02/
+        ├── Series Name S02E01.mkv
+    │   ├── Series Name S02E01.en.srt
+        └── Series Name S02E02-E03.mkv
+    │   ├── Series Name S02E02-E03.en.srt
+Movies/
+├── Movie Name (Year)/
+│   ├── Movie Name (Year).mkv
+│   ├── Movie Name (Year).en.srt
+```
+
 ### Download subtitles for your language
+
+#### Subliminal
+```sh
+uvx subliminal download -l pl *.mkv
+uvx subliminal download -l en *.mp4
+```
 
 #### Qnapi
 ```sh
@@ -18,12 +46,6 @@ qnapi -l pl *.mkv
 
 #### VLsub
 or open with VLC, with VLsub extension.
-
-#### Subliminal
-```sh
-uvx subliminal download -l pl *.mkv
-uvx subliminal download -l en *.mkv
-```
 
 ### Detect encoding
 ```sh
@@ -66,7 +88,11 @@ cargo install alass-cli
 
 Synchronize subtitles to audio:
 ```sh
-alass movie.mp4 incorrect_subtitle.srt output.srt
+alass-cli movie.mp4 incorrect_subtitle.srt output.srt
+# Batch synchronize (generates .new.srt)
+ls -1 *.srt | sed -e 's/\.en.srt$//g' | xargs -d '\n' -I %s echo 'alass-cli "%s.mp4" "%s.en.srt" "%s.new.srt"'
+# overwrite original .srt
+ls -1 *.new.srt | sed 's/\.new\.srt$//' | xargs -d '\n' -I %s echo 'mv -f "%s.new.srt" "%s.en.srt"'
 ```
 
 ### Appendix
