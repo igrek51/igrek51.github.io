@@ -1,0 +1,12 @@
+[project]
+name = "igrek51-github-io"
+version = "0.1.0"
+description = "igrek51 Github Pages"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.6.5",
+    "pygments==2.19.2",
+    "pymdown-extensions==10.14.3",
+]

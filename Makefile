@@ -1,14 +1,12 @@
-setup:
-	python3 -m venv venv &&\
-	. venv/bin/activate &&\
-	pip install --upgrade pip setuptools &&\
-	pip install -r requirements.txt
+venv:
+	uv venv --python 3.14
+	uv sync
 
 mkdocs-local:
-	mkdocs serve --dev-addr 0.0.0.0:8001
+	uv run mkdocs serve --dev-addr 0.0.0.0:8001
 
 mkdocs-push:
-	mkdocs gh-deploy --force --clean --verbose
+	uv run mkdocs gh-deploy --force --clean --verbose
 
 rubik-svgs:
 	curl -L -o docs/assets/misc/rubik/3x_1_white_cross.svg \
